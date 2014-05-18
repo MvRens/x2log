@@ -1,0 +1,201 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{e601c684-e576-44d0-b94c-9a32de0c82c4}</ProjectGuid>
+			<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+			<DCC_DCCCompiler>DCC32</DCC_DCCCompiler>
+			<DCC_DependencyCheckOutputName>X2LogTest.exe</DCC_DependencyCheckOutputName>
+			<MainSource>X2LogTest.dpr</MainSource>
+			<FrameworkType>VCL</FrameworkType>
+			<ProjectVersion>13.4</ProjectVersion>
+			<Base>True</Base>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+			<TargetedPlatforms>1</TargetedPlatforms>
+			<AppType>Application</AppType>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+			<Base_Win64>true</Base_Win64>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+			<Cfg_1_Win32>true</Cfg_1_Win32>
+			<CfgParent>Cfg_1</CfgParent>
+			<Cfg_1>true</Cfg_1>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+			<Cfg_2_Win32>true</Cfg_2_Win32>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
+			<DCC_ExeOutput>bin</DCC_ExeOutput>
+			<Manifest_File>None</Manifest_File>
+			<DCC_DcuOutput>lib</DCC_DcuOutput>
+			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<VerInfo_Locale>1043</VerInfo_Locale>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win64)'!=''">
+			<Icon_MainIcon>X2LogTest_Icon.ico</Icon_MainIcon>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<Version>7.0</Version>
+			<DCC_DebugInformation>False</DCC_DebugInformation>
+			<DCC_LocalDebugSymbols>False</DCC_LocalDebugSymbols>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<Version>7.0</Version>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+		</PropertyGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Parameters>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">False</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">0</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1043</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvAppFrmDesign160.bpl">JVCL Application and Form Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvBandsDesign160.bpl">JVCL Band Objects</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvBDEDesign160.bpl">JVCL BDE Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvCmpDesign160.bpl">JVCL Non-Visual Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvControlsDesign160.bpl">JVCL Visual Controls</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvCoreDesign160.bpl">JVCL Core Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvCryptDesign160.bpl">JVCL Encryption and Compression</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvCustomDesign160.bpl">JVCL Custom Controls</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvDBDesign160.bpl">JVCL Database Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvDlgsDesign160.bpl">JVCL Dialog Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvDockingDesign160.bpl">JVCL Docking Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvDotNetCtrlsDesign160.bpl">JVCL DotNet Controls</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvGlobusDesign160.bpl">JVCL Globus Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvHMIDesign160.bpl">JVCL HMI Controls</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvJansDesign160.bpl">JVCL Jans Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvManagedThreadsDesign160.bpl">JVCL Managed Threads</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvMMDesign160.bpl">JVCL Multimedia and Image Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvNetDesign160.bpl">JVCL Network Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvPageCompsDesign160.bpl">JVCL Page Style Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvPascalInterpreterDesign160.bpl">JVCL Interpreter Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvPluginSystemDesign160.bpl">JVCL Plugin Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvPrintPreviewDesign160.bpl">JVCL Print Preview Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvRuntimeDesignDesign160.bpl">JVCL Runtime Design Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvStdCtrlsDesign160.bpl">JVCL Standard Controls</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvSystemDesign160.bpl">JVCL System Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvTimeFrameworkDesign160.bpl">JVCL Time Framework</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvWizardsDesign160.bpl">JVCL Wizard</Excluded_Packages>
+						<Excluded_Packages Name="F:\Components\bin\DXE2\win32\JvXPCtrlsDesign160.bpl">JVCL XP Controls</Excluded_Packages>
+					</Excluded_Packages>
+					<Source>
+						<Source Name="MainSource">X2LogTest.dpr</Source>
+					</Source>
+				</Delphi.Personality>
+				<Platforms>
+					<Platform value="Win64">False</Platform>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<ItemGroup>
+			<DelphiCompile Include="$(MainSource)">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="source\MainFrm.pas">
+				<Form>MainForm</Form>
+			</DCCReference>
+			<DCCReference Include="..\X2Log.Intf.pas"/>
+			<DCCReference Include="..\X2Log.pas"/>
+			<DCCReference Include="..\X2Log.Observer.Event.pas"/>
+			<DCCReference Include="..\X2Log.Observer.Custom.pas"/>
+			<DCCReference Include="..\X2Log.Exception.Default.pas"/>
+			<DCCReference Include="..\X2Log.Exception.madExcept.pas"/>
+			<DCCReference Include="..\X2Log.Observer.LogFile.pas"/>
+			<DCCReference Include="..\X2Log.Constants.pas"/>
+			<DCCReference Include="..\X2Log.Observer.NamedPipe.pas"/>
+			<DCCReference Include="..\X2Log.Observer.CustomThreaded.pas"/>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<ItemGroup/>
+		<Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+	</Project>

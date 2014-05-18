@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{66C17964-1E71-4A50-A5F4-D04EB6A833D3}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="Test\X2LogTest.dproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="NamedPipeClient\X2LogNamedPipeClient.dproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="X2LogTest">
+			<MSBuild Projects="Test\X2LogTest.dproj"/>
+		</Target>
+		<Target Name="X2LogTest:Clean">
+			<MSBuild Projects="Test\X2LogTest.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="X2LogTest:Make">
+			<MSBuild Projects="Test\X2LogTest.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="X2LogNamedPipeClient">
+			<MSBuild Projects="NamedPipeClient\X2LogNamedPipeClient.dproj"/>
+		</Target>
+		<Target Name="X2LogNamedPipeClient:Clean">
+			<MSBuild Projects="NamedPipeClient\X2LogNamedPipeClient.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="X2LogNamedPipeClient:Make">
+			<MSBuild Projects="NamedPipeClient\X2LogNamedPipeClient.dproj" Targets="Make"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="X2LogTest;X2LogNamedPipeClient"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="X2LogTest:Clean;X2LogNamedPipeClient:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="X2LogTest:Make;X2LogNamedPipeClient:Make"/>
+		</Target>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
+	</Project>
