@@ -32,6 +32,10 @@ object MainForm: TMainForm
     OnChange = pcObserversChange
     object tsEvent: TTabSheet
       Caption = 'Event Observer '
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
@@ -51,6 +55,10 @@ object MainForm: TMainForm
     object tsFile: TTabSheet
       Caption = 'File Observer'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe Observer'
@@ -78,7 +86,18 @@ object MainForm: TMainForm
       Align = alRight
       Cancel = True
       Caption = 'Close'
+      TabOrder = 1
+    end
+    object btnMonitorForm: TButton
+      Left = 0
+      Top = 0
+      Width = 145
+      Height = 25
+      Align = alLeft
+      Cancel = True
+      Caption = 'Monitor Form Observer'
       TabOrder = 0
+      OnClick = btnMonitorFormClick
     end
   end
   object GroupBox1: TGroupBox

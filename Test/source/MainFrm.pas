@@ -28,6 +28,7 @@ type
     edtException: TEdit;
     btnException: TButton;
     tsNamedPipe: TTabSheet;
+    btnMonitorForm: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure edtExceptionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edtMessageKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnExceptionClick(Sender: TObject);
+    procedure btnMonitorFormClick(Sender: TObject);
   private
     FLog: IX2Log;
     FObserver: IX2LogObserver;
@@ -56,6 +58,7 @@ uses
   X2Log.Exception.madExcept,
   X2Log.Observer.Event,
   X2Log.Observer.LogFile,
+  X2Log.Observer.MonitorForm,
   X2Log.Observer.NamedPipe;
 
 
@@ -65,10 +68,14 @@ uses
 { TMainForm }
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  { Testing the localization (Dutch) }
   SetLogResourceString(@LogLevelVerbose, 'Uitgebreid');
   SetLogResourceString(@LogLevelInfo, 'Informatie');
   SetLogResourceString(@LogLevelWarning, 'Waarschuwing');
   SetLogResourceString(@LogLevelError, 'Fout');
+
+  SetLogResourceString(@LogMonitorFormColumnTime, 'Tijd');
+  SetLogResourceString(@LogMonitorFormColumnMessage, 'Melding');
 
   FLog := TX2Log.Create;
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
@@ -162,6 +169,12 @@ begin
     on E:Exception do
       FLog.Exception(E);
   end;
+end;
+
+
+procedure TMainForm.btnMonitorFormClick(Sender: TObject);
+begin
+  TX2LogObserverMonitorForm.ShowInstance(FLog);
 end;
 
 end.

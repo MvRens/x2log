@@ -1,6 +1,11 @@
 program X2LogTest;
 
 uses
+  madExcept,
+  madLinkDisAsm,
+  madListHardware,
+  madListProcesses,
+  madListModules,
   Forms,
   MainFrm in 'source\MainFrm.pas' {MainForm},
   X2Log.Intf in '..\X2Log.Intf.pas',
@@ -24,6 +29,7 @@ var
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
+  Application.Title := 'X²LogTest';
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.

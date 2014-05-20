@@ -26,6 +26,19 @@ resourcestring
   LogFileLineDetails = ' (details: %s)';
 
 
+  {
+    X2Log.Observer.MonitorForm
+  }
+
+  { Caption of the monitor form. %s is optional and will be replaced
+    with the application's title }
+  LogMonitorFormCaption = '%s - Live Log';
+
+  { Caption of the columns in the live log view }
+  LogMonitorFormColumnTime = 'Time';
+  LogMonitorFormColumnMessage = 'Message';
+
+
 
   function GetLogLevelText(ALogLevel: TX2LogLevel): string;
 

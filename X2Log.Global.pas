@@ -9,8 +9,10 @@ uses
 
 type
   TX2GlobalLog = class(TObject)
-  private
-    class var FInstance: IX2Log;
+  private class var
+    FInstance: IX2Log;
+  protected
+    class procedure CleanupInstance;
   public
     class function Instance: IX2Log;
 
@@ -43,6 +45,13 @@ begin
     FInstance := TX2Log.Create;
 
   Result := FInstance;
+end;
+
+
+class procedure TX2GlobalLog.CleanupInstance;
+begin
+  if Assigned(FInstance) then
+    FreeAndNil(FInstance);
 end;
 
 
@@ -98,5 +107,10 @@ class procedure TX2GlobalLog.Exception(AException: Exception; const AMessage, AD
 begin
   Instance.Exception(AException, AMessage, ADetails);
 end;
+
+
+initialization
+finalization
+  TX2GlobalLog.CleanupInstance;
 
 end.
