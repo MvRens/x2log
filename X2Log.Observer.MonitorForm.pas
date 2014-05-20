@@ -1,5 +1,7 @@
 unit X2Log.Observer.MonitorForm;
 
+// #ToDo3 -oMvR: 20-5-2014: pause button
+
 interface
 uses
   System.Classes,
@@ -10,7 +12,7 @@ uses
   VirtualTrees,
   Winapi.Messages,
 
-  X2Log.Intf;
+  X2Log.Intf, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.ToolWin;
 
 
 const
@@ -21,6 +23,17 @@ type
   TX2LogObserverMonitorForm = class(TForm, IX2LogObserver)
     vstLog: TVirtualStringTree;
     ilsLog: TImageList;
+    splDetails: TSplitter;
+    HeaderControl1: THeaderControl;
+    pnlDetails: TPanel;
+    reDetails: TRichEdit;
+    pnlLog: TPanel;
+    tbLog: TToolBar;
+    tbDetails: TToolBar;
+    pnlBorder: TPanel;
+    tbClear: TToolButton;
+    tbSaveDetails: TToolButton;
+    sbStatus: TStatusBar;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -28,6 +41,8 @@ type
     procedure vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstLogGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
+    procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+    procedure tbClearClick(Sender: TObject);
   private class var
     FInstances: TDictionary<IX2Log,TX2LogObserverMonitorForm>;
   private
@@ -195,6 +210,9 @@ begin
   vstLog.NodeDataSize := SizeOf(TLogEntryNodeData);
   vstLog.Header.Columns[ColumnTime].Text := GetLogResourceString(@LogMonitorFormColumnTime);
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
+
+  tbClear.Caption := GetLogResourceString(@LogMonitorFormButtonClear);
+  tbSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
 end;
 
 
@@ -248,9 +266,15 @@ var
   nodeData: PLogEntryNodeData;
 
 begin
+// #ToDo1 -oMvR: 20-5-2014: thread safety; Log is not guaranteed to be called in the main thread!
+  if GetCurrentThreadId <> MainThreadID then
+    exit;
+
   node := vstLog.AddChild(nil);
   nodeData := vstLog.GetNodeData(node);
   nodeData^.Initialize(ALevel, AMessage, ADetails);
+
+  tbClear.Enabled := True;
 end;
 
 
@@ -332,6 +356,27 @@ begin
           ImageIndex := 4;
     end;
   end;
+end;
+
+
+procedure TX2LogObserverMonitorForm.vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+var
+  nodeData: PLogEntryNodeData;
+
+begin
+  if Assigned(Node) then
+  begin
+    nodeData := Sender.GetNodeData(Node);
+    reDetails.Text := nodeData^.Details;
+  end else
+    reDetails.Text := '';
+end;
+
+
+procedure TX2LogObserverMonitorForm.tbClearClick(Sender: TObject);
+begin
+  vstLog.Clear;
+  tbClear.Enabled := False;
 end;
 
 end.

@@ -77,6 +77,9 @@ begin
   SetLogResourceString(@LogMonitorFormColumnTime, 'Tijd');
   SetLogResourceString(@LogMonitorFormColumnMessage, 'Melding');
 
+  SetLogResourceString(@LogMonitorFormButtonClear, 'Wissen');
+  SetLogResourceString(@LogMonitorFormButtonSaveDetails, 'Opslaan');
+
   FLog := TX2Log.Create;
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
 

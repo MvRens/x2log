@@ -38,6 +38,10 @@ resourcestring
   LogMonitorFormColumnTime = 'Time';
   LogMonitorFormColumnMessage = 'Message';
 
+  { Caption of the toolbar buttons }
+  LogMonitorFormButtonClear = 'Clear';
+  LogMonitorFormButtonSaveDetails = 'Save';
+
 
 
   function GetLogLevelText(ALogLevel: TX2LogLevel): string;
