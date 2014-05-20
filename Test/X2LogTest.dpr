@@ -12,7 +12,9 @@ uses
   X2Log.Observer.LogFile in '..\X2Log.Observer.LogFile.pas',
   X2Log.Constants in '..\X2Log.Constants.pas',
   X2Log.Observer.NamedPipe in '..\X2Log.Observer.NamedPipe.pas',
-  X2Log.Observer.CustomThreaded in '..\X2Log.Observer.CustomThreaded.pas';
+  X2Log.Observer.CustomThreaded in '..\X2Log.Observer.CustomThreaded.pas',
+  X2Log.Observer.MonitorForm in '..\X2Log.Observer.MonitorForm.pas' {X2LogObserverMonitorForm},
+  X2Log.Global in '..\X2Log.Global.pas';
 
 {$R *.res}
 
