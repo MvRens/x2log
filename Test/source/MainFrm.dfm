@@ -19,29 +19,28 @@ object MainForm: TMainForm
   object pcObservers: TPageControl
     AlignWithMargins = True
     Left = 8
-    Top = 113
+    Top = 169
     Width = 595
-    Height = 361
+    Height = 305
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsNamedPipe
+    ActivePage = tsEvent
     Align = alClient
     TabOrder = 0
     OnChange = pcObserversChange
+    ExplicitTop = 113
+    ExplicitHeight = 361
     object tsEvent: TTabSheet
       Caption = 'Event Observer '
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 333
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
         Top = 8
         Width = 571
-        Height = 317
+        Height = 261
         Margins.Left = 8
         Margins.Top = 8
         Margins.Right = 8
@@ -50,19 +49,18 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
+        ExplicitHeight = 317
       end
     end
     object tsFile: TTabSheet
       Caption = 'File Observer'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 333
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe Observer'
       ImageIndex = 2
+      ExplicitHeight = 333
     end
   end
   object pnlButtons: TPanel
@@ -87,6 +85,7 @@ object MainForm: TMainForm
       Cancel = True
       Caption = 'Close'
       TabOrder = 1
+      OnClick = btnCloseClick
     end
     object btnMonitorForm: TButton
       Left = 0
@@ -105,7 +104,7 @@ object MainForm: TMainForm
     Left = 8
     Top = 8
     Width = 595
-    Height = 97
+    Height = 153
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
@@ -115,7 +114,7 @@ object MainForm: TMainForm
     TabOrder = 2
     DesignSize = (
       595
-      97)
+      153)
     object lblMessage: TLabel
       Left = 16
       Top = 32
@@ -125,7 +124,7 @@ object MainForm: TMainForm
     end
     object lblException: TLabel
       Left = 16
-      Top = 59
+      Top = 99
       Width = 51
       Height = 13
       Caption = 'Exception:'
@@ -140,19 +139,19 @@ object MainForm: TMainForm
       Text = 'Hello world!'
       OnKeyDown = edtMessageKeyDown
     end
-    object btnSend: TButton
-      Left = 500
-      Top = 29
+    object btnVerbose: TButton
+      Left = 92
+      Top = 56
       Width = 75
       Height = 21
       Anchors = [akLeft, akTop, akRight]
-      Caption = '&Send'
+      Caption = 'Verbose'
       TabOrder = 1
-      OnClick = btnSendClick
+      OnClick = btnLogClick
     end
     object edtException: TEdit
       Left = 92
-      Top = 56
+      Top = 96
       Width = 402
       Height = 21
       Anchors = [akLeft, akTop, akRight]
@@ -161,14 +160,44 @@ object MainForm: TMainForm
       OnKeyDown = edtExceptionKeyDown
     end
     object btnException: TButton
-      Left = 500
-      Top = 56
+      Left = 92
+      Top = 123
       Width = 75
       Height = 21
       Anchors = [akLeft, akTop, akRight]
       Caption = '&Send'
       TabOrder = 3
       OnClick = btnExceptionClick
+    end
+    object btnInfo: TButton
+      Left = 173
+      Top = 56
+      Width = 75
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Info'
+      TabOrder = 4
+      OnClick = btnLogClick
+    end
+    object btnWarning: TButton
+      Left = 254
+      Top = 56
+      Width = 75
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Warning'
+      TabOrder = 5
+      OnClick = btnLogClick
+    end
+    object btnError: TButton
+      Left = 335
+      Top = 56
+      Width = 75
+      Height = 21
+      Anchors = [akLeft, akTop, akRight]
+      Caption = 'Error'
+      TabOrder = 6
+      OnClick = btnLogClick
     end
   end
 end

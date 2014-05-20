@@ -15,7 +15,7 @@ uses
 type
   TMainForm = class(TForm)
     btnClose: TButton;
-    btnSend: TButton;
+    btnVerbose: TButton;
     edtMessage: TEdit;
     GroupBox1: TGroupBox;
     lblMessage: TLabel;
@@ -29,11 +29,15 @@ type
     btnException: TButton;
     tsNamedPipe: TTabSheet;
     btnMonitorForm: TButton;
+    btnInfo: TButton;
+    btnWarning: TButton;
+    btnError: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure pcObserversChange(Sender: TObject);
-    procedure btnSendClick(Sender: TObject);
+    procedure btnCloseClick(Sender: TObject);
+    procedure btnLogClick(Sender: TObject);
     procedure edtExceptionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edtMessageKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnExceptionClick(Sender: TObject);
@@ -78,7 +82,9 @@ begin
   SetLogResourceString(@LogMonitorFormColumnMessage, 'Melding');
 
   SetLogResourceString(@LogMonitorFormButtonClear, 'Wissen');
+  SetLogResourceString(@LogMonitorFormButtonCopyDetails, 'Kopieren');
   SetLogResourceString(@LogMonitorFormButtonSaveDetails, 'Opslaan');
+  SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauseerd: %d melding(en) overgeslagen');
 
   FLog := TX2Log.Create;
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
@@ -156,9 +162,22 @@ begin
 end;
 
 
-procedure TMainForm.btnSendClick(Sender: TObject);
+procedure TMainForm.btnCloseClick(Sender: TObject);
 begin
-  FLog.Info(edtMessage.Text);
+  Close;
+end;
+
+
+procedure TMainForm.btnLogClick(Sender: TObject);
+begin
+  if Sender = btnVerbose then
+    FLog.Verbose(edtMessage.Text)
+  else if Sender = btnInfo then
+    FLog.Info(edtMessage.Text)
+  else if Sender = btnWarning then
+    FLog.Warning(edtMessage.Text)
+  else if Sender = btnError then
+    FLog.Error(edtMessage.Text);
 end;
 
 

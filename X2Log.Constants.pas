@@ -40,7 +40,11 @@ resourcestring
 
   { Caption of the toolbar buttons }
   LogMonitorFormButtonClear = 'Clear';
+  LogMonitorFormButtonCopyDetails = 'Copy';
   LogMonitorFormButtonSaveDetails = 'Save';
+
+  { Status messages }
+  LogMonitorFormStatusPaused = 'Paused: %d log message(s) skipped';
 
 
 

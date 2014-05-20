@@ -1,18 +1,20 @@
 unit X2Log.Observer.MonitorForm;
 
-// #ToDo3 -oMvR: 20-5-2014: pause button
-
 interface
 uses
   System.Classes,
   System.Generics.Collections,
+  Vcl.ComCtrls,
   Vcl.Controls,
+  Vcl.ExtCtrls,
   Vcl.Forms,
   Vcl.ImgList,
+  Vcl.StdCtrls,
+  Vcl.ToolWin,
   VirtualTrees,
   Winapi.Messages,
 
-  X2Log.Intf, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.ToolWin;
+  X2Log.Intf, Vcl.ActnList;
 
 
 const
@@ -34,21 +36,34 @@ type
     tbClear: TToolButton;
     tbSaveDetails: TToolButton;
     sbStatus: TStatusBar;
+    tbCopyDetails: TToolButton;
+    alLog: TActionList;
+    actClear: TAction;
+    actCopyDetails: TAction;
+    actSaveDetails: TAction;
+    actPause: TAction;
+    tbPause: TToolButton;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure vstLogInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstLogGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
+    procedure vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
     procedure vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
-    procedure tbClearClick(Sender: TObject);
+    procedure actClearExecute(Sender: TObject);
+    procedure actCopyDetailsExecute(Sender: TObject);
+    procedure actPauseExecute(Sender: TObject);
   private class var
     FInstances: TDictionary<IX2Log,TX2LogObserverMonitorForm>;
   private
     FFreeOnClose: Boolean;
     FLogToAttach: IX2Log;
     FLogAttached: Boolean;
+    FPausedLogCount: Integer;
+
+    function GetPaused: Boolean;
   protected
     class function GetInstance(ALog: IX2Log; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
@@ -59,8 +74,13 @@ type
     procedure WMEnable(var Msg: TWMEnable); message WM_ENABLE;
     procedure CMReenable(var Msg: TMessage); message CM_REENABLE;
 
+    procedure UpdateUI;
+    procedure UpdateStatus;
+
     property LogToAttach: IX2Log read FLogToAttach;
     property LogAttached: Boolean read FLogAttached;
+    property Paused: Boolean read GetPaused;
+    property PausedLogCount: Integer read FPausedLogCount write FPausedLogCount;
   public
     class function Instance(ALog: IX2Log): TX2LogObserverMonitorForm;
 
@@ -81,6 +101,7 @@ implementation
 uses
   System.DateUtils,
   System.SysUtils,
+  Vcl.Clipbrd,
   Winapi.Windows,
 
   X2Log.Constants;
@@ -212,7 +233,10 @@ begin
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
 
   tbClear.Caption := GetLogResourceString(@LogMonitorFormButtonClear);
+  tbCopyDetails.Caption := GetLogResourceString(@LogMonitorFormButtonCopyDetails);
   tbSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
+
+  UpdateUI;
 end;
 
 
@@ -266,15 +290,24 @@ var
   nodeData: PLogEntryNodeData;
 
 begin
-// #ToDo1 -oMvR: 20-5-2014: thread safety; Log is not guaranteed to be called in the main thread!
-  if GetCurrentThreadId <> MainThreadID then
-    exit;
+  { Ensure thread safety; TThread.Queue will run the procedure immediately
+    if Log is called from the main thread, or queue it asynchronously }
+  TThread.Queue(nil,
+    procedure
+    begin
+      if not Paused then
+      begin
+        node := vstLog.AddChild(nil);
+        nodeData := vstLog.GetNodeData(node);
+        nodeData^.Initialize(ALevel, AMessage, ADetails);
 
-  node := vstLog.AddChild(nil);
-  nodeData := vstLog.GetNodeData(node);
-  nodeData^.Initialize(ALevel, AMessage, ADetails);
-
-  tbClear.Enabled := True;
+        UpdateUI;
+      end else
+      begin
+        PausedLogCount := PausedLogCount + 1;
+        UpdateStatus;
+      end;
+    end);
 end;
 
 
@@ -289,6 +322,34 @@ end;
 procedure TX2LogObserverMonitorForm.CMReenable(var Msg: TMessage);
 begin
   EnableWindow(Self.Handle, True);
+end;
+
+
+procedure TX2LogObserverMonitorForm.UpdateUI;
+var
+  hasDetails: Boolean;
+
+begin
+  actClear.Enabled := (vstLog.RootNodeCount > 0);
+
+  hasDetails := (Length(reDetails.Text) > 0);
+  actCopyDetails.Enabled := hasDetails;
+  actSaveDetails.Enabled := hasDetails;
+end;
+
+
+procedure TX2LogObserverMonitorForm.UpdateStatus;
+begin
+  if Paused then
+    sbStatus.SimpleText := ' ' + Format(GetLogResourceString(@LogMonitorFormStatusPaused), [PausedLogCount])
+  else
+    sbStatus.SimpleText := '';
+end;
+
+
+function TX2LogObserverMonitorForm.GetPaused: Boolean;
+begin
+  Result := actPause.Checked;
 end;
 
 
@@ -332,6 +393,20 @@ begin
 end;
 
 
+procedure TX2LogObserverMonitorForm.vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+                                                  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
+var
+  nodeData: PLogEntryNodeData;
+
+begin
+  if Column = ColumnLevel then
+  begin
+    nodeData := Sender.GetNodeData(Node);
+    HintText := GetLogLevelText(nodeData^.Level);
+  end;
+end;
+
+
 procedure TX2LogObserverMonitorForm.vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
                                                         Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
 var
@@ -370,13 +445,29 @@ begin
     reDetails.Text := nodeData^.Details;
   end else
     reDetails.Text := '';
+
+  UpdateUI;
 end;
 
 
-procedure TX2LogObserverMonitorForm.tbClearClick(Sender: TObject);
+procedure TX2LogObserverMonitorForm.actClearExecute(Sender: TObject);
 begin
   vstLog.Clear;
-  tbClear.Enabled := False;
+  UpdateUI;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actCopyDetailsExecute(Sender: TObject);
+begin
+  if Length(reDetails.Text) > 0 then
+    Clipboard.AsText := reDetails.Text;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actPauseExecute(Sender: TObject);
+begin
+  PausedLogCount := 0;
+  UpdateStatus;
 end;
 
 end.
