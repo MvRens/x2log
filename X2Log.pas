@@ -6,29 +6,21 @@ uses
   System.Generics.Collections,
   System.SysUtils,
 
-  X2Log.Intf;
+  X2Log.Intf,
+  X2Log.Client.Base;
 
 
 type
-  TX2Log = class(TInterfacedObject, IX2Log, IX2LogMethods)
+  TX2Log = class(TX2LogBaseClient, IX2Log)
   private
     FExceptionStrategy: IX2LogExceptionStrategy;
-    FObservers: TList<IX2LogObserver>;
   private
     property ExceptionStrategy: IX2LogExceptionStrategy read FExceptionStrategy;
-    property Observers: TList<IX2LogObserver> read FObservers;
   public
     constructor Create;
-    destructor Destroy; override;
 
     { IX2Log }
-    procedure Attach(AObserver: IX2LogObserver);
-    procedure Detach(AObserver: IX2LogObserver);
-
     procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
-
-    { IX2LogMethods }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
     procedure Info(const AMessage: string; const ADetails: string = '');
@@ -48,30 +40,7 @@ constructor TX2Log.Create;
 begin
   inherited Create;
 
-  FObservers := TList<IX2LogObserver>.Create;
   SetExceptionStrategy(nil);
-end;
-
-
-destructor TX2Log.Destroy;
-begin
-  FreeAndNil(FObservers);
-
-  inherited Destroy;
-end;
-
-
-procedure TX2Log.Attach(AObserver: IX2LogObserver);
-begin
-  { Explicit cast ensures we're getting the same pointer in Attach and Detach
-    if, for example, the implementing interface is a descendant of IX2LogObserver }
-  Observers.Add(AObserver as IX2LogObserver);
-end;
-
-
-procedure TX2Log.Detach(AObserver: IX2LogObserver);
-begin
-  Observers.Remove(AObserver as IX2LogObserver);
 end;
 
 
@@ -81,16 +50,6 @@ begin
     FExceptionStrategy := AStrategy
   else
     FExceptionStrategy := TX2LogDefaultExceptionStrategy.Create;
-end;
-
-
-procedure TX2Log.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
-var
-  observer: IX2LogObserver;
-
-begin
-  for observer in Observers do
-    observer.Log(ALevel, AMessage, ADetails);
 end;
 
 

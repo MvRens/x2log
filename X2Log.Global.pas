@@ -22,7 +22,7 @@ type
 
     class procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
-    { Facade for IX2LogMethods }
+    { Facade for IX2LogBase }
     class procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
 
     class procedure Verbose(const AMessage: string; const ADetails: string = '');

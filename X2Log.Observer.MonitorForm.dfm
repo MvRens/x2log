@@ -35,7 +35,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 500
     object tbDetails: TToolBar
       Left = 0
       Top = 0
@@ -69,7 +68,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       BevelKind = bkFlat
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitHeight = 478
       object HeaderControl1: THeaderControl
         Left = 0
         Top = 0
@@ -101,7 +99,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 1
-        ExplicitHeight = 457
       end
     end
   end
@@ -113,7 +110,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitHeight = 500
     object vstLog: TVirtualStringTree
       Left = 0
       Top = 22
@@ -138,7 +134,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       OnGetImageIndex = vstLogGetImageIndex
       OnGetHint = vstLogGetHint
       OnInitNode = vstLogInitNode
-      ExplicitHeight = 478
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
@@ -199,7 +194,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 584
     Top = 48
     Bitmap = {
-      494C0101090040007C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109004000800010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

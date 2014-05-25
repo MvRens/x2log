@@ -19,7 +19,9 @@ uses
   X2Log.Observer.NamedPipe in '..\X2Log.Observer.NamedPipe.pas',
   X2Log.Observer.CustomThreaded in '..\X2Log.Observer.CustomThreaded.pas',
   X2Log.Observer.MonitorForm in '..\X2Log.Observer.MonitorForm.pas' {X2LogObserverMonitorForm},
-  X2Log.Global in '..\X2Log.Global.pas';
+  X2Log.Global in '..\X2Log.Global.pas',
+  X2Log.Client.NamedPipe in '..\X2Log.Client.NamedPipe.pas',
+  X2Log.Client.Base in '..\X2Log.Client.Base.pas';
 
 {$R *.res}
 

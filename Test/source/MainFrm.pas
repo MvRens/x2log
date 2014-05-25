@@ -9,7 +9,7 @@ uses
   Vcl.Forms,
   Vcl.StdCtrls,
 
-  X2Log.Intf;
+  X2Log.Intf, Vcl.ImgList;
 
   
 type
@@ -32,22 +32,41 @@ type
     btnInfo: TButton;
     btnWarning: TButton;
     btnError: TButton;
+    btnEventStart: TButton;
+    btnEventStop: TButton;
+    ilsObservers: TImageList;
+    btnFileStart: TButton;
+    btnFileStop: TButton;
+    btnNamedPipeStart: TButton;
+    btnNamedPipeStop: TButton;
+    edtFilename: TEdit;
+    lblFilename: TLabel;
+    rbProgramData: TRadioButton;
+    rbUserData: TRadioButton;
+    rbAbsolute: TRadioButton;
+    edtPipeName: TEdit;
+    lblPipeName: TLabel;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure pcObserversChange(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure btnLogClick(Sender: TObject);
     procedure edtExceptionKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure edtMessageKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnExceptionClick(Sender: TObject);
     procedure btnMonitorFormClick(Sender: TObject);
+    procedure btnEventStartClick(Sender: TObject);
+    procedure btnEventStopClick(Sender: TObject);
+    procedure btnFileStartClick(Sender: TObject);
+    procedure btnFileStopClick(Sender: TObject);
+    procedure btnNamedPipeStartClick(Sender: TObject);
+    procedure btnNamedPipeStopClick(Sender: TObject);
   private
     FLog: IX2Log;
-    FObserver: IX2LogObserver;
+    FEventObserver: IX2LogObserver;
+    FFileObserver: IX2LogObserver;
+    FNamedPipeObserver: IX2LogObserver;
   protected
-    procedure InitObserver;
-
     procedure DoLog(Sender: TObject; Level: TX2LogLevel; const Msg, Details: string);
   end;
 
@@ -90,44 +109,12 @@ begin
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
 
   pcObservers.ActivePageIndex := 0;
-  InitObserver;
 end;
 
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
   FLog := nil;
-end;
-
-
-procedure TMainForm.InitObserver;
-var
-  activePage: TTabSheet;
-
-begin
-  if Assigned(FObserver) then
-  begin
-    FLog.Detach(FObserver);
-    FObserver := nil;
-  end;
-
-  activePage := pcObservers.ActivePage;
-
-  if activePage = tsEvent then
-    FObserver := TX2LogEventObserver.Create(DoLog)
-  else if activePage = tsFile then
-    FObserver := TX2LogFileObserver.CreateInProgramData('X2LogTest\Test.log');
-
-  if activePage = tsNamedPipe then
-  begin
-    FObserver := TX2LogNamedPipeObserver.Create('X2LogTest');
-  end else
-  begin
-
-  end;
-
-  if Assigned(FObserver) then
-    FLog.Attach(FObserver);
 end;
 
 
@@ -155,12 +142,6 @@ begin
     Key := 0;
   end;
 end;
-
-procedure TMainForm.pcObserversChange(Sender: TObject);
-begin
-  InitObserver;
-end;
-
 
 procedure TMainForm.btnCloseClick(Sender: TObject);
 begin
@@ -197,6 +178,84 @@ end;
 procedure TMainForm.btnMonitorFormClick(Sender: TObject);
 begin
   TX2LogObserverMonitorForm.ShowInstance(FLog);
+end;
+
+
+procedure TMainForm.btnEventStartClick(Sender: TObject);
+begin
+  if not Assigned(FEventObserver) then
+  begin
+    FEventObserver := TX2LogEventObserver.Create(DoLog);
+    FLog.Attach(FEventObserver);
+
+    tsEvent.ImageIndex := 1;
+  end;
+end;
+
+
+procedure TMainForm.btnEventStopClick(Sender: TObject);
+begin
+  if Assigned(FEventObserver) then
+  begin
+    FLog.Detach(FEventObserver);
+    FEventObserver := nil;
+
+    tsEvent.ImageIndex := 0;
+  end;
+end;
+
+
+procedure TMainForm.btnFileStartClick(Sender: TObject);
+begin
+  if not Assigned(FFileObserver) then
+  begin
+    if rbProgramData.Checked then
+      FFileObserver := TX2LogFileObserver.CreateInProgramData(edtFilename.Text)
+    else if rbUserData.Checked then
+      FFileObserver := TX2LogFileObserver.CreateInUserAppData(edtFilename.Text)
+    else
+      FFileObserver := TX2LogFileObserver.Create(edtFilename.Text);
+
+    FLog.Attach(FFileObserver);
+
+    tsFile.ImageIndex := 1;
+  end;
+end;
+
+
+procedure TMainForm.btnFileStopClick(Sender: TObject);
+begin
+  if Assigned(FFileObserver) then
+  begin
+    FLog.Detach(FFileObserver);
+    FFileObserver := nil;
+
+    tsFile.ImageIndex := 0;
+  end;
+end;
+
+
+procedure TMainForm.btnNamedPipeStartClick(Sender: TObject);
+begin
+  if not Assigned(FNamedPipeObserver) then
+  begin
+    FNamedPipeObserver := TX2LogNamedPipeObserver.Create(edtPipeName.Text);
+    FLog.Attach(FNamedPipeObserver);
+
+    tsNamedPipe.ImageIndex := 1;
+  end;
+end;
+
+
+procedure TMainForm.btnNamedPipeStopClick(Sender: TObject);
+begin
+  if Assigned(FNamedPipeObserver) then
+  begin
+    FLog.Detach(FNamedPipeObserver);
+    FNamedPipeObserver := nil;
+
+    tsNamedPipe.ImageIndex := 0;
+  end;
 end;
 
 end.

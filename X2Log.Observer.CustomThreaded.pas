@@ -174,6 +174,8 @@ var
   entry: TX2LogQueueEntry;
 
 begin
+  NameThreadForDebugging('TX2LogObserverWorkerThread');
+
   Setup;
   try
     while not Terminated do

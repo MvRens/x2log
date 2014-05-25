@@ -20,6 +20,7 @@ type
 
 implementation
 uses
+  System.Classes,
   System.Generics.Collections,
   System.SyncObjs,
   System.SysUtils,
@@ -35,15 +36,18 @@ type
   TX2LogNamedPipeClient = class(TObject)
   private
     FOverlapped: TOverlapped;
-    FPipe: THandle;
+    FPipeHandle: THandle;
     FState: TX2LogNamedPipeClientState;
     FOverlappedEvent: TEvent;
     FWriteQueue: TObjectQueue<TX2LogQueueEntry>;
-    FWriteBuffer: Pointer;
-    FWriteBufferSize: Integer;
+    FWriteBuffer: TMemoryStream;
   protected
     function DoSend(AEntry: TX2LogQueueEntry): Boolean;
     procedure ClearWriteBuffer;
+
+    property PipeHandle: THandle read FPipeHandle;
+    property WriteBuffer: TMemoryStream read FWriteBuffer;
+    property WriteQueue: TObjectQueue<TX2LogQueueEntry> read FWriteQueue;
   public
     constructor Create(APipe: THandle);
     destructor Destroy; override;
@@ -53,7 +57,7 @@ type
 
     procedure Disconnect;
 
-    property Pipe: THandle read FPipe;
+    property Pipe: THandle read FPipeHandle;
     property Overlapped: TOverlapped read FOverlapped;
     property OverlappedEvent: TEvent read FOverlappedEvent;
     property State: TX2LogNamedPipeClientState read FState write FState;
@@ -65,7 +69,6 @@ type
     FClients: TObjectList<TX2LogNamedPipeClient>;
     FPipeName: string;
   protected
-
     procedure WaitForEntry; override;
     procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
     procedure ProcessClientEvent(AClientIndex: Integer);
@@ -103,7 +106,7 @@ constructor TX2LogNamedPipeClient.Create(APipe: THandle);
 begin
   inherited Create;
 
-  FPipe := APipe;
+  FPipeHandle := APipe;
   FState := Listening;
 
   FOverlappedEvent := TEvent.Create(nil, False, False, '');
@@ -115,8 +118,8 @@ destructor TX2LogNamedPipeClient.Destroy;
 begin
   FreeAndNil(FOverlappedEvent);
 
-  if FPipe <> INVALID_HANDLE_VALUE then
-    DisconnectNamedPipe(FPipe);
+  if PipeHandle <> INVALID_HANDLE_VALUE then
+    DisconnectNamedPipe(PipeHandle);
 
   ClearWriteBuffer;
 
@@ -126,14 +129,14 @@ end;
 
 procedure TX2LogNamedPipeClient.Send(AEntry: TX2LogQueueEntry);
 begin
-  if not Assigned(FWriteBuffer) then
+  if not Assigned(WriteBuffer) then
     DoSend(AEntry)
   else
   begin
-    if not Assigned(FWriteQueue) then
+    if not Assigned(WriteQueue) then
       FWriteQueue := TObjectQueue<TX2LogQueueEntry>.Create(True);
 
-    FWriteQueue.Enqueue(TX2LogQueueEntry.Create(AEntry));
+    WriteQueue.Enqueue(TX2LogQueueEntry.Create(AEntry));
   end;
 end;
 
@@ -145,15 +148,18 @@ var
 begin
   ClearWriteBuffer;
 
-  while FWriteQueue.Count > 0 do
+  if Assigned(WriteQueue) then
   begin
-    entry := FWriteQueue.Extract;
-    try
-      { Returns False when IO is pending }
-      if not DoSend(entry) then
-        break;
-    finally
-      FreeAndNil(entry);
+    while WriteQueue.Count > 0 do
+    begin
+      entry := WriteQueue.Extract;
+      try
+        { Returns False when IO is pending }
+        if not DoSend(entry) then
+          break;
+      finally
+        FreeAndNil(entry);
+      end;
     end;
   end;
 end;
@@ -161,55 +167,49 @@ end;
 
 procedure TX2LogNamedPipeClient.Disconnect;
 begin
-  if FPipe <> INVALID_HANDLE_VALUE then
+  if PipeHandle <> INVALID_HANDLE_VALUE then
   begin
-    CancelIo(FPipe);
-    DisconnectNamedPipe(FPipe);
+    CancelIo(PipeHandle);
+    DisconnectNamedPipe(PipeHandle);
 
-    FPipe := INVALID_HANDLE_VALUE;
+    FPipeHandle := INVALID_HANDLE_VALUE;
   end;
 end;
 
 
 function TX2LogNamedPipeClient.DoSend(AEntry: TX2LogQueueEntry): Boolean;
 
-  procedure AppendToBuffer(var APointer: PByte; const ASource; ASize: Cardinal); overload; inline;
-  begin
-    Move(ASource, APointer^, ASize);
-    Inc(APointer, ASize);
-  end;
-
-  procedure AppendToBuffer(var APointer: PByte; const ASource: string); overload; inline;
+  procedure WriteString(const ASource: WideString);
   var
     sourceLength: Cardinal;
 
   begin
     sourceLength := Length(ASource);
-    AppendToBuffer(APointer, sourceLength, SizeOf(Cardinal));
-    AppendToBuffer(APointer, PChar(ASource)^, sourceLength * SizeOf(Char));
+    WriteBuffer.WriteBuffer(sourceLength, SizeOf(Cardinal));
+    WriteBuffer.WriteBuffer(PWideChar(ASource)^, sourceLength * SizeOf(WideChar));
   end;
 
 
 var
+  header: TX2LogMessageHeader;
   bytesWritten: Cardinal;
-  bufferPointer: PByte;
   lastError: Cardinal;
 
 begin
   ClearWriteBuffer;
 
-  FWriteBufferSize := SizeOf(TX2LogLevel) +
-                      SizeOf(Cardinal) + (Length(AEntry.Message) * SizeOf(Char)) +
-                      SizeOf(Cardinal) + (Length(AEntry.Details) * SizeOf(Char));
+  FWriteBuffer := TMemoryStream.Create;
 
-  GetMem(FWriteBuffer, FWriteBufferSize);
+  header.ID := X2LogMessageHeader;
+  header.Version := X2LogMessageVersion;
+  header.Size := SizeOf(header);
+  header.Level := AEntry.Level;
 
-  bufferPointer := FWriteBuffer;
-  AppendToBuffer(bufferPointer, AEntry.Level, SizeOf(TX2LogLevel));
-  AppendToBuffer(bufferPointer, AEntry.Message);
-  AppendToBuffer(bufferPointer, AEntry.Details);
+  WriteBuffer.WriteBuffer(header, SizeOf(header));
+  WriteString(AEntry.Message);
+  WriteString(AEntry.Details);
 
-  Result := WriteFile(Pipe, FWriteBuffer^, FWriteBufferSize, bytesWritten, @Overlapped);
+  Result := WriteFile(Pipe, WriteBuffer.Memory^, WriteBuffer.Size, bytesWritten, @Overlapped);
   if not Result then
   begin
     lastError := GetLastError;
@@ -233,11 +233,7 @@ end;
 
 procedure TX2LogNamedPipeClient.ClearWriteBuffer;
 begin
-  if Assigned(FWriteBuffer) then
-  begin
-    FreeMem(FWriteBuffer, FWriteBufferSize);
-    FWriteBuffer := nil;
-  end;
+  FreeAndNil(FWriteBuffer);
 end;
 
 
