@@ -21,7 +21,8 @@ uses
   X2Log.Observer.MonitorForm in '..\X2Log.Observer.MonitorForm.pas' {X2LogObserverMonitorForm},
   X2Log.Global in '..\X2Log.Global.pas',
   X2Log.Client.NamedPipe in '..\X2Log.Client.NamedPipe.pas',
-  X2Log.Client.Base in '..\X2Log.Client.Base.pas';
+  X2Log.Client.Base in '..\X2Log.Client.Base.pas',
+  X2Log.Registry.NamedPipe in '..\X2Log.Registry.NamedPipe.pas';
 
 {$R *.res}
 

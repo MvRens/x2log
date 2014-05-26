@@ -70,7 +70,6 @@ const
   ClearBufferTreshold = 4096;
 
 
-
 { TX2LogNamedPipeClient }
 constructor TX2LogNamedPipeClient.Create(const APipeName: string);
 begin

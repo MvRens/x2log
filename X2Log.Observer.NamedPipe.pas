@@ -86,6 +86,18 @@ type
   end;
 
 
+
+  { Someone went through a lot of trouble to win at Scrabble... }
+  function ConvertStringSecurityDescriptorToSecurityDescriptorW(StringSecurityDescriptor: PWideChar;
+                                                                StringSDRevision: DWORD;
+                                                                SecurityDescriptor: PSECURITY_DESCRIPTOR;
+                                                                SecurityDescriptorSize: PULONG): BOOL; stdcall; external advapi32;
+
+const
+  SDDL_REVISION_1 = 1;
+
+
+
 { TX2LogNamedPipeObserver }
 constructor TX2LogNamedPipeObserver.Create(const APipeName: string; ALogLevels: TX2LogLevels);
 begin
@@ -129,6 +141,8 @@ end;
 
 procedure TX2LogNamedPipeClient.Send(AEntry: TX2LogQueueEntry);
 begin
+  OutputDebugString(PChar(AEntry.Message));
+
   if not Assigned(WriteBuffer) then
     DoSend(AEntry)
   else
@@ -378,13 +392,43 @@ const
   DefaultTimeout = 5000;
 
 var
+  security: TSecurityAttributes;
   pipe: THandle;
   client: TX2LogNamedPipeClient;
 
 begin
-  pipe := CreateNamedPipe(PChar('\\.\pipe\' + PipeName), PIPE_ACCESS_OUTBOUND or FILE_FLAG_OVERLAPPED,
-                          PIPE_TYPE_MESSAGE or PIPE_READMODE_MESSAGE or PIPE_WAIT, PIPE_UNLIMITED_INSTANCES,
-                          BufferSize, BufferSize, DefaultTimeout, nil);
+  FillChar(security, SizeOf(security), 0);
+  security.nLength := SizeOf(security);
+  security.bInheritHandle := False;
+
+  { Thanks to: http://www.osronline.com/showthread.cfm?link=204207
+          and: http://www.netid.washington.edu/documentation/domains/sddl.aspx
+
+      0x12018d =
+         0x00100000 - SYNCHRONIZE
+         0x00020000 - READ_CONTROL
+         0x00000100 - FILE_WRITE_ATTRIBUTES
+         0x00000080 - FILE_READ_ATTRIBUTES
+         0x00000008 - FILE_READ_EA
+         0x00000004 - FILE_CREATE_PIPE_INSTANCE
+         0x00000001 - FILE_READ_DATA }
+  if ConvertStringSecurityDescriptorToSecurityDescriptorW('D:' +                  // Discretionary ACL
+                                                          '(D;;FA;;;NU)' +        // Deny file all access (FA) to network user access (NU)
+                                                          '(A;;0x12018d;;;WD)' +  // Allow specific permissions for everyone (WD)
+                                                          '(A;;0x12018d;;;CO)',   // Allow specific permissions for creator owner (CO)
+                                                          SDDL_REVISION_1,
+                                                          @security.lpSecurityDescriptor,
+                                                          nil) then
+  begin
+    try
+      pipe := CreateNamedPipe(PChar('\\.\pipe\' + PipeName), PIPE_ACCESS_OUTBOUND or FILE_FLAG_OVERLAPPED,
+                              PIPE_TYPE_MESSAGE or PIPE_READMODE_MESSAGE or PIPE_WAIT, PIPE_UNLIMITED_INSTANCES,
+                              BufferSize, BufferSize, DefaultTimeout, @security);
+    finally
+      LocalFree(HLOCAL(security.lpSecurityDescriptor));
+    end;
+  end else
+    RaiseLastOSError;
 
   if pipe <> INVALID_HANDLE_VALUE then
   begin

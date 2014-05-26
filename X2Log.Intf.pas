@@ -8,6 +8,12 @@ type
   TX2LogLevel = (Verbose, Info, Warning, Error);
 
 
+const
+  X2LogLevelsAll = [Low(TX2LogLevel)..High(TX2LogLevel)];
+  X2LogLevelsDefault = X2LogLevelsAll - [Verbose];
+
+
+type
   IX2LogBase = interface
     ['{1949E8DC-6DC5-43DC-B678-55CF8274E79D}']
     procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');

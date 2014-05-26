@@ -8,10 +8,6 @@ uses
   X2Log.Intf;
 
 
-const
-  X2LogLevelsAll = [Low(TX2LogLevel)..High(TX2LogLevel)];
-  X2LogLevelsDefault = X2LogLevelsAll - [Verbose];
-
 type
   TX2LogLevels = set of TX2LogLevel;
 

@@ -9,6 +9,9 @@
 			<Projects Include="NamedPipeClient\X2LogNamedPipeClient.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="ServiceTest\X2LogServiceTest.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
 		<Target Name="X2LogNamedPipeClient:Make">
 			<MSBuild Projects="NamedPipeClient\X2LogNamedPipeClient.dproj" Targets="Make"/>
 		</Target>
+		<Target Name="X2LogServiceTest">
+			<MSBuild Projects="ServiceTest\X2LogServiceTest.dproj"/>
+		</Target>
+		<Target Name="X2LogServiceTest:Clean">
+			<MSBuild Projects="ServiceTest\X2LogServiceTest.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="X2LogServiceTest:Make">
+			<MSBuild Projects="ServiceTest\X2LogServiceTest.dproj" Targets="Make"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="X2LogTest;X2LogNamedPipeClient"/>
+			<CallTarget Targets="X2LogTest;X2LogNamedPipeClient;X2LogServiceTest"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="X2LogTest:Clean;X2LogNamedPipeClient:Clean"/>
+			<CallTarget Targets="X2LogTest:Clean;X2LogNamedPipeClient:Clean;X2LogServiceTest:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="X2LogTest:Make;X2LogNamedPipeClient:Make"/>
+			<CallTarget Targets="X2LogTest:Make;X2LogNamedPipeClient:Make;X2LogServiceTest:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

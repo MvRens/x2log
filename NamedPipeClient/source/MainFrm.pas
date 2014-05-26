@@ -25,6 +25,8 @@ type
 
 implementation
 uses
+  System.SysUtils,
+
   X2Log.Constants,
   X2Log.Client.NamedPipe,
   X2Log.Observer.Event;
@@ -44,7 +46,7 @@ end;
 
 procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; const Msg, Details: string);
 begin
-  mmoLog.Lines.Add(GetLogLevelText(Level) + ': ' + Msg + ' (' + Details + ')');
+  mmoLog.Lines.Add(DateTimeToStr(Now) + ' ' + GetLogLevelText(Level) + ': ' + Msg + ' (' + Details + ')');
 end;
 
 end.
