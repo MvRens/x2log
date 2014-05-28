@@ -4,13 +4,14 @@ interface
 uses
   System.SysUtils,
 
+  X2Log,
   X2Log.Intf;
 
 
 type
   TX2GlobalLog = class(TObject)
   private class var
-    FInstance: IX2Log;
+    FInstance: TX2Log;
   protected
     class procedure CleanupInstance;
   public
@@ -34,8 +35,6 @@ type
 
 
 implementation
-uses
-  X2Log;
 
 
 { TX2GlobalLog }
