@@ -401,6 +401,8 @@ begin
   security.nLength := SizeOf(security);
   security.bInheritHandle := False;
 
+  pipe := INVALID_HANDLE_VALUE;
+
   { Thanks to: http://www.osronline.com/showthread.cfm?link=204207
           and: http://www.netid.washington.edu/documentation/domains/sddl.aspx
 
