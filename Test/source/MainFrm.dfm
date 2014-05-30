@@ -30,10 +30,8 @@ object MainForm: TMainForm
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
-    ExplicitHeight = 305
     object tsEvent: TTabSheet
       Caption = 'Event Observer '
-      ExplicitHeight = 277
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
@@ -48,7 +46,6 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        ExplicitHeight = 229
       end
       object btnEventStart: TButton
         Left = 8
@@ -71,7 +68,6 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File Observer'
-      ExplicitHeight = 277
       object lblFilename: TLabel
         Left = 12
         Top = 64
@@ -134,7 +130,6 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe Observer'
-      ExplicitHeight = 277
       object lblPipeName: TLabel
         Left = 12
         Top = 64
@@ -183,7 +178,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 482
     object btnClose: TButton
       Left = 520
       Top = 0
@@ -318,7 +312,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140028000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020014002C000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

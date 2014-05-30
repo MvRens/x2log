@@ -9,7 +9,7 @@ uses
 
 
 type
-  TX2LogBaseClient = class(TInterfacedPersistent, IX2LogBase, IX2LogObservable)
+  TX2LogBaseClient = class(TInterfacedObject, IX2LogBase, IX2LogObservable)
   private
     FObservers: TList<IX2LogObserver>;
   protected

@@ -60,7 +60,7 @@ type
     procedure actSaveDetailsExecute(Sender: TObject);
     procedure actPauseExecute(Sender: TObject);
   private class var
-    FInstances: TDictionary<IX2Log,TX2LogObserverMonitorForm>;
+    FInstances: TObjectDictionary<IX2Log,TX2LogObserverMonitorForm>;
   private
     FFreeOnClose: Boolean;
     FLogToAttach: IX2Log;
@@ -160,7 +160,7 @@ begin
   log := (ALog as IX2Log);
 
   if not Assigned(FInstances) then
-    FInstances := TDictionary<IX2Log,TX2LogObserverMonitorForm>.Create;
+    FInstances := TObjectDictionary<IX2Log,TX2LogObserverMonitorForm>.Create([doOwnsValues]);
 
   if not FInstances.TryGetValue(log, Result) then
   begin
@@ -618,5 +618,10 @@ begin
   PausedLogCount := 0;
   UpdateStatus;
 end;
+
+
+initialization
+finalization
+  TX2LogObserverMonitorForm.CleanupInstances;
 
 end.

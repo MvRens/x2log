@@ -11,7 +11,7 @@ uses
 type
   TX2GlobalLog = class(TObject)
   private class var
-    FInstance: TX2Log;
+    FInstance: IX2Log;
   protected
     class procedure CleanupInstance;
   public
@@ -59,8 +59,7 @@ end;
 
 class procedure TX2GlobalLog.CleanupInstance;
 begin
-  if Assigned(FInstance) then
-    FreeAndNil(FInstance);
+  FInstance := nil;
 end;
 
 

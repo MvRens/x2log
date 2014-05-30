@@ -107,6 +107,8 @@ begin
   SetLogResourceString(@LogMonitorFormButtonSaveDetails, 'Opslaan');
   SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauseerd: %d melding(en) overgeslagen');
 
+  SetLogResourceString(@LogMonitorFormSaveDetailsFilter, 'Alle bestanden (*.*)|*.*');
+
   FLog := TX2Log.Create;
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
 

@@ -102,8 +102,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 1
-        ExplicitLeft = -2
-        ExplicitWidth = 348
       end
     end
   end
@@ -154,7 +152,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 2
-          Width = 424
+          Width = 428
           WideText = 'Message'
         end>
     end
@@ -202,7 +200,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C010109004000880010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101090040008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

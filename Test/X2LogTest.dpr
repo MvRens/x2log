@@ -25,6 +25,8 @@ var
   MainForm: TMainForm;
   
 begin
+  ReportMemoryLeaksOnShutdown := True;
+
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'X²LogTest';
