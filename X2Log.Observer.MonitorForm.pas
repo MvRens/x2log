@@ -142,10 +142,10 @@ const
 { TLogEntryNode }
 procedure TLogEntryNodeData.Initialize(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
-  Time := Now;
-  Level := ALevel;
-  Message := AMessage;
-  Details := ADetails;
+  Self.Time := Now;
+  Self.Level := ALevel;
+  Self.Message := AMessage;
+  Self.Details := ADetails;
 end;
 
 
@@ -208,7 +208,7 @@ begin
     begin
       if FInstances[log] = AForm then
       begin
-        FInstances.Remove(log);
+        FInstances.ExtractPair(log);
         break;
       end;
     end;
@@ -306,12 +306,20 @@ begin
     if Log is called from the main thread, or queue it asynchronously }
   TThread.Queue(nil,
     procedure
+    var
+      scroll: Boolean;
+
     begin
       if not Paused then
       begin
+        scroll := (vstLog.RootNodeCount > 0) and (vstLog.BottomNode = vstLog.GetLast);
+
         node := vstLog.AddChild(nil);
         nodeData := vstLog.GetNodeData(node);
         nodeData^.Initialize(ALevel, AMessage, ADetails);
+
+        if scroll then
+          vstLog.ScrollIntoView(node, False);
 
         UpdateUI;
       end else

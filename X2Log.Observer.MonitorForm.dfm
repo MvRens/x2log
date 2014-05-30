@@ -46,7 +46,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 0
-      ExplicitWidth = 350
       object tbCopyDetails: TToolButton
         Left = 0
         Top = 0
@@ -69,7 +68,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       BevelKind = bkFlat
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitWidth = 350
       object HeaderControl1: THeaderControl
         Left = 0
         Top = 0
@@ -83,7 +81,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
             Width = 378
           end>
         NoSizing = True
-        ExplicitWidth = 346
       end
       object reDetails: TRichEdit
         Left = 0
@@ -113,7 +110,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 634
     object vstLog: TVirtualStringTree
       Left = 0
       Top = 22
@@ -138,7 +134,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       OnGetImageIndex = vstLogGetImageIndex
       OnGetHint = vstLogGetHint
       OnInitNode = vstLogInitNode
-      ExplicitWidth = 634
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
@@ -168,7 +163,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 1
-      ExplicitWidth = 634
       object tbClear: TToolButton
         Left = 0
         Top = 0
@@ -200,7 +194,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C0101090040008C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109004000940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
