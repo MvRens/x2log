@@ -11,18 +11,18 @@ uses
 type
   TX2LogLevels = set of TX2LogLevel;
 
-  TX2LogCustomObserver = class(TInterfacedObject, IX2LogObserver)
+  TX2LogCustomObserver = class(TInterfacedObject, IX2LogBase, IX2LogObserver)
   private
     FLogLevels: TX2LogLevels;
   protected
-    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = ''); virtual; abstract;
-
-    { IX2LogObserver }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = ''); virtual;
+    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); virtual; abstract;
 
     property LogLevels: TX2LogLevels read FLogLevels;
   public
     constructor Create(ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+
+    { IX2LogBase }
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil);
   end;
 
 
@@ -38,7 +38,7 @@ begin
 end;
 
 
-procedure TX2LogCustomObserver.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogCustomObserver.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   if ALevel in LogLevels then
     DoLog(ALevel, AMessage, ADetails);

@@ -9,7 +9,7 @@ uses
 
 
 type
-  TX2LogBaseClient = class(TInterfacedPersistent, IX2LogObservable)
+  TX2LogBaseClient = class(TInterfacedPersistent, IX2LogBase, IX2LogObservable)
   private
     FObservers: TList<IX2LogObserver>;
   protected
@@ -19,7 +19,8 @@ type
     destructor Destroy; override;
 
     { IX2LogBase }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = ''); virtual;
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil); virtual;
+
 
     { IX2LogObservable }
     procedure Attach(AObserver: IX2LogObserver);
@@ -63,7 +64,7 @@ begin
 end;
 
 
-procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 var
   observer: IX2LogObserver;
 

@@ -2,7 +2,9 @@ unit X2Log.Intf;
 
 interface
 uses
+  System.Classes,
   System.SysUtils;
+
 
 type
   TX2LogLevel = (Verbose, Info, Warning, Error);
@@ -14,9 +16,45 @@ const
 
 
 type
+  { Details }
+  IX2LogDetails = interface
+    ['{86F24F52-CE1F-4A79-936F-A5805D84E18A}']
+  end;
+
+
+  IX2LogDetailsCopyable = interface
+    ['{BA93B3CD-4F05-4887-A585-78093E0B31C9}']
+    procedure CopyToClipboard;
+  end;
+
+
+  IX2LogDetailsStreamable = interface
+    ['{7DD0756D-F06E-4267-A433-04BEFF4FA955}']
+    procedure SaveToStream(AStream: TStream);
+  end;
+
+
+  IX2LogDetailsText = interface(IX2LogDetails)
+    ['{D5F194E9-8633-4575-801D-E8983124118F}']
+    function GetAsString: string;
+
+    property AsString: string read GetAsString;
+  end;
+
+
+  IX2LogDetailsBinary = interface(IX2LogDetails)
+    ['{265739E7-BB65-434B-BCD3-BB89B936A854}']
+    function GetAsStream: TStream;
+
+    { Note: Stream Position will be reset by GetAsStream }
+    property AsStream: TStream read GetAsStream;
+  end;
+
+
+  { Logging }
   IX2LogBase = interface
     ['{1949E8DC-6DC5-43DC-B678-55CF8274E79D}']
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil); overload;
   end;
 
 
@@ -27,7 +65,7 @@ type
 
   IX2LogExceptionStrategy = interface
     ['{C0B7950E-BE0A-4A21-A7C5-F8322FD4E205}']
-    procedure Execute(AException: Exception; var AMessage: string; var ADetails: string);
+    procedure Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails);
   end;
 
 
@@ -43,10 +81,18 @@ type
     procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
+    procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Info(const AMessage: string; const ADetails: string = '');
+    procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Warning(const AMessage: string; const ADetails: string = '');
+    procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Error(const AMessage: string; const ADetails: string = '');
-    procedure Exception(AException: Exception; const AMessage: string = ''; const ADetails: string = '');
+    procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
+    procedure Exception(AException: Exception; const AMessage: string = '');
   end;
   
 

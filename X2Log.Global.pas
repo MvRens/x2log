@@ -24,17 +24,27 @@ type
     class procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
     { Facade for IX2LogBase }
-    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
+    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 
     class procedure Verbose(const AMessage: string; const ADetails: string = '');
+    class procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     class procedure Info(const AMessage: string; const ADetails: string = '');
+    class procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     class procedure Warning(const AMessage: string; const ADetails: string = '');
+    class procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     class procedure Error(const AMessage: string; const ADetails: string = '');
-    class procedure Exception(AException: Exception; const AMessage: string = ''; const ADetails: string = '');
+    class procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
+    class procedure Exception(AException: Exception; const AMessage: string = '');
   end;
 
 
 implementation
+uses
+  X2Log.Details.Default;
 
 
 { TX2GlobalLog }
@@ -72,7 +82,7 @@ begin
 end;
 
 
-class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   Instance.Log(ALevel, AMessage, ADetails);
 end;
@@ -84,9 +94,21 @@ begin
 end;
 
 
+class procedure TX2GlobalLog.VerboseEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
+  Instance.VerboseEx(AMessage, ADetails);
+end;
+
+
 class procedure TX2GlobalLog.Info(const AMessage, ADetails: string);
 begin
   Instance.Info(AMessage, ADetails);
+end;
+
+
+class procedure TX2GlobalLog.InfoEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
+  Instance.InfoEx(AMessage, ADetails);
 end;
 
 
@@ -96,15 +118,27 @@ begin
 end;
 
 
+class procedure TX2GlobalLog.WarningEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
+  Instance.WarningEx(AMessage, ADetails);
+end;
+
+
 class procedure TX2GlobalLog.Error(const AMessage, ADetails: string);
 begin
   Instance.Error(AMessage, ADetails);
 end;
 
 
-class procedure TX2GlobalLog.Exception(AException: Exception; const AMessage, ADetails: string);
+class procedure TX2GlobalLog.ErrorEx(const AMessage: string; ADetails: IX2LogDetails);
 begin
-  Instance.Exception(AException, AMessage, ADetails);
+  Instance.ErrorEx(AMessage, ADetails);
+end;
+
+
+class procedure TX2GlobalLog.Exception(AException: Exception; const AMessage: string);
+begin
+  Instance.Exception(AException, AMessage);
 end;
 
 

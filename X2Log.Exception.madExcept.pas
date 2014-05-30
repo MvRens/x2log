@@ -12,24 +12,23 @@ type
   TX2LogmadExceptExceptionStrategy = class(TX2LogDefaultExceptionStrategy)
   public
     { IX2LogExceptionStrategy }
-    procedure Execute(AException: Exception; var AMessage: string; var ADetails: string); override;
+    procedure Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails); override;
   end;
 
 
 implementation
 uses
-  madExcept;
+  madExcept,
+
+  X2Log.Details.Default;
 
 
 { TX2LogmadExceptExceptionStrategy }
-procedure TX2LogmadExceptExceptionStrategy.Execute(AException: Exception; var AMessage, ADetails: string);
+procedure TX2LogmadExceptExceptionStrategy.Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails);
 begin
   inherited Execute(AException, AMessage, ADetails);
 
-  if Length(ADetails) > 0 then
-    ADetails := ADetails + #13#10;
-
-  ADetails := ADetails + madExcept.CreateBugReport(etNormal, AException);
+  ADetails := TX2LogStringDetails.CreateIfNotEmpty(madExcept.CreateBugReport(etNormal, AException));
 end;
 
 end.

@@ -208,6 +208,7 @@ var
   header: TX2LogMessageHeader;
   bytesWritten: Cardinal;
   lastError: Cardinal;
+  logDetailsText: IX2LogDetailsText;
 
 begin
   ClearWriteBuffer;
@@ -221,7 +222,12 @@ begin
 
   WriteBuffer.WriteBuffer(header, SizeOf(header));
   WriteString(AEntry.Message);
-  WriteString(AEntry.Details);
+
+  // #ToDo1 support for non-string details
+  if Supports(AEntry.Details, IX2LogDetailsText, logDetailsText) then
+    WriteString(logDetailsText.AsString)
+  else
+    WriteString('');
 
   Result := WriteFile(Pipe, WriteBuffer.Memory^, WriteBuffer.Size, bytesWritten, @Overlapped);
   if not Result then

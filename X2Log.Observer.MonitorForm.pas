@@ -4,8 +4,10 @@ interface
 uses
   System.Classes,
   System.Generics.Collections,
+  Vcl.ActnList, 
   Vcl.ComCtrls,
   Vcl.Controls,
+  Vcl.Dialogs,
   Vcl.ExtCtrls,
   Vcl.Forms,
   Vcl.ImgList,
@@ -14,7 +16,7 @@ uses
   VirtualTrees,
   Winapi.Messages,
 
-  X2Log.Intf, Vcl.ActnList;
+  X2Log.Intf;
 
 
 const
@@ -43,6 +45,7 @@ type
     actSaveDetails: TAction;
     actPause: TAction;
     tbPause: TToolButton;
+    sdDetails: TSaveDialog;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -54,6 +57,7 @@ type
     procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
     procedure actClearExecute(Sender: TObject);
     procedure actCopyDetailsExecute(Sender: TObject);
+    procedure actSaveDetailsExecute(Sender: TObject);
     procedure actPauseExecute(Sender: TObject);
   private class var
     FInstances: TDictionary<IX2Log,TX2LogObserverMonitorForm>;
@@ -62,6 +66,7 @@ type
     FLogToAttach: IX2Log;
     FLogAttached: Boolean;
     FPausedLogCount: Integer;
+    FDetails: IX2LogDetails;
 
     function GetPaused: Boolean;
   protected
@@ -77,6 +82,10 @@ type
     procedure UpdateUI;
     procedure UpdateStatus;
 
+    procedure SetDetails(ADetails: IX2LogDetails);
+    procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
+
+    property Details: IX2LogDetails read FDetails;
     property LogToAttach: IX2Log read FLogToAttach;
     property LogAttached: Boolean read FLogAttached;
     property Paused: Boolean read GetPaused;
@@ -91,7 +100,7 @@ type
     destructor Destroy; override;
 
     { IX2LogObserver }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 
     property FreeOnClose: Boolean read FFreeOnClose write FFreeOnClose;
   end;
@@ -100,6 +109,7 @@ type
 implementation
 uses
   System.DateUtils,
+  System.Math,
   System.SysUtils,
   Vcl.Clipbrd,
   Winapi.Windows,
@@ -115,9 +125,9 @@ type
     Time: TDateTime;
     Level: TX2LogLevel;
     Message: string;
-    Details: string;
+    Details: IX2LogDetails;
 
-    procedure Initialize(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+    procedure Initialize(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
   end;
 
   PLogEntryNodeData = ^TLogEntryNodeData;
@@ -130,7 +140,7 @@ const
 
 
 { TLogEntryNode }
-procedure TLogEntryNodeData.Initialize(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TLogEntryNodeData.Initialize(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   Time := Now;
   Level := ALevel;
@@ -236,6 +246,8 @@ begin
   tbCopyDetails.Caption := GetLogResourceString(@LogMonitorFormButtonCopyDetails);
   tbSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
 
+  sdDetails.Filter := GetLogResourceString(@LogMonitorFormSaveDetailsFilter);
+
   UpdateUI;
 end;
 
@@ -284,7 +296,7 @@ begin
 end;
 
 
-procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 var
   node: PVirtualNode;
   nodeData: PLogEntryNodeData;
@@ -326,15 +338,8 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.UpdateUI;
-var
-  hasDetails: Boolean;
-
 begin
   actClear.Enabled := (vstLog.RootNodeCount > 0);
-
-  hasDetails := (Length(reDetails.Text) > 0);
-  actCopyDetails.Enabled := hasDetails;
-  actSaveDetails.Enabled := hasDetails;
 end;
 
 
@@ -344,6 +349,126 @@ begin
     sbStatus.SimpleText := ' ' + Format(GetLogResourceString(@LogMonitorFormStatusPaused), [PausedLogCount])
   else
     sbStatus.SimpleText := '';
+end;
+
+
+procedure TX2LogObserverMonitorForm.SetDetails(ADetails: IX2LogDetails);
+var
+  logDetailsBinary: IX2LogDetailsBinary;
+  logDetailsText: IX2LogDetailsText;
+
+begin
+  FDetails := ADetails;
+
+  if Assigned(Details) then
+  begin
+    if Supports(ADetails, IX2LogDetailsBinary, logDetailsBinary) then
+      SetBinaryDetails(logDetailsBinary)
+
+    else if Supports(ADetails, IX2LogDetailsText, logDetailsText) then
+      reDetails.Text := logDetailsText.AsString;
+  end else
+    reDetails.Clear;
+
+
+  actCopyDetails.Enabled := Supports(ADetails, IX2LogDetailsCopyable);
+  actSaveDetails.Enabled := Supports(ADetails, IX2LogDetailsStreamable);
+end;
+
+
+procedure TX2LogObserverMonitorForm.SetBinaryDetails(ADetails: IX2LogDetailsBinary);
+const
+  BufferSize = 4096;
+
+  BytesPerLine = 16;
+  HexSplitPos = 7;
+  HexSplitSpacing = 1;
+
+  HexDigits = 2;
+  TextDigits = 1;
+  HexSpacing = 0;
+  HexTextSpacing = 2;
+
+  ReadableCharacters = [32..126, 161..255];
+  UnreadableCharacter = '.';
+
+
+  procedure ResetLine(var ALine: string);
+  var
+    linePos: Integer;
+
+  begin
+    for linePos := 1 to Length(ALine) do
+      ALine[linePos] := ' ';
+  end;
+
+
+var
+  stream: TStream;
+  buffer: array[0..Pred(BufferSize)] of Byte;
+  readBytes: Integer;
+  linePosition: Integer;
+  line: string;
+  bufferIndex: Integer;
+  hexValue: string;
+  hexPos: Integer;
+  textPos: Integer;
+
+begin
+  stream := ADetails.AsStream;
+  linePosition := 0;
+
+  SetLength(line, (BytesPerLine * (HexDigits + HexSpacing + TextDigits)) + HexTextSpacing +
+                  IfThen(HexSplitPos < BytesPerLine, HexSplitSpacing, 0));
+  ResetLine(line);
+
+  reDetails.Lines.BeginUpdate;
+  try
+    reDetails.Lines.Clear;
+
+    while True do
+    begin
+      readBytes := stream.Read(buffer, SizeOf(buffer));
+      if readBytes = 0 then
+        break;
+
+      for bufferIndex := 0 to Pred(readBytes) do
+      begin
+        hexValue := IntToHex(buffer[bufferIndex], HexDigits);
+
+        if linePosition >= BytesPerLine then
+        begin
+          reDetails.Lines.Add(line);
+
+          ResetLine(line);
+          linePosition := 0;
+        end;
+
+        hexPos := (linePosition * (HexDigits + HexSpacing));
+        if linePosition > HexSplitPos then
+          Inc(hexPos, HexSplitSpacing);
+
+        line[hexPos + 1] := hexValue[1];
+        line[hexPos + 2] := hexValue[2];
+
+        textPos := (BytesPerLine * (HexDigits + HexSpacing)) + HexTextSpacing + (linePosition * TextDigits);
+        if HexSplitPos < BytesPerLine then
+          Inc(textPos, HexSplitSpacing);
+
+        if buffer[bufferIndex] in ReadableCharacters then
+          line[textPos] := Chr(buffer[bufferIndex])
+        else
+          line[textPos] := UnreadableCharacter;
+
+        Inc(linePosition);
+      end;
+    end;
+
+    if linePosition > 0 then
+      reDetails.Lines.Add(line);
+  finally
+    reDetails.Lines.EndUpdate;
+  end;
 end;
 
 
@@ -427,7 +552,7 @@ begin
         end;
 
       ColumnMessage:
-        if Length(nodeData^.Details) > 0 then
+        if Assigned(nodeData^.Details) then
           ImageIndex := 4;
     end;
   end;
@@ -442,9 +567,9 @@ begin
   if Assigned(Node) then
   begin
     nodeData := Sender.GetNodeData(Node);
-    reDetails.Text := nodeData^.Details;
+    SetDetails(nodeData^.Details);
   end else
-    reDetails.Text := '';
+    SetDetails(nil);
 
   UpdateUI;
 end;
@@ -458,9 +583,33 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.actCopyDetailsExecute(Sender: TObject);
+var
+  logDetailsCopyable: IX2LogDetailsCopyable;
+
 begin
-  if Length(reDetails.Text) > 0 then
-    Clipboard.AsText := reDetails.Text;
+  if Supports(Details, IX2LogDetailsCopyable, logDetailsCopyable) then
+    logDetailsCopyable.CopyToClipboard;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actSaveDetailsExecute(Sender: TObject);
+var
+  logDetailsStreamable: IX2LogDetailsStreamable;
+  outputStream: TFileStream;
+
+begin
+  if Supports(Details, IX2LogDetailsStreamable, logDetailsStreamable) then
+  begin
+    if sdDetails.Execute then
+    begin
+      outputStream := TFileStream.Create(sdDetails.FileName, fmCreate or fmShareDenyWrite);
+      try
+        logDetailsStreamable.SaveToStream(outputStream);
+      finally
+        FreeAndNil(outputStream);
+      end;
+    end;
+  end;
 end;
 
 

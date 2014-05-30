@@ -17,7 +17,7 @@ type
     btnClose: TButton;
     btnVerbose: TButton;
     edtMessage: TEdit;
-    GroupBox1: TGroupBox;
+    gbDispatch: TGroupBox;
     lblMessage: TLabel;
     mmoEvent: TMemo;
     pcObservers: TPageControl;
@@ -46,6 +46,7 @@ type
     rbAbsolute: TRadioButton;
     edtPipeName: TEdit;
     lblPipeName: TLabel;
+    btnBinary: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -67,7 +68,7 @@ type
     FFileObserver: IX2LogObserver;
     FNamedPipeObserver: IX2LogObserver;
   protected
-    procedure DoLog(Sender: TObject; Level: TX2LogLevel; const Msg, Details: string);
+    procedure DoLog(Sender: TObject; Level: TX2LogLevel; const Msg: string; Details: IX2LogDetails);
   end;
 
 
@@ -78,6 +79,7 @@ uses
 
   X2Log,
   X2Log.Constants,
+  X2Log.Details.Default,
   X2Log.Exception.madExcept,
   X2Log.Observer.Event,
   X2Log.Observer.LogFile,
@@ -118,9 +120,18 @@ begin
 end;
 
 
-procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; const Msg, Details: string);
+procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; const Msg: string; Details: IX2LogDetails);
+var
+  text: string;
+  logDetailsText: IX2LogDetailsText;
+
 begin
-  mmoEvent.Lines.Add(GetLogLevelText(Level) + ': ' + Msg + ' (' + Details + ')');
+  text := GetLogLevelText(Level) + ': ' + Msg;
+
+  if Supports(Details, IX2LogDetailsText, logDetailsText) then
+    text := text + ' (' + logDetailsText.AsString + ')';
+
+  mmoEvent.Lines.Add(text);
 end;
 
 
@@ -158,7 +169,9 @@ begin
   else if Sender = btnWarning then
     FLog.Warning(edtMessage.Text)
   else if Sender = btnError then
-    FLog.Error(edtMessage.Text);
+    FLog.Error(edtMessage.Text)
+  else if Sender = btnBinary then
+    FLog.InfoEx(edtMessage.Text, TX2LogBinaryDetails.Create(#0#1#2#3'Test'#12'Some more data'));
 end;
 
 

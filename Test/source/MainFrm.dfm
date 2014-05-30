@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'X'#178'Log Test'
-  ClientHeight = 515
+  ClientHeight = 544
   ClientWidth = 611
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,27 +21,25 @@ object MainForm: TMainForm
     Left = 8
     Top = 169
     Width = 595
-    Height = 305
+    Height = 334
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsFile
+    ActivePage = tsEvent
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
+    ExplicitHeight = 305
     object tsEvent: TTabSheet
       Caption = 'Event Observer '
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 277
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
         Top = 40
         Width = 571
-        Height = 229
+        Height = 258
         Margins.Left = 8
         Margins.Top = 40
         Margins.Right = 8
@@ -50,7 +48,7 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        ExplicitTop = 41
+        ExplicitHeight = 229
       end
       object btnEventStart: TButton
         Left = 8
@@ -73,6 +71,7 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File Observer'
+      ExplicitHeight = 277
       object lblFilename: TLabel
         Left = 12
         Top = 64
@@ -135,10 +134,7 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe Observer'
-      ExplicitLeft = 0
-      ExplicitTop = 30
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 277
       object lblPipeName: TLabel
         Left = 12
         Top = 64
@@ -177,7 +173,7 @@ object MainForm: TMainForm
   object pnlButtons: TPanel
     AlignWithMargins = True
     Left = 8
-    Top = 482
+    Top = 511
     Width = 595
     Height = 25
     Margins.Left = 8
@@ -187,6 +183,7 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 482
     object btnClose: TButton
       Left = 520
       Top = 0
@@ -210,7 +207,7 @@ object MainForm: TMainForm
       OnClick = btnMonitorFormClick
     end
   end
-  object GroupBox1: TGroupBox
+  object gbDispatch: TGroupBox
     AlignWithMargins = True
     Left = 8
     Top = 8
@@ -255,7 +252,6 @@ object MainForm: TMainForm
       Top = 56
       Width = 75
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
       Caption = 'Verbose'
       TabOrder = 1
       OnClick = btnLogClick
@@ -266,7 +262,7 @@ object MainForm: TMainForm
       Width = 402
       Height = 21
       Anchors = [akLeft, akTop, akRight]
-      TabOrder = 2
+      TabOrder = 6
       Text = 'Horrible things are happening.'
       OnKeyDown = edtExceptionKeyDown
     end
@@ -275,9 +271,8 @@ object MainForm: TMainForm
       Top = 123
       Width = 75
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
       Caption = '&Send'
-      TabOrder = 3
+      TabOrder = 7
       OnClick = btnExceptionClick
     end
     object btnInfo: TButton
@@ -285,9 +280,8 @@ object MainForm: TMainForm
       Top = 56
       Width = 75
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
       Caption = 'Info'
-      TabOrder = 4
+      TabOrder = 2
       OnClick = btnLogClick
     end
     object btnWarning: TButton
@@ -295,9 +289,8 @@ object MainForm: TMainForm
       Top = 56
       Width = 75
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
       Caption = 'Warning'
-      TabOrder = 5
+      TabOrder = 3
       OnClick = btnLogClick
     end
     object btnError: TButton
@@ -305,9 +298,17 @@ object MainForm: TMainForm
       Top = 56
       Width = 75
       Height = 21
-      Anchors = [akLeft, akTop, akRight]
       Caption = 'Error'
-      TabOrder = 6
+      TabOrder = 4
+      OnClick = btnLogClick
+    end
+    object btnBinary: TButton
+      Left = 432
+      Top = 56
+      Width = 62
+      Height = 21
+      Caption = 'Binary'
+      TabOrder = 5
       OnClick = btnLogClick
     end
   end
@@ -317,7 +318,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140024000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140028000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

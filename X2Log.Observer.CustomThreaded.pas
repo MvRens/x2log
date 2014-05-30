@@ -20,7 +20,7 @@ type
   protected
     function CreateWorkerThread: TX2LogObserverWorkerThread; virtual; abstract;
 
-    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = ''); override;
+    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); override;
 
     property WorkerThread: TX2LogObserverWorkerThread read FWorkerThread;
   public
@@ -31,16 +31,16 @@ type
 
   TX2LogQueueEntry = class(TPersistent)
   private
-    FDetails: string;
+    FDetails: IX2LogDetails;
     FLevel: TX2LogLevel;
     FMessage: string;
   public
-    constructor Create(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string); overload;
+    constructor Create(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); overload;
     constructor Create(AEntry: TX2LogQueueEntry); overload;
 
     procedure Assign(Source: TPersistent); override;
 
-    property Details: string read FDetails;
+    property Details: IX2LogDetails read FDetails;
     property Level: TX2LogLevel read FLevel;
     property Message: string read FMessage;
   end;
@@ -68,7 +68,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = '');
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
   end;
 
 
@@ -94,7 +94,7 @@ begin
 end;
 
 
-procedure TX2LogCustomThreadedObserver.DoLog(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogCustomThreadedObserver.DoLog(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   WorkerThread.Log(ALevel, AMessage, ADetails);
 end;
@@ -102,7 +102,7 @@ end;
 
 
 { TX2LogQueueEntry }
-constructor TX2LogQueueEntry.Create(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string);
+constructor TX2LogQueueEntry.Create(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   inherited Create;
 
@@ -156,7 +156,7 @@ begin
 end;
 
 
-procedure TX2LogObserverWorkerThread.Log(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogObserverWorkerThread.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   TMonitor.Enter(LogQueue);
   try

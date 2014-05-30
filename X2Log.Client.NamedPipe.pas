@@ -24,8 +24,9 @@ implementation
 uses
   System.SyncObjs,
   System.SysUtils,
+  Winapi.Windows,
 
-  Winapi.Windows;
+  X2Log.Details.Default;
 
 
 type
@@ -290,7 +291,8 @@ begin
       msg := ReadString;
       details := ReadString;
 
-      Log.Log(header.Level, msg, details);
+      // #ToDo1 named pipe support for non-string details
+      Log.Log(header.Level, msg, TX2LogStringDetails.CreateIfNotEmpty(details));
     except
       on E:EReadError do
         ClosePipe;

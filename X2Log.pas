@@ -23,15 +23,24 @@ type
     procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
+    procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Info(const AMessage: string; const ADetails: string = '');
+    procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Warning(const AMessage: string; const ADetails: string = '');
+    procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
     procedure Error(const AMessage: string; const ADetails: string = '');
-    procedure Exception(AException: Exception; const AMessage: string = ''; const ADetails: string = '');
+    procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+
+    procedure Exception(AException: Exception; const AMessage: string = '');
   end;
   
 
 implementation
 uses
+  X2Log.Details.Default,
   X2Log.Exception.Default;
 
 
@@ -55,11 +64,23 @@ end;
 
 procedure TX2Log.Verbose(const AMessage, ADetails: string);
 begin
+  Log(TX2LogLevel.Verbose, AMessage, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
+end;
+
+
+procedure TX2Log.VerboseEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
   Log(TX2LogLevel.Verbose, AMessage, ADetails);
 end;
 
 
 procedure TX2Log.Info(const AMessage, ADetails: string);
+begin
+  Log(TX2LogLevel.Info, AMessage, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
+end;
+
+
+procedure TX2Log.InfoEx(const AMessage: string; ADetails: IX2LogDetails);
 begin
   Log(TX2LogLevel.Info, AMessage, ADetails);
 end;
@@ -67,24 +88,36 @@ end;
 
 procedure TX2Log.Warning(const AMessage, ADetails: string);
 begin
+  Log(TX2LogLevel.Warning, AMessage, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
+end;
+
+
+procedure TX2Log.WarningEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
   Log(TX2LogLevel.Warning, AMessage, ADetails);
 end;
 
 
 procedure TX2Log.Error(const AMessage, ADetails: string);
 begin
+  Log(TX2LogLevel.Error, AMessage, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
+end;
+
+
+procedure TX2Log.ErrorEx(const AMessage: string; ADetails: IX2LogDetails);
+begin
   Log(TX2LogLevel.Error, AMessage, ADetails);
 end;
 
 
-procedure TX2Log.Exception(AException: Exception; const AMessage, ADetails: string);
+procedure TX2Log.Exception(AException: Exception; const AMessage: string);
 var
   msg: string;
-  details: string;
+  details: IX2LogDetails;
 
 begin
   msg := AMessage;
-  details := ADetails;
+  details := nil;
 
   ExceptionStrategy.Execute(AException, msg, details);
   Log(TX2LogLevel.Error, msg, details);

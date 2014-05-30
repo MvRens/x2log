@@ -114,12 +114,13 @@ var
   detailsFileName: string;
   detailsNumber: Integer;
   writer: TStreamWriter;
+  logDetailsStreamable: IX2LogDetailsStreamable;
 
 begin
   ForceDirectories(ExtractFilePath(FileName));
   errorMsg := AEntry.Message;
 
-  if Length(AEntry.Details) > 0 then
+  if Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
   begin
     detailsExtension := ExtractFileExt(FileName);
     baseReportFileName := ChangeFileExt(FileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), Now));
@@ -150,12 +151,7 @@ begin
           try
             detailsFileStream := THandleStream.Create(detailsFile);
             try
-              detailsWriter := TStreamWriter.Create(detailsFileStream, TEncoding.ANSI);
-              try
-                detailsWriter.Write(AEntry.Details);
-              finally
-                FreeAndNil(detailsWriter);
-              end;
+              logDetailsStreamable.SaveToStream(detailsFileStream);
             finally
               FreeAndNil(detailsFileStream);
             end;

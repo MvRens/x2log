@@ -46,6 +46,8 @@ resourcestring
   { Status messages }
   LogMonitorFormStatusPaused = 'Paused: %d log message(s) skipped';
 
+  LogMonitorFormSaveDetailsFilter = 'All files (*.*)|*.*';
+
 
 
   function GetLogLevelText(ALogLevel: TX2LogLevel): string;

@@ -18,7 +18,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
   PixelsPerInch = 96
   TextHeight = 13
   object splDetails: TSplitter
-    Left = 634
+    Left = 602
     Top = 0
     Width = 6
     Height = 496
@@ -28,9 +28,9 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     ExplicitHeight = 519
   end
   object pnlDetails: TPanel
-    Left = 640
+    Left = 608
     Top = 0
-    Width = 350
+    Width = 382
     Height = 496
     Align = alRight
     BevelOuter = bvNone
@@ -38,7 +38,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     object tbDetails: TToolBar
       Left = 0
       Top = 0
-      Width = 350
+      Width = 382
       Height = 22
       AutoSize = True
       ButtonWidth = 52
@@ -46,6 +46,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 0
+      ExplicitWidth = 350
       object tbCopyDetails: TToolButton
         Left = 0
         Top = 0
@@ -62,30 +63,32 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     object pnlBorder: TPanel
       Left = 0
       Top = 22
-      Width = 350
+      Width = 382
       Height = 474
       Align = alClient
       BevelKind = bkFlat
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 350
       object HeaderControl1: THeaderControl
         Left = 0
         Top = 0
-        Width = 346
+        Width = 378
         Height = 17
         Sections = <
           item
             AutoSize = True
             ImageIndex = -1
             Text = 'Details'
-            Width = 346
+            Width = 378
           end>
         NoSizing = True
+        ExplicitWidth = 346
       end
       object reDetails: TRichEdit
         Left = 0
         Top = 17
-        Width = 346
+        Width = 378
         Height = 453
         Align = alClient
         BorderStyle = bsNone
@@ -99,21 +102,24 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 1
+        ExplicitLeft = -2
+        ExplicitWidth = 348
       end
     end
   end
   object pnlLog: TPanel
     Left = 0
     Top = 0
-    Width = 634
+    Width = 602
     Height = 496
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 634
     object vstLog: TVirtualStringTree
       Left = 0
       Top = 22
-      Width = 634
+      Width = 602
       Height = 474
       Align = alClient
       Header.AutoSizeIndex = 2
@@ -134,6 +140,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       OnGetImageIndex = vstLogGetImageIndex
       OnGetHint = vstLogGetHint
       OnInitNode = vstLogInitNode
+      ExplicitWidth = 634
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
@@ -147,14 +154,14 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 2
-          Width = 460
+          Width = 424
           WideText = 'Message'
         end>
     end
     object tbLog: TToolBar
       Left = 0
       Top = 0
-      Width = 634
+      Width = 602
       Height = 22
       AutoSize = True
       ButtonWidth = 56
@@ -163,6 +170,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 1
+      ExplicitWidth = 634
       object tbClear: TToolButton
         Left = 0
         Top = 0
@@ -191,10 +199,10 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     SimplePanel = True
   end
   object ilsLog: TImageList
-    Left = 584
+    Left = 448
     Top = 48
     Bitmap = {
-      494C010109004000840010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109004000880010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -608,13 +616,15 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     end
     object actCopyDetails: TAction
       Caption = 'Copy'
+      Enabled = False
       ImageIndex = 7
       OnExecute = actCopyDetailsExecute
     end
     object actSaveDetails: TAction
       Caption = 'Save'
+      Enabled = False
       ImageIndex = 5
-      Visible = False
+      OnExecute = actSaveDetailsExecute
     end
     object actPause: TAction
       AutoCheck = True
@@ -622,5 +632,10 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       ImageIndex = 8
       OnExecute = actPauseExecute
     end
+  end
+  object sdDetails: TSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 512
+    Top = 112
   end
 end

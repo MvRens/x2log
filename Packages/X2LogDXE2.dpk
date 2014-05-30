@@ -30,7 +30,8 @@ package X2LogDXE2;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  vcl;
 
 contains
   X2Log.Client.Base in '..\X2Log.Client.Base.pas',
@@ -44,7 +45,8 @@ contains
   X2Log.Observer.Event in '..\X2Log.Observer.Event.pas',
   X2Log.Observer.LogFile in '..\X2Log.Observer.LogFile.pas',
   X2Log.Observer.NamedPipe in '..\X2Log.Observer.NamedPipe.pas',
-  X2Log in '..\X2Log.pas';
+  X2Log in '..\X2Log.pas',
+  X2Log.Details.Default in '..\X2Log.Details.Default.pas';
 
 end.
 

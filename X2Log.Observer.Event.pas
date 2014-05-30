@@ -7,7 +7,7 @@ uses
 
 
 type
-  TX2LogEvent = procedure(Sender: TObject; Level: TX2LogLevel; const Msg, Details: string) of object;
+  TX2LogEvent = procedure(Sender: TObject; Level: TX2LogLevel; const Msg: string; Details: IX2LogDetails) of object;
 
 
   TX2LogEventObserver = class(TX2LogCustomObserver)
@@ -15,7 +15,7 @@ type
     FOnLog: TX2LogEvent;
     FRunInMainThread: Boolean;
   protected
-    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; const ADetails: string = ''); override;
+    procedure DoLog(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); override;
   public
     constructor Create(ALogLevels: TX2LogLevels = X2LogLevelsDefault); overload;
     constructor Create(AOnLog: TX2LogEvent; ALogLevels: TX2LogLevels = X2LogLevelsDefault); overload;
@@ -48,7 +48,7 @@ begin
 end;
 
 
-procedure TX2LogEventObserver.DoLog(ALevel: TX2LogLevel; const AMessage, ADetails: string);
+procedure TX2LogEventObserver.DoLog(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   if Assigned(FOnLog) then
   begin
