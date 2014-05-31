@@ -4,6 +4,7 @@ interface
 uses
   System.Classes,
   System.Generics.Collections,
+  System.Types,
   Vcl.ActnList, 
   Vcl.ComCtrls,
   Vcl.Controls,
@@ -24,6 +25,10 @@ const
 
 
 type
+  TX2LogObserverMonitorForm = class;
+  TMonitorFormDictionary = TObjectDictionary<IX2LogObservable,TX2LogObserverMonitorForm>;
+
+
   TX2LogObserverMonitorForm = class(TForm, IX2LogObserver)
     vstLog: TVirtualStringTree;
     ilsLog: TImageList;
@@ -59,18 +64,19 @@ type
     procedure actCopyDetailsExecute(Sender: TObject);
     procedure actSaveDetailsExecute(Sender: TObject);
     procedure actPauseExecute(Sender: TObject);
+    procedure ToolbarCustomDraw(Sender: TToolBar; const ARect: TRect; var DefaultDraw: Boolean);
   private class var
-    FInstances: TObjectDictionary<IX2Log,TX2LogObserverMonitorForm>;
+    FInstances: TMonitorFormDictionary;
   private
     FFreeOnClose: Boolean;
-    FLogToAttach: IX2Log;
+    FLogObservable: IX2LogObservable;
     FLogAttached: Boolean;
     FPausedLogCount: Integer;
     FDetails: IX2LogDetails;
 
     function GetPaused: Boolean;
   protected
-    class function GetInstance(ALog: IX2Log; out AForm: TX2LogObserverMonitorForm): Boolean;
+    class function GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
     class procedure CleanupInstances;
 
@@ -86,17 +92,17 @@ type
     procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
 
     property Details: IX2LogDetails read FDetails;
-    property LogToAttach: IX2Log read FLogToAttach;
+    property LogObservable: IX2LogObservable read FLogObservable;
     property LogAttached: Boolean read FLogAttached;
     property Paused: Boolean read GetPaused;
     property PausedLogCount: Integer read FPausedLogCount write FPausedLogCount;
   public
-    class function Instance(ALog: IX2Log): TX2LogObserverMonitorForm;
+    class function Instance(ALog: IX2LogObservable): TX2LogObserverMonitorForm;
 
-    class procedure ShowInstance(ALog: IX2Log);
-    class procedure CloseInstance(ALog: IX2Log);
+    class procedure ShowInstance(ALog: IX2LogObservable);
+    class procedure CloseInstance(ALog: IX2LogObservable);
 
-    constructor Create(AOwner: TComponent; ALogToAttach: IX2Log = nil); reintroduce;
+    constructor Create(AOwner: TComponent; ALogObservable: IX2LogObservable = nil); reintroduce;
     destructor Destroy; override;
 
     { IX2LogObserver }
@@ -112,6 +118,7 @@ uses
   System.Math,
   System.SysUtils,
   Vcl.Clipbrd,
+  Vcl.Themes,
   Winapi.Windows,
 
   X2Log.Constants;
@@ -150,17 +157,17 @@ end;
 
 
 { TX2LogObserverMonitorForm }
-class function TX2LogObserverMonitorForm.Instance(ALog: IX2Log): TX2LogObserverMonitorForm;
+class function TX2LogObserverMonitorForm.Instance(ALog: IX2LogObservable): TX2LogObserverMonitorForm;
 var
-  log: IX2Log;
+  log: IX2LogObservable;
 
 begin
   { Explicit cast ensures we're getting the same pointer every time if, for example,
     the implementing interface is a descendant of IX2Log }
-  log := (ALog as IX2Log);
+  log := (ALog as IX2LogObservable);
 
   if not Assigned(FInstances) then
-    FInstances := TObjectDictionary<IX2Log,TX2LogObserverMonitorForm>.Create([doOwnsValues]);
+    FInstances := TMonitorFormDictionary.Create([doOwnsValues]);
 
   if not FInstances.TryGetValue(log, Result) then
   begin
@@ -172,13 +179,13 @@ begin
 end;
 
 
-class procedure TX2LogObserverMonitorForm.ShowInstance(ALog: IX2Log);
+class procedure TX2LogObserverMonitorForm.ShowInstance(ALog: IX2LogObservable);
 begin
   Instance(ALog).Show;
 end;
 
 
-class procedure TX2LogObserverMonitorForm.CloseInstance(ALog: IX2Log);
+class procedure TX2LogObserverMonitorForm.CloseInstance(ALog: IX2LogObservable);
 var
   monitorForm: TX2LogObserverMonitorForm;
 
@@ -188,7 +195,7 @@ begin
 end;
 
 
-class function TX2LogObserverMonitorForm.GetInstance(ALog: IX2Log; out AForm: TX2LogObserverMonitorForm): Boolean;
+class function TX2LogObserverMonitorForm.GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
 begin
   Result := False;
 
@@ -199,7 +206,7 @@ end;
 
 class procedure TX2LogObserverMonitorForm.RemoveInstance(AForm: TX2LogObserverMonitorForm);
 var
-  log: IX2Log;
+  log: IX2LogObservable;
 
 begin
   if Assigned(FInstances) then
@@ -223,14 +230,14 @@ begin
 end;
 
 
-constructor TX2LogObserverMonitorForm.Create(AOwner: TComponent; ALogToAttach: IX2Log);
+constructor TX2LogObserverMonitorForm.Create(AOwner: TComponent; ALogObservable: IX2LogObservable);
 var
   captionFormat: string;
 
 begin
   inherited Create(AOwner);
 
-  FLogToAttach := ALogToAttach;
+  FLogObservable := ALogObservable;
 
   captionFormat := GetLogResourceString(@LogMonitorFormCaption);
   if Pos('%s', captionFormat) > 0 then
@@ -262,8 +269,8 @@ end;
 
 destructor TX2LogObserverMonitorForm.Destroy;
 begin
-  if Assigned(FLogToAttach) and FLogAttached then
-    FLogToAttach.Detach(Self);
+  if Assigned(FLogObservable) and FLogAttached then
+    FLogObservable.Detach(Self);
 
   RemoveInstance(Self);
 
@@ -273,9 +280,9 @@ end;
 
 procedure TX2LogObserverMonitorForm.FormShow(Sender: TObject);
 begin
-  if Assigned(FLogToAttach) and (not FLogAttached) then
+  if Assigned(FLogObservable) and (not FLogAttached) then
   begin
-    FLogToAttach.Attach(Self);
+    FLogObservable.Attach(Self);
     FLogAttached := True;
   end;
 end;
@@ -283,9 +290,9 @@ end;
 
 procedure TX2LogObserverMonitorForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if Assigned(FLogToAttach) and FLogAttached then
+  if Assigned(FLogObservable) and FLogAttached then
   begin
-    FLogToAttach.Detach(Self);
+    FLogObservable.Detach(Self);
     FLogAttached := False;
   end;
 
@@ -625,6 +632,24 @@ procedure TX2LogObserverMonitorForm.actPauseExecute(Sender: TObject);
 begin
   PausedLogCount := 0;
   UpdateStatus;
+end;
+
+
+procedure TX2LogObserverMonitorForm.ToolbarCustomDraw(Sender: TToolBar; const ARect: TRect; var DefaultDraw: Boolean);
+var
+  element: TThemedElementDetails;
+  rect: TRect;
+
+begin
+  if StyleServices.Enabled then
+  begin
+    rect := Sender.ClientRect;
+    if Assigned(Self.Menu) then
+      Dec(rect.Top, GetSystemMetrics(SM_CYMENU));
+
+    element := StyleServices.GetElementDetails(trRebarRoot);
+    StyleServices.DrawElement(Sender.Canvas.Handle, element, rect);
+  end;
 end;
 
 

@@ -52,8 +52,8 @@ type
     tsBinary: TTabSheet;
     pnlDispatch: TPanel;
     bvlDispatch: TBevel;
-    Panel1: TPanel;
-    Bevel1: TBevel;
+    pnlObservers: TPanel;
+    bvlObservers: TBevel;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);

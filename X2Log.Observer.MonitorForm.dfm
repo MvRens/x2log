@@ -46,6 +46,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 0
+      OnCustomDraw = ToolbarCustomDraw
       object tbCopyDetails: TToolButton
         Left = 0
         Top = 0
@@ -163,6 +164,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       List = True
       ShowCaptions = True
       TabOrder = 1
+      OnCustomDraw = ToolbarCustomDraw
       object tbClear: TToolButton
         Left = 0
         Top = 0
@@ -194,7 +196,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C010109004000940010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101090040009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

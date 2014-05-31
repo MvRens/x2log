@@ -46,8 +46,8 @@ resourcestring
   { Status messages }
   LogMonitorFormStatusPaused = 'Paused: %d log message(s) skipped';
 
+  { Filter for Save details buttons }
   LogMonitorFormSaveDetailsFilter = 'All files (*.*)|*.*';
-
 
 
   function GetLogLevelText(ALogLevel: TX2LogLevel): string;
@@ -62,8 +62,11 @@ uses
   System.SysUtils;
 
 
+type
+  TResourceStringDictionary = TDictionary<Pointer,string>;
+
 var
-  LogResourceStringMap: TDictionary<Pointer,string>;
+  LogResourceStringMap: TResourceStringDictionary;
 
 
 
@@ -104,7 +107,7 @@ end;
 
 
 initialization
-  LogResourceStringMap := TDictionary<Pointer,string>.Create;
+  LogResourceStringMap := TResourceStringDictionary.Create;
 
 finalization
   FreeAndNil(LogResourceStringMap);

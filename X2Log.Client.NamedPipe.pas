@@ -17,6 +17,7 @@ type
     property WorkerThread: TThread read FWorkerThread;
   public
     constructor Create(const APipeName: string);
+    destructor Destroy; override;
   end;
 
 
@@ -24,18 +25,21 @@ implementation
 uses
   System.SyncObjs,
   System.SysUtils,
+  System.Types,
   Winapi.Windows,
 
-  X2Log.Details.Default;
+  X2Log.Details.Default,
+  X2Log.Details.Registry;
 
 
 type
   TX2LogNamedPipeClientWorkerThread = class(TThread)
   private
-    FLog: IX2LogBase;
+    FClient: TX2LogNamedPipeClient;
     FPipeName: string;
 
     FTerminateEvent: TEvent;
+    FReadEvent: TEvent;
     FPipeHandle: THandle;
     FOverlappedRead: TOverlapped;
     FReadBuffer: array[0..4095] of Byte;
@@ -51,14 +55,16 @@ type
     procedure ReadMessage;
     procedure HandleMessage;
 
-    property Log: IX2LogBase read FLog;
+    property Client: TX2LogNamedPipeClient read FClient;
     property PipeName: string read FPipeName;
 
+    property ReadEvent: TEvent read FReadEvent;
     property TerminateEvent: TEvent read FTerminateEvent;
     property PipeHandle: THandle read FPipeHandle;
     property MessageData: TMemoryStream read FMessageData;
   public
-    constructor Create(ALog: IX2LogBase; const APipeName: string);
+    constructor Create(AClient: TX2LogNamedPipeClient; const APipeName: string);
+    destructor Destroy; override;
   end;
 
 
@@ -80,16 +86,35 @@ begin
 end;
 
 
+destructor TX2LogNamedPipeClient.Destroy;
+begin
+  FreeAndNil(FWorkerThread);
+
+  inherited Destroy;
+end;
+
+
 { TX2LogNamedPipeClientWorkerThread }
-constructor TX2LogNamedPipeClientWorkerThread.Create(ALog: IX2LogBase; const APipeName: string);
+constructor TX2LogNamedPipeClientWorkerThread.Create(AClient: TX2LogNamedPipeClient; const APipeName: string);
 begin
   FTerminateEvent := TEvent.Create(nil, True, False, '');
+  FReadEvent := TEvent.Create(nil, True, False, '');
   FMessageData := TMemoryStream.Create;
 
-  FLog := ALog;
+  FClient := AClient;
   FPipeName := APipeName;
 
   inherited Create(False);
+end;
+
+
+destructor TX2LogNamedPipeClientWorkerThread.Destroy;
+begin
+  inherited Destroy;
+
+  FreeAndNil(FMessageData);
+  FreeAndNil(FReadEvent);
+  FreeAndNil(FTerminateEvent);
 end;
 
 
@@ -159,15 +184,13 @@ end;
 
 procedure TX2LogNamedPipeClientWorkerThread.ReadPipe;
 var
-  readEvent: TEvent;
   events: array[0..1] of THandle;
   waitResult: Cardinal;
   bytesTransferred: Cardinal;
 
 begin
-  readEvent := TEvent.Create(nil, False, False, '');
   events[0] := TerminateEvent.Handle;
-  events[1] := readEvent.Handle;
+  events[1] := ReadEvent.Handle;
 
   FOverlappedRead.hEvent := readEvent.Handle;
   ReadMessage;
@@ -268,12 +291,17 @@ var
   header: TX2LogMessageHeaderV1;
   headerDiff: Integer;
   msg: string;
-  details: string;
+  details: IX2LogDetails;
+  serializerIID: TGUID;
+  detailsSize: Cardinal;
+  detailsStream: TMemoryStream;
+  serializer: IX2LogDetailsSerializer;
 
 begin
   if MessageData.Size > 0 then
   begin
     try
+      { Header }
       MessageData.Position := 0;
       MessageData.ReadBuffer(header, SizeOf(header));
 
@@ -288,11 +316,35 @@ begin
       end else if headerDiff < 0 then
         raise EReadError.Create('Header too small');
 
+      { Message }
       msg := ReadString;
-      details := ReadString;
 
-      // #ToDo1 named pipe support for non-string details
-      Log.Log(header.Level, msg, TX2LogStringDetails.CreateIfNotEmpty(details));
+      { Details }
+      details := nil;
+
+      MessageData.ReadBuffer(serializerIID, SizeOf(TGUID));
+      if serializerIID <> GUID_NULL then
+      begin
+        MessageData.ReadBuffer(detailsSize, SizeOf(Cardinal));
+        if detailsSize > 0 then
+        begin
+          if TX2LogDetailsRegistry.GetSerializer(serializerIID, serializer) then
+          begin
+            detailsStream := TMemoryStream.Create;
+            try
+              detailsStream.CopyFrom(MessageData, detailsSize);
+              detailsStream.Position := 0;
+
+              details := serializer.Deserialize(detailsStream);
+            finally
+              FreeAndNil(detailsStream);
+            end;
+          end else
+            MessageData.Seek(detailsSize, soFromCurrent);
+        end;
+      end;
+
+      Client.Log(header.Level, msg, details);
     except
       on E:EReadError do
         ClosePipe;

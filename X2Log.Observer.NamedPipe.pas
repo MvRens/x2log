@@ -24,7 +24,10 @@ uses
   System.Generics.Collections,
   System.SyncObjs,
   System.SysUtils,
-  Winapi.Windows;
+  System.Types,
+  Winapi.Windows,
+
+  X2Log.Details.Registry;
 
 
 type
@@ -128,11 +131,9 @@ end;
 
 destructor TX2LogNamedPipeClient.Destroy;
 begin
+  Disconnect;
+
   FreeAndNil(FOverlappedEvent);
-
-  if PipeHandle <> INVALID_HANDLE_VALUE then
-    DisconnectNamedPipe(PipeHandle);
-
   ClearWriteBuffer;
 
   inherited Destroy;
@@ -185,6 +186,7 @@ begin
   begin
     CancelIo(PipeHandle);
     DisconnectNamedPipe(PipeHandle);
+    CloseHandle(PipeHandle);
 
     FPipeHandle := INVALID_HANDLE_VALUE;
   end;
@@ -208,26 +210,49 @@ var
   header: TX2LogMessageHeader;
   bytesWritten: Cardinal;
   lastError: Cardinal;
-  logDetailsText: IX2LogDetailsText;
+  detailsSize: Cardinal;
+  detailsStream: TMemoryStream;
+  serializerIID: TGUID;
+  serializer: IX2LogDetailsSerializer;
 
 begin
   ClearWriteBuffer;
 
   FWriteBuffer := TMemoryStream.Create;
 
+  { Header }
   header.ID := X2LogMessageHeader;
   header.Version := X2LogMessageVersion;
   header.Size := SizeOf(header);
   header.Level := AEntry.Level;
 
   WriteBuffer.WriteBuffer(header, SizeOf(header));
+
+  { Message }
   WriteString(AEntry.Message);
 
-  // #ToDo1 support for non-string details
-  if Supports(AEntry.Details, IX2LogDetailsText, logDetailsText) then
-    WriteString(logDetailsText.AsString)
-  else
-    WriteString('');
+  { Details }
+  if TX2LogDetailsRegistry.GetSerializer(AEntry.Details, serializer) then
+  begin
+    detailsStream := TMemoryStream.Create;
+    try
+      serializer.Serialize(AEntry.Details, detailsStream);
+
+      serializerIID := AEntry.Details.SerializerIID;
+      WriteBuffer.WriteBuffer(serializerIID, SizeOf(TGUID));
+
+      detailsSize := detailsStream.Size;
+      WriteBuffer.WriteBuffer(detailsSize, SizeOf(Cardinal));
+      WriteBuffer.CopyFrom(detailsStream, 0);
+    finally
+      FreeAndNil(detailsStream);
+    end;
+  end else
+  begin
+    serializerIID := GUID_NULL;
+    WriteBuffer.WriteBuffer(serializerIID, SizeOf(TGUID));
+  end;
+
 
   Result := WriteFile(Pipe, WriteBuffer.Memory^, WriteBuffer.Size, bytesWritten, @Overlapped);
   if not Result then
@@ -412,18 +437,19 @@ begin
   { Thanks to: http://www.osronline.com/showthread.cfm?link=204207
           and: http://www.netid.washington.edu/documentation/domains/sddl.aspx
 
-      0x12018d =
+      0x12019f =
          0x00100000 - SYNCHRONIZE
          0x00020000 - READ_CONTROL
          0x00000100 - FILE_WRITE_ATTRIBUTES
          0x00000080 - FILE_READ_ATTRIBUTES
+         0x00000010 - FILE_WRITE_EA
          0x00000008 - FILE_READ_EA
          0x00000004 - FILE_CREATE_PIPE_INSTANCE
+         0x00000002 - FILE_WRITE_DATA
          0x00000001 - FILE_READ_DATA }
   if ConvertStringSecurityDescriptorToSecurityDescriptorW('D:' +                  // Discretionary ACL
                                                           '(D;;FA;;;NU)' +        // Deny file all access (FA) to network user access (NU)
-                                                          '(A;;0x12018d;;;WD)' +  // Allow specific permissions for everyone (WD)
-                                                          '(A;;0x12018d;;;CO)',   // Allow specific permissions for creator owner (CO)
+                                                          '(A;;0x12019f;;;WD)',   // Allow permissions for everyone (WD)
                                                           SDDL_REVISION_1,
                                                           @security.lpSecurityDescriptor,
                                                           nil) then
@@ -452,6 +478,8 @@ begin
           begin
             client.State := Connected;
             Clients.Add(client);
+
+            AddListener;
           end;
       else
         { Error occured }

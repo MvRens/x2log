@@ -349,7 +349,7 @@ object MainForm: TMainForm
       Shape = bsTopLine
     end
   end
-  object Panel1: TPanel
+  object pnlObservers: TPanel
     AlignWithMargins = True
     Left = 8
     Top = 144
@@ -370,7 +370,7 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 4
-    object Bevel1: TBevel
+    object bvlObservers: TBevel
       Left = 80
       Top = 12
       Width = 513
@@ -384,7 +384,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140034000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140038000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

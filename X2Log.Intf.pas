@@ -19,6 +19,16 @@ type
   { Details }
   IX2LogDetails = interface
     ['{86F24F52-CE1F-4A79-936F-A5805D84E18A}']
+    function GetSerializerIID: TGUID;
+
+    property SerializerIID: TGUID read GetSerializerIID;
+  end;
+
+
+  IX2LogDetailsSerializer = interface
+    ['{E75F6F4E-A671-4622-878C-F59C64FB1320}']
+    procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
+    function Deserialize(AStream: TStream): IX2LogDetails;
   end;
 
 

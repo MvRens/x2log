@@ -10,8 +10,8 @@ uses
 
 type
   TX2GlobalLog = class(TObject)
-  private class var
-    FInstance: IX2Log;
+  private
+    class var FInstance: IX2Log;
   protected
     class procedure CleanupInstance;
   public
