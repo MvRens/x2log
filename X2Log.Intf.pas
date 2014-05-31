@@ -8,6 +8,7 @@ uses
 
 type
   TX2LogLevel = (Verbose, Info, Warning, Error);
+  TX2LogLevels = set of TX2LogLevel;
 
 
 const

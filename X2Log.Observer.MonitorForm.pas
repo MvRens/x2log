@@ -51,6 +51,15 @@ type
     actPause: TAction;
     tbPause: TToolButton;
     sdDetails: TSaveDialog;
+    tbShowVerbose: TToolButton;
+    tbShowInfo: TToolButton;
+    tbShowWarning: TToolButton;
+    tbShowError: TToolButton;
+    actShowVerbose: TAction;
+    actShowInfo: TAction;
+    actShowWarning: TAction;
+    actShowError: TAction;
+    lblFilter: TLabel;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -65,6 +74,10 @@ type
     procedure actSaveDetailsExecute(Sender: TObject);
     procedure actPauseExecute(Sender: TObject);
     procedure ToolbarCustomDraw(Sender: TToolBar; const ARect: TRect; var DefaultDraw: Boolean);
+    procedure actShowVerboseExecute(Sender: TObject);
+    procedure actShowInfoExecute(Sender: TObject);
+    procedure actShowWarningExecute(Sender: TObject);
+    procedure actShowErrorExecute(Sender: TObject);
   private class var
     FInstances: TMonitorFormDictionary;
   private
@@ -73,8 +86,7 @@ type
     FLogAttached: Boolean;
     FPausedLogCount: Integer;
     FDetails: IX2LogDetails;
-
-    function GetPaused: Boolean;
+    FVisibleLevels: TX2LogLevels;
   protected
     class function GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
@@ -87,6 +99,10 @@ type
 
     procedure UpdateUI;
     procedure UpdateStatus;
+    procedure UpdateFilter;
+
+    function GetPaused: Boolean;
+    procedure ToggleVisibleLevel(AAction: TObject; ALevel: TX2LogLevel);
 
     procedure SetDetails(ADetails: IX2LogDetails);
     procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
@@ -96,6 +112,7 @@ type
     property LogAttached: Boolean read FLogAttached;
     property Paused: Boolean read GetPaused;
     property PausedLogCount: Integer read FPausedLogCount write FPausedLogCount;
+    property VisibleLevels: TX2LogLevels read FVisibleLevels write FVisibleLevels;
   public
     class function Instance(ALog: IX2LogObservable): TX2LogObserverMonitorForm;
 
@@ -144,6 +161,8 @@ const
   ColumnLevel = 0;
   ColumnTime = 1;
   ColumnMessage = 2;
+
+  LevelImageIndex: array[TX2LogLevel] of TImageIndex = (0, 1, 2, 3);
 
 
 { TLogEntryNode }
@@ -249,12 +268,20 @@ begin
   vstLog.Header.Columns[ColumnTime].Text := GetLogResourceString(@LogMonitorFormColumnTime);
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
 
-  tbClear.Caption := GetLogResourceString(@LogMonitorFormButtonClear);
-  tbCopyDetails.Caption := GetLogResourceString(@LogMonitorFormButtonCopyDetails);
-  tbSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
+  actClear.Caption := GetLogResourceString(@LogMonitorFormButtonClear);
+  actPause.Caption := GetLogResourceString(@LogMonitorFormButtonPause);
+  actCopyDetails.Caption := GetLogResourceString(@LogMonitorFormButtonCopyDetails);
+  actSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
 
   sdDetails.Filter := GetLogResourceString(@LogMonitorFormSaveDetailsFilter);
 
+  lblFilter.Caption := '    ' + GetLogResourceString(@LogMonitorFormButtonFilter) + '  ';
+  actShowVerbose.Caption := GetLogLevelText(TX2LogLevel.Verbose);
+  actShowInfo.Caption := GetLogLevelText(TX2LogLevel.Info);
+  actShowWarning.Caption := GetLogLevelText(TX2LogLevel.Warning);
+  actShowError.Caption := GetLogLevelText(TX2LogLevel.Error);
+
+  FVisibleLevels := [Low(TX2LogLevel)..High(TX2LogLevel)];
   UpdateUI;
 end;
 
@@ -325,6 +352,8 @@ begin
         nodeData := vstLog.GetNodeData(node);
         nodeData^.Initialize(ALevel, AMessage, ADetails);
 
+        vstLog.IsVisible[node] := (ALevel in VisibleLevels);
+
         if scroll then
           vstLog.ScrollIntoView(node, False);
 
@@ -364,6 +393,43 @@ begin
     sbStatus.SimpleText := ' ' + Format(GetLogResourceString(@LogMonitorFormStatusPaused), [PausedLogCount])
   else
     sbStatus.SimpleText := '';
+end;
+
+
+procedure TX2LogObserverMonitorForm.UpdateFilter;
+var
+  node: PVirtualNode;
+  nodeData: PLogEntryNodeData;
+
+begin
+  vstLog.BeginUpdate;
+  try
+    for node in vstLog.Nodes do
+    begin
+      nodeData := vstLog.GetNodeData(node);
+      vstLog.IsVisible[node] := (nodeData^.Level in VisibleLevels);
+    end;
+  finally
+    vstLog.EndUpdate;
+  end;
+end;
+
+
+function TX2LogObserverMonitorForm.GetPaused: Boolean;
+begin
+  Result := actPause.Checked;
+end;
+
+
+procedure TX2LogObserverMonitorForm.ToggleVisibleLevel(AAction: TObject; ALevel: TX2LogLevel);
+begin
+  if ALevel in VisibleLevels then
+    Exclude(FVisibleLevels, ALevel)
+  else
+    Include(FVisibleLevels, ALevel);
+
+  (AAction as TCustomAction).Checked := (ALevel in VisibleLevels);
+  UpdateFilter;
 end;
 
 
@@ -487,12 +553,6 @@ begin
 end;
 
 
-function TX2LogObserverMonitorForm.GetPaused: Boolean;
-begin
-  Result := actPause.Checked;
-end;
-
-
 procedure TX2LogObserverMonitorForm.vstLogInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode;
                                                    var InitialStates: TVirtualNodeInitStates);
 var
@@ -559,12 +619,7 @@ begin
 
     case Column of
       ColumnLevel:
-        case nodeData^.Level of
-          TX2LogLevel.Verbose:    ImageIndex := 0;
-          TX2LogLevel.Info:       ImageIndex := 1;
-          TX2LogLevel.Warning:    ImageIndex := 2;
-          TX2LogLevel.Error:      ImageIndex := 3;
-        end;
+        ImageIndex := LevelImageIndex[nodeData^.Level];
 
       ColumnMessage:
         if Assigned(nodeData^.Details) then
@@ -632,6 +687,30 @@ procedure TX2LogObserverMonitorForm.actPauseExecute(Sender: TObject);
 begin
   PausedLogCount := 0;
   UpdateStatus;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actShowVerboseExecute(Sender: TObject);
+begin
+  ToggleVisibleLevel(Sender, TX2LogLevel.Verbose);
+end;
+
+
+procedure TX2LogObserverMonitorForm.actShowInfoExecute(Sender: TObject);
+begin
+  ToggleVisibleLevel(Sender, TX2LogLevel.Info);
+end;
+
+
+procedure TX2LogObserverMonitorForm.actShowWarningExecute(Sender: TObject);
+begin
+  ToggleVisibleLevel(Sender, TX2LogLevel.Warning);
+end;
+
+
+procedure TX2LogObserverMonitorForm.actShowErrorExecute(Sender: TObject);
+begin
+  ToggleVisibleLevel(Sender, TX2LogLevel.Error);
 end;
 
 

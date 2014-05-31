@@ -148,7 +148,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 2
-          Width = 428
+          Width = 424
           WideText = 'Message'
         end>
     end
@@ -158,7 +158,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Width = 602
       Height = 22
       AutoSize = True
-      ButtonWidth = 56
+      ButtonWidth = 67
       Caption = 'tbLog'
       Images = ilsLog
       List = True
@@ -175,6 +175,43 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 56
         Top = 0
         Action = actPause
+        AutoSize = True
+        Style = tbsCheck
+      end
+      object lblFilter: TLabel
+        Left = 116
+        Top = 0
+        Width = 46
+        Height = 22
+        Caption = '    Filter:  '
+        Layout = tlCenter
+      end
+      object tbShowVerbose: TToolButton
+        Left = 162
+        Top = 0
+        Action = actShowVerbose
+        AutoSize = True
+        Style = tbsCheck
+      end
+      object tbShowInfo: TToolButton
+        Left = 232
+        Top = 0
+        Action = actShowInfo
+        AutoSize = True
+        Style = tbsCheck
+      end
+      object tbShowWarning: TToolButton
+        Left = 283
+        Top = 0
+        Action = actShowWarning
+        AutoSize = True
+        Style = tbsCheck
+      end
+      object tbShowError: TToolButton
+        Left = 354
+        Top = 0
+        Action = actShowError
+        AutoSize = True
         Style = tbsCheck
       end
     end
@@ -196,7 +233,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C0101090040009C0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109004000B80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -625,6 +662,30 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Caption = 'Pause'
       ImageIndex = 8
       OnExecute = actPauseExecute
+    end
+    object actShowVerbose: TAction
+      Caption = 'Verbose'
+      Checked = True
+      ImageIndex = 0
+      OnExecute = actShowVerboseExecute
+    end
+    object actShowInfo: TAction
+      Caption = 'Info'
+      Checked = True
+      ImageIndex = 1
+      OnExecute = actShowInfoExecute
+    end
+    object actShowWarning: TAction
+      Caption = 'Warning'
+      Checked = True
+      ImageIndex = 2
+      OnExecute = actShowWarningExecute
+    end
+    object actShowError: TAction
+      Caption = 'Error'
+      Checked = True
+      ImageIndex = 3
+      OnExecute = actShowErrorExecute
     end
   end
   object sdDetails: TSaveDialog

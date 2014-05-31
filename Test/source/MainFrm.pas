@@ -111,9 +111,10 @@ begin
   SetLogResourceString(@LogMonitorFormColumnMessage, 'Melding');
 
   SetLogResourceString(@LogMonitorFormButtonClear, 'Wissen');
+  SetLogResourceString(@LogMonitorFormButtonPause, 'Pauzeren');
   SetLogResourceString(@LogMonitorFormButtonCopyDetails, 'Kopieren');
   SetLogResourceString(@LogMonitorFormButtonSaveDetails, 'Opslaan');
-  SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauseerd: %d melding(en) overgeslagen');
+  SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauzeerd: %d melding(en) overgeslagen');
 
   SetLogResourceString(@LogMonitorFormSaveDetailsFilter, 'Alle bestanden (*.*)|*.*');
 
@@ -201,8 +202,7 @@ end;
 
 procedure TMainForm.btnMonitorFormClick(Sender: TObject);
 begin
-//  TX2LogObserverMonitorForm.ShowInstance(FLog);
-  TX2LogObserverMonitorForm.ShowInstance(Tx2globallog.Instance);
+  TX2LogObserverMonitorForm.ShowInstance(FLog);
 end;
 
 
