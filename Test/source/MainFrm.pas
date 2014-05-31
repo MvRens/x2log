@@ -17,7 +17,6 @@ type
     btnClose: TButton;
     btnVerbose: TButton;
     edtMessage: TEdit;
-    gbDispatch: TGroupBox;
     lblMessage: TLabel;
     mmoEvent: TMemo;
     pcObservers: TPageControl;
@@ -47,6 +46,14 @@ type
     edtPipeName: TEdit;
     lblPipeName: TLabel;
     btnBinary: TButton;
+    pcDispatch: TPageControl;
+    tsText: TTabSheet;
+    tsException: TTabSheet;
+    tsBinary: TTabSheet;
+    pnlDispatch: TPanel;
+    bvlDispatch: TBevel;
+    Panel1: TPanel;
+    Bevel1: TBevel;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -84,7 +91,8 @@ uses
   X2Log.Observer.Event,
   X2Log.Observer.LogFile,
   X2Log.Observer.MonitorForm,
-  X2Log.Observer.NamedPipe;
+  X2Log.Observer.NamedPipe,
+  X2Log.Global;
 
 
 {$R *.dfm}
@@ -112,6 +120,7 @@ begin
   FLog := TX2Log.Create;
   FLog.SetExceptionStrategy(TX2LogmadExceptExceptionStrategy.Create);
 
+  pcDispatch.ActivePageIndex := 0;
   pcObservers.ActivePageIndex := 0;
 end;
 
@@ -192,7 +201,8 @@ end;
 
 procedure TMainForm.btnMonitorFormClick(Sender: TObject);
 begin
-  TX2LogObserverMonitorForm.ShowInstance(FLog);
+//  TX2LogObserverMonitorForm.ShowInstance(FLog);
+  TX2LogObserverMonitorForm.ShowInstance(Tx2globallog.Instance);
 end;
 
 

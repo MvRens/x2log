@@ -19,9 +19,9 @@ object MainForm: TMainForm
   object pcObservers: TPageControl
     AlignWithMargins = True
     Left = 8
-    Top = 169
+    Top = 176
     Width = 595
-    Height = 334
+    Height = 327
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
@@ -31,13 +31,13 @@ object MainForm: TMainForm
     Images = ilsObservers
     TabOrder = 0
     object tsEvent: TTabSheet
-      Caption = 'Event Observer '
+      Caption = 'Event'
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
         Top = 40
         Width = 571
-        Height = 258
+        Height = 251
         Margins.Left = 8
         Margins.Top = 40
         Margins.Right = 8
@@ -67,7 +67,7 @@ object MainForm: TMainForm
       end
     end
     object tsFile: TTabSheet
-      Caption = 'File Observer'
+      Caption = 'File'
       object lblFilename: TLabel
         Left = 12
         Top = 64
@@ -129,7 +129,7 @@ object MainForm: TMainForm
       end
     end
     object tsNamedPipe: TTabSheet
-      Caption = 'Named Pipe Observer'
+      Caption = 'Named Pipe'
       object lblPipeName: TLabel
         Left = 12
         Top = 64
@@ -201,109 +201,181 @@ object MainForm: TMainForm
       OnClick = btnMonitorFormClick
     end
   end
-  object gbDispatch: TGroupBox
+  object pcDispatch: TPageControl
     AlignWithMargins = True
     Left = 8
-    Top = 8
+    Top = 32
     Width = 595
-    Height = 153
+    Height = 104
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 0
+    ActivePage = tsText
+    Align = alTop
+    TabOrder = 2
+    object tsText: TTabSheet
+      Caption = 'Text'
+      DesignSize = (
+        587
+        76)
+      object lblMessage: TLabel
+        Left = 16
+        Top = 15
+        Width = 46
+        Height = 13
+        Caption = 'Message:'
+      end
+      object btnError: TButton
+        Left = 335
+        Top = 39
+        Width = 75
+        Height = 21
+        Caption = 'Error'
+        TabOrder = 0
+        OnClick = btnLogClick
+      end
+      object btnInfo: TButton
+        Left = 173
+        Top = 39
+        Width = 75
+        Height = 21
+        Caption = 'Info'
+        TabOrder = 1
+        OnClick = btnLogClick
+      end
+      object btnVerbose: TButton
+        Left = 92
+        Top = 39
+        Width = 75
+        Height = 21
+        Caption = 'Verbose'
+        TabOrder = 2
+        OnClick = btnLogClick
+      end
+      object btnWarning: TButton
+        Left = 254
+        Top = 39
+        Width = 75
+        Height = 21
+        Caption = 'Warning'
+        TabOrder = 3
+        OnClick = btnLogClick
+      end
+      object edtMessage: TEdit
+        Left = 92
+        Top = 12
+        Width = 477
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 4
+        Text = 'Hello world!'
+        OnKeyDown = edtMessageKeyDown
+      end
+    end
+    object tsException: TTabSheet
+      Caption = 'Exception'
+      ImageIndex = 1
+      DesignSize = (
+        587
+        76)
+      object lblException: TLabel
+        Left = 16
+        Top = 15
+        Width = 51
+        Height = 13
+        Caption = 'Exception:'
+      end
+      object btnException: TButton
+        Left = 92
+        Top = 39
+        Width = 75
+        Height = 21
+        Caption = '&Send'
+        TabOrder = 0
+        OnClick = btnExceptionClick
+      end
+      object edtException: TEdit
+        Left = 92
+        Top = 12
+        Width = 477
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 1
+        Text = 'Horrible things are happening.'
+        OnKeyDown = edtExceptionKeyDown
+      end
+    end
+    object tsBinary: TTabSheet
+      Caption = 'Binary'
+      ImageIndex = 2
+      object btnBinary: TButton
+        Left = 12
+        Top = 23
+        Width = 62
+        Height = 21
+        Caption = 'Binary'
+        TabOrder = 0
+        OnClick = btnLogClick
+      end
+    end
+  end
+  object pnlDispatch: TPanel
+    AlignWithMargins = True
+    Left = 8
+    Top = 0
+    Width = 595
+    Height = 24
+    Margins.Left = 8
+    Margins.Top = 0
+    Margins.Right = 8
+    Margins.Bottom = 0
+    Align = alTop
+    Alignment = taLeftJustify
+    BevelOuter = bvNone
+    Caption = 'Dispatch'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 3
+    object bvlDispatch: TBevel
+      Left = 80
+      Top = 12
+      Width = 513
+      Height = 9
+      Shape = bsTopLine
+    end
+  end
+  object Panel1: TPanel
+    AlignWithMargins = True
+    Left = 8
+    Top = 144
+    Width = 595
+    Height = 24
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 0
     Align = alTop
-    Caption = ' Dispatch '
-    TabOrder = 2
-    DesignSize = (
-      595
-      153)
-    object lblMessage: TLabel
-      Left = 16
-      Top = 32
-      Width = 46
-      Height = 13
-      Caption = 'Message:'
-    end
-    object lblException: TLabel
-      Left = 16
-      Top = 99
-      Width = 51
-      Height = 13
-      Caption = 'Exception:'
-    end
-    object edtMessage: TEdit
-      Left = 92
-      Top = 29
-      Width = 402
-      Height = 21
-      Anchors = [akLeft, akTop, akRight]
-      TabOrder = 0
-      Text = 'Hello world!'
-      OnKeyDown = edtMessageKeyDown
-    end
-    object btnVerbose: TButton
-      Left = 92
-      Top = 56
-      Width = 75
-      Height = 21
-      Caption = 'Verbose'
-      TabOrder = 1
-      OnClick = btnLogClick
-    end
-    object edtException: TEdit
-      Left = 92
-      Top = 96
-      Width = 402
-      Height = 21
-      Anchors = [akLeft, akTop, akRight]
-      TabOrder = 6
-      Text = 'Horrible things are happening.'
-      OnKeyDown = edtExceptionKeyDown
-    end
-    object btnException: TButton
-      Left = 92
-      Top = 123
-      Width = 75
-      Height = 21
-      Caption = '&Send'
-      TabOrder = 7
-      OnClick = btnExceptionClick
-    end
-    object btnInfo: TButton
-      Left = 173
-      Top = 56
-      Width = 75
-      Height = 21
-      Caption = 'Info'
-      TabOrder = 2
-      OnClick = btnLogClick
-    end
-    object btnWarning: TButton
-      Left = 254
-      Top = 56
-      Width = 75
-      Height = 21
-      Caption = 'Warning'
-      TabOrder = 3
-      OnClick = btnLogClick
-    end
-    object btnError: TButton
-      Left = 335
-      Top = 56
-      Width = 75
-      Height = 21
-      Caption = 'Error'
-      TabOrder = 4
-      OnClick = btnLogClick
-    end
-    object btnBinary: TButton
-      Left = 432
-      Top = 56
-      Width = 62
-      Height = 21
-      Caption = 'Binary'
-      TabOrder = 5
-      OnClick = btnLogClick
+    Alignment = taLeftJustify
+    BevelOuter = bvNone
+    Caption = 'Observers'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 4
+    object Bevel1: TBevel
+      Left = 80
+      Top = 12
+      Width = 513
+      Height = 9
+      Shape = bsTopLine
     end
   end
   object ilsObservers: TImageList
@@ -312,7 +384,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C0101020014002C000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140034000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

@@ -110,7 +110,6 @@ var
   detailsExtension: string;
   detailsFile: THandle;
   detailsFileStream: THandleStream;
-  detailsWriter: TStreamWriter;
   detailsFileName: string;
   detailsNumber: Integer;
   writer: TStreamWriter;
