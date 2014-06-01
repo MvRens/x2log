@@ -1,7 +1,8 @@
 program X2LogTest;
 
+{$R *.dres}
+
 uses
-//  FastMM4,
   Forms,
   MainFrm in 'source\MainFrm.pas' {MainForm},
   X2Log.Intf in '..\X2Log.Intf.pas',
@@ -19,7 +20,9 @@ uses
   X2Log.Client.NamedPipe in '..\X2Log.Client.NamedPipe.pas',
   X2Log.Client.Base in '..\X2Log.Client.Base.pas',
   X2Log.Details.Default in '..\X2Log.Details.Default.pas',
-  X2Log.Details.Registry in '..\X2Log.Details.Registry.pas';
+  X2Log.Details.Registry in '..\X2Log.Details.Registry.pas',
+  X2Log.Details.Intf in '..\X2Log.Details.Intf.pas',
+  X2Log.Util.Stream in '..\X2Log.Util.Stream.pas';
 
 {$R *.res}
 

@@ -211,7 +211,7 @@ object MainForm: TMainForm
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 0
-    ActivePage = tsText
+    ActivePage = tsBinary
     Align = alTop
     TabOrder = 2
     object tsText: TTabSheet
@@ -309,14 +309,23 @@ object MainForm: TMainForm
     object tsBinary: TTabSheet
       Caption = 'Binary'
       ImageIndex = 2
-      object btnBinary: TButton
+      object btnBinaryRawByteString: TButton
         Left = 12
-        Top = 23
-        Width = 62
+        Top = 15
+        Width = 152
         Height = 21
-        Caption = 'Binary'
+        Caption = 'Binary (RawByteString)'
         TabOrder = 0
-        OnClick = btnLogClick
+        OnClick = btnBinaryRawByteStringClick
+      end
+      object btnGraphic: TButton
+        Left = 170
+        Top = 15
+        Width = 79
+        Height = 21
+        Caption = 'Graphic'
+        TabOrder = 1
+        OnClick = btnGraphicClick
       end
     end
   end
@@ -384,7 +393,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C0101020014003C000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140044000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

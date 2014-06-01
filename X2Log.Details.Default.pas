@@ -3,7 +3,9 @@ unit X2Log.Details.Default;
 interface
 uses
   System.Classes,
+  Vcl.Graphics,
 
+  X2Log.Details.Intf,
   X2Log.Intf;
 
 
@@ -55,18 +57,49 @@ type
   end;
 
 
+
+  TX2LogGraphicDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsGraphic,
+                                                  IX2LogDetailsCopyable, IX2LogDetailsStreamable)
+  private
+    FGraphic: TGraphic;
+  protected
+    { Dummy parameter to prevent 'Duplicate constructor inaccessible from C++' warning }
+    constructor CreateOwned(AGraphic: TGraphic; ADummy: Integer = 0);
+  public
+    class function CreateIfNotEmpty(AGraphic: TGraphic): TX2LogGraphicDetails;
+
+    constructor Create(AGraphic: TGraphic);
+    destructor Destroy; override;
+
+    { IX2LogDetails }
+    function GetSerializerIID: TGUID;
+
+    { IX2LogDetailsGraphic }
+    function GetAsGraphic: TGraphic;
+
+    { IX2LogDetailsCopyable }
+    procedure CopyToClipboard;
+
+    { IX2LogDetailsStreamable }
+    procedure SaveToStream(AStream: TStream);
+  end;
+
+
 implementation
 uses
   System.SysUtils,
   Vcl.ClipBrd,
+  Winapi.Windows,
 
   X2Log.Constants,
-  X2Log.Details.Registry;
+  X2Log.Details.Registry,
+  X2Log.Util.Stream;
 
 
 const
   StringDetailsSerializerIID: TGUID = '{4223C30E-6E80-4D66-9EDC-F8688A7413D2}';
   BinaryDetailsSerializerIID: TGUID = '{05F6E8BD-118E-41B3-B626-1F190CC2A7D3}';
+  GraphicDetailsSerializerIID: TGUID = '{BD31E42A-83DC-4947-A862-79ABAE8D5056}';
 
 
 
@@ -80,6 +113,14 @@ type
 
 
   TX2LogBinaryDetailsSerializer = class(TInterfacedObject, IX2LogDetailsSerializer)
+  public
+    { IX2LogDetailsSerializer }
+    procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
+    function Deserialize(AStream: TStream): IX2LogDetails;
+  end;
+
+
+  TX2LogGraphicDetailsSerializer = class(TInterfacedObject, IX2LogDetailsSerializer)
   public
     { IX2LogDetailsSerializer }
     procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
@@ -190,39 +231,83 @@ begin
 end;
 
 
-{ TX2LogStringDetailsSerializer }
-procedure TX2LogStringDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+{ TX2LogGraphicDetails }
+class function TX2LogGraphicDetails.CreateIfNotEmpty(AGraphic: TGraphic): TX2LogGraphicDetails;
+begin
+  if Assigned(AGraphic) and (not AGraphic.Empty) then
+    Result := Self.Create(AGraphic)
+  else
+    Result := nil;
+end;
+
+
+constructor TX2LogGraphicDetails.Create(AGraphic: TGraphic);
+begin
+  inherited Create;
+
+  if not Assigned(AGraphic) then
+    raise EInvalidGraphic.Create('AGraphic can not be nil');
+
+  FGraphic := TGraphicClass(AGraphic.ClassType).Create;
+  FGraphic.Assign(AGraphic);
+end;
+
+
+constructor TX2LogGraphicDetails.CreateOwned(AGraphic: TGraphic; ADummy: Integer);
+begin
+  inherited Create;
+
+  FGraphic := AGraphic;
+end;
+
+
+destructor TX2LogGraphicDetails.Destroy;
+begin
+  FreeAndNil(FGraphic);
+
+  inherited;
+end;
+
+
+function TX2LogGraphicDetails.GetSerializerIID: TGUID;
+begin
+  Result := GraphicDetailsSerializerIID;
+end;
+
+
+procedure TX2LogGraphicDetails.CopyToClipboard;
 var
-  bytes: TBytes;
-  bytesLength: Cardinal;
+  format: Word;
+  data: NativeUInt;
+  palette: HPALETTE;
 
 begin
-  bytes := TEncoding.UTF8.GetBytes((ADetails as IX2LogDetailsText).AsString);
-  bytesLength := Length(bytes);
+  GetAsGraphic.SaveToClipboardFormat(format, data, palette);
+end;
 
-  AStream.WriteBuffer(bytesLength, SizeOf(Cardinal));
-  if bytesLength > 0 then
-    AStream.WriteBuffer(bytes[0], bytesLength);
+
+procedure TX2LogGraphicDetails.SaveToStream(AStream: TStream);
+begin
+  FGraphic.SaveToStream(AStream);
+end;
+
+
+function TX2LogGraphicDetails.GetAsGraphic: TGraphic;
+begin
+  Result := FGraphic;
+end;
+
+
+{ TX2LogStringDetailsSerializer }
+procedure TX2LogStringDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+begin
+  TStreamUtil.WriteString(AStream, (ADetails as IX2LogDetailsText).AsString);
 end;
 
 
 function TX2LogStringDetailsSerializer.Deserialize(AStream: TStream): IX2LogDetails;
-var
-  bytes: TBytes;
-  bytesLength: Cardinal;
-
 begin
-  AStream.ReadBuffer(bytesLength, SizeOf(Cardinal));
-  if bytesLength > 0 then
-  begin
-    SetLength(bytes, bytesLength);
-    AStream.ReadBuffer(bytes[0], bytesLength);
-
-    Result := TX2LogStringDetails.Create(TEncoding.UTF8.GetString(bytes));
-  end else
-    { Do not return nil; the fact that Deserialize is called means an
-      empty Details was serialized. }
-    Result := TX2LogStringDetails.Create('');
+  Result := TX2LogStringDetails.Create(TStreamUtil.ReadString(AStream));
 end;
 
 
@@ -230,15 +315,13 @@ end;
 procedure TX2LogBinaryDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
 var
   stream: TStream;
-  streamSize: Cardinal;
 
 begin
   stream := (ADetails as IX2LogDetailsBinary).AsStream;
-  streamSize := stream.Size;
 
-  AStream.WriteBuffer(streamSize, SizeOf(Cardinal));
-  if streamSize > 0 then
-    AStream.CopyFrom(stream, streamSize);
+  TStreamUtil.WriteCardinal(AStream, stream.Size);
+  if stream.Size > 0 then
+    AStream.CopyFrom(stream, stream.Size);
 end;
 
 
@@ -247,7 +330,7 @@ var
   streamSize: Cardinal;
 
 begin
-  AStream.ReadBuffer(streamSize, SizeOf(Cardinal));
+  streamSize := TStreamUtil.ReadCardinal(AStream);
   if streamSize > 0 then
     Result := TX2LogBinaryDetails.Create(AStream, streamSize)
   else
@@ -257,9 +340,44 @@ begin
 end;
 
 
+{ TX2LogGraphicDetailsSerializer }
+procedure TX2LogGraphicDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+var
+  graphic: TGraphic;
+
+begin
+  graphic := (ADetails as IX2LogDetailsGraphic).AsGraphic;
+  TStreamUtil.WriteString(AStream, graphic.ClassName);
+  graphic.SaveToStream(AStream);
+end;
+
+
+function TX2LogGraphicDetailsSerializer.Deserialize(AStream: TStream): IX2LogDetails;
+var
+  graphicClass: TGraphicClass;
+  graphic: TGraphic;
+
+begin
+  Result := nil;
+  graphicClass := TGraphicClass(GetClass(TStreamUtil.ReadString(AStream)));
+  if Assigned(graphicClass) then
+  begin
+    graphic := graphicClass.Create;
+    try
+      graphic.LoadFromStream(AStream);
+      Result := TX2LogGraphicDetails.CreateOwned(graphic);
+    except
+      FreeAndNil(graphic);
+      raise;
+    end;
+  end;
+end;
+
+
 initialization
   TX2LogDetailsRegistry.Register(StringDetailsSerializerIID, TX2LogStringDetailsSerializer.Create);
   TX2LogDetailsRegistry.Register(BinaryDetailsSerializerIID, TX2LogBinaryDetailsSerializer.Create);
+  TX2LogDetailsRegistry.Register(GraphicDetailsSerializerIID, TX2LogGraphicDetailsSerializer.Create);
 
 end.
 

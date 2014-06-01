@@ -45,7 +45,7 @@ type
     rbAbsolute: TRadioButton;
     edtPipeName: TEdit;
     lblPipeName: TLabel;
-    btnBinary: TButton;
+    btnBinaryRawByteString: TButton;
     pcDispatch: TPageControl;
     tsText: TTabSheet;
     tsException: TTabSheet;
@@ -54,6 +54,7 @@ type
     bvlDispatch: TBevel;
     pnlObservers: TPanel;
     bvlObservers: TBevel;
+    btnGraphic: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -69,6 +70,8 @@ type
     procedure btnFileStopClick(Sender: TObject);
     procedure btnNamedPipeStartClick(Sender: TObject);
     procedure btnNamedPipeStopClick(Sender: TObject);
+    procedure btnBinaryRawByteStringClick(Sender: TObject);
+    procedure btnGraphicClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
@@ -82,11 +85,13 @@ type
 implementation
 uses
   System.SysUtils,
+  Vcl.Imaging.Jpeg,
   Winapi.Windows,
 
   X2Log,
   X2Log.Constants,
   X2Log.Details.Default,
+  X2Log.Details.Intf,
   X2Log.Exception.madExcept,
   X2Log.Observer.Event,
   X2Log.Observer.LogFile,
@@ -181,9 +186,35 @@ begin
   else if Sender = btnWarning then
     FLog.Warning(edtMessage.Text)
   else if Sender = btnError then
-    FLog.Error(edtMessage.Text)
-  else if Sender = btnBinary then
-    FLog.InfoEx(edtMessage.Text, TX2LogBinaryDetails.Create(#0#1#2#3'Test'#12'Some more data'));
+    FLog.Error(edtMessage.Text);
+end;
+
+
+procedure TMainForm.btnBinaryRawByteStringClick(Sender: TObject);
+begin
+  FLog.InfoEx(edtMessage.Text, TX2LogBinaryDetails.Create(#0#1#2#3'Test'#12'Some more data'));
+end;
+
+
+procedure TMainForm.btnGraphicClick(Sender: TObject);
+var
+  graphic: TJPEGImage;
+  resourceStream: TResourceStream;
+
+begin
+  graphic := TJPEGImage.Create;
+  try
+    resourceStream := TResourceStream.Create(SysInit.HInstance, 'GraphicDetails', RT_RCDATA);
+    try
+      graphic.LoadFromStream(resourceStream);
+    finally
+      FreeAndNil(resourceStream);
+    end;
+
+    FLog.InfoEx('Graphic', TX2LogGraphicDetails.Create(graphic));
+  finally
+    FreeAndNil(graphic);
+  end;
 end;
 
 

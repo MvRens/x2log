@@ -17,6 +17,7 @@ uses
   VirtualTrees,
   Winapi.Messages,
 
+  X2Log.Details.Intf,
   X2Log.Intf;
 
 
@@ -60,6 +61,8 @@ type
     actShowWarning: TAction;
     actShowError: TAction;
     lblFilter: TLabel;
+    sbDetailsImage: TScrollBox;
+    imgDetailsImage: TImage;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -106,6 +109,9 @@ type
 
     procedure SetDetails(ADetails: IX2LogDetails);
     procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
+    procedure SetGraphicDetails(ADetails: IX2LogDetailsGraphic);
+
+    procedure SetVisibleDetails(AControl: TControl);
 
     property Details: IX2LogDetails read FDetails;
     property LogObservable: IX2LogObservable read FLogObservable;
@@ -435,6 +441,7 @@ end;
 
 procedure TX2LogObserverMonitorForm.SetDetails(ADetails: IX2LogDetails);
 var
+  logDetailsGraphic: IX2LogDetailsGraphic;
   logDetailsBinary: IX2LogDetailsBinary;
   logDetailsText: IX2LogDetailsText;
 
@@ -443,13 +450,19 @@ begin
 
   if Assigned(Details) then
   begin
-    if Supports(ADetails, IX2LogDetailsBinary, logDetailsBinary) then
+    if Supports(ADetails, IX2LogDetailsGraphic, logDetailsGraphic) then
+      SetGraphicDetails(logDetailsGraphic)
+
+    else if Supports(ADetails, IX2LogDetailsBinary, logDetailsBinary) then
       SetBinaryDetails(logDetailsBinary)
 
     else if Supports(ADetails, IX2LogDetailsText, logDetailsText) then
+    begin
       reDetails.Text := logDetailsText.AsString;
+      SetVisibleDetails(reDetails);
+    end;
   end else
-    reDetails.Clear;
+    SetVisibleDetails(nil);
 
 
   actCopyDetails.Enabled := Supports(ADetails, IX2LogDetailsCopyable);
@@ -549,7 +562,35 @@ begin
       reDetails.Lines.Add(line);
   finally
     reDetails.Lines.EndUpdate;
+
+    SetVisibleDetails(reDetails);
   end;
+end;
+
+
+procedure TX2LogObserverMonitorForm.SetGraphicDetails(ADetails: IX2LogDetailsGraphic);
+begin
+  imgDetailsImage.Picture.Assign(ADetails.AsGraphic);
+  SetVisibleDetails(sbDetailsImage);
+end;
+
+
+procedure TX2LogObserverMonitorForm.SetVisibleDetails(AControl: TControl);
+begin
+  if Assigned(AControl) then
+  begin
+    AControl.BringToFront;
+    AControl.Visible := True;
+  end;
+
+  reDetails.Visible := (AControl = reDetails);
+  sbDetailsImage.Visible := (AControl = sbDetailsImage);
+
+  if not reDetails.Visible then
+    reDetails.Clear;
+
+  if not sbDetailsImage.Visible then
+    imgDetailsImage.Picture.Assign(nil);
 end;
 
 
@@ -648,6 +689,8 @@ end;
 procedure TX2LogObserverMonitorForm.actClearExecute(Sender: TObject);
 begin
   vstLog.Clear;
+  SetDetails(nil);
+
   UpdateUI;
 end;
 

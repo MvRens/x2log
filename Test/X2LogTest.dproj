@@ -192,6 +192,12 @@
 			<DCCReference Include="..\X2Log.Client.Base.pas"/>
 			<DCCReference Include="..\X2Log.Details.Default.pas"/>
 			<DCCReference Include="..\X2Log.Details.Registry.pas"/>
+			<DCCReference Include="..\X2Log.Details.Intf.pas"/>
+			<DCCReference Include="..\X2Log.Util.Stream.pas"/>
+			<RcItem Include="resources\Graphic.jpg">
+				<ResourceType>RCDATA</ResourceType>
+				<ResourceId>GraphicDetails</ResourceId>
+			</RcItem>
 			<BuildConfiguration Include="Debug">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

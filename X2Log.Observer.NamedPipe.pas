@@ -27,7 +27,8 @@ uses
   System.Types,
   Winapi.Windows,
 
-  X2Log.Details.Registry;
+  X2Log.Details.Registry,
+  X2Log.Util.Stream;
 
 
 type
@@ -194,23 +195,10 @@ end;
 
 
 function TX2LogNamedPipeClient.DoSend(AEntry: TX2LogQueueEntry): Boolean;
-
-  procedure WriteString(const ASource: WideString);
-  var
-    sourceLength: Cardinal;
-
-  begin
-    sourceLength := Length(ASource);
-    WriteBuffer.WriteBuffer(sourceLength, SizeOf(Cardinal));
-    WriteBuffer.WriteBuffer(PWideChar(ASource)^, sourceLength * SizeOf(WideChar));
-  end;
-
-
 var
   header: TX2LogMessageHeader;
   bytesWritten: Cardinal;
   lastError: Cardinal;
-  detailsSize: Cardinal;
   detailsStream: TMemoryStream;
   serializerIID: TGUID;
   serializer: IX2LogDetailsSerializer;
@@ -229,7 +217,7 @@ begin
   WriteBuffer.WriteBuffer(header, SizeOf(header));
 
   { Message }
-  WriteString(AEntry.Message);
+  TStreamUtil.WriteString(WriteBuffer, AEntry.Message);
 
   { Details }
   if TX2LogDetailsRegistry.GetSerializer(AEntry.Details, serializer) then
@@ -241,8 +229,7 @@ begin
       serializerIID := AEntry.Details.SerializerIID;
       WriteBuffer.WriteBuffer(serializerIID, SizeOf(TGUID));
 
-      detailsSize := detailsStream.Size;
-      WriteBuffer.WriteBuffer(detailsSize, SizeOf(Cardinal));
+      TStreamUtil.WriteCardinal(WriteBuffer, detailsStream.Size);
       WriteBuffer.CopyFrom(detailsStream, 0);
     finally
       FreeAndNil(detailsStream);

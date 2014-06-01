@@ -73,7 +73,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 0
         Top = 0
         Width = 378
-        Height = 17
+        Height = 19
         Sections = <
           item
             AutoSize = True
@@ -85,9 +85,9 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       end
       object reDetails: TRichEdit
         Left = 0
-        Top = 17
+        Top = 19
         Width = 378
-        Height = 453
+        Height = 451
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = ANSI_CHARSET
@@ -100,6 +100,28 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         ReadOnly = True
         ScrollBars = ssBoth
         TabOrder = 1
+        Visible = False
+      end
+      object sbDetailsImage: TScrollBox
+        Left = 0
+        Top = 19
+        Width = 378
+        Height = 451
+        HorzScrollBar.Tracking = True
+        VertScrollBar.Tracking = True
+        Align = alClient
+        BorderStyle = bsNone
+        DoubleBuffered = True
+        ParentDoubleBuffered = False
+        TabOrder = 2
+        Visible = False
+        object imgDetailsImage: TImage
+          Left = 0
+          Top = 0
+          Width = 25
+          Height = 25
+          AutoSize = True
+        end
       end
     end
   end
@@ -123,7 +145,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Header.Font.Height = -11
       Header.Font.Name = 'Tahoma'
       Header.Font.Style = []
-      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible, hoHeaderClickAutoSort]
+      Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoVisible]
       HintMode = hmHint
       Images = ilsLog
       TabOrder = 0
@@ -233,7 +255,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C010109004000B80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109004000BC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

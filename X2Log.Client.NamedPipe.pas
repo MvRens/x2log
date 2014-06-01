@@ -29,7 +29,8 @@ uses
   Winapi.Windows,
 
   X2Log.Details.Default,
-  X2Log.Details.Registry;
+  X2Log.Details.Registry,
+  X2Log.Util.Stream;
 
 
 type
@@ -271,22 +272,6 @@ end;
 
 
 procedure TX2LogNamedPipeClientWorkerThread.HandleMessage;
-
-  function ReadString: WideString;
-  var
-    size: Cardinal;
-
-  begin
-    MessageData.ReadBuffer(size, SizeOf(cardinal));
-    if size > 0 then
-    begin
-      SetLength(Result, size);
-      MessageData.ReadBuffer(Result[1], size * SizeOf(WideChar));
-    end else
-      Result := '';
-  end;
-
-
 var
   header: TX2LogMessageHeaderV1;
   headerDiff: Integer;
@@ -317,7 +302,7 @@ begin
         raise EReadError.Create('Header too small');
 
       { Message }
-      msg := ReadString;
+      msg := TStreamUtil.ReadString(MessageData);
 
       { Details }
       details := nil;
@@ -325,7 +310,7 @@ begin
       MessageData.ReadBuffer(serializerIID, SizeOf(TGUID));
       if serializerIID <> GUID_NULL then
       begin
-        MessageData.ReadBuffer(detailsSize, SizeOf(Cardinal));
+        detailsSize := TStreamUtil.ReadCardinal(MessageData);
         if detailsSize > 0 then
         begin
           if TX2LogDetailsRegistry.GetSerializer(serializerIID, serializer) then
