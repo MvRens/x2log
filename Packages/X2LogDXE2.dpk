@@ -46,7 +46,10 @@ contains
   X2Log.Observer.LogFile in '..\X2Log.Observer.LogFile.pas',
   X2Log.Observer.NamedPipe in '..\X2Log.Observer.NamedPipe.pas',
   X2Log in '..\X2Log.pas',
-  X2Log.Details.Default in '..\X2Log.Details.Default.pas';
+  X2Log.Details.Default in '..\X2Log.Details.Default.pas',
+  X2Log.Details.Intf in '..\X2Log.Details.Intf.pas',
+  X2Log.Details.Registry in '..\X2Log.Details.Registry.pas',
+  X2Log.Util.Stream in '..\X2Log.Util.Stream.pas';
 
 end.
 
