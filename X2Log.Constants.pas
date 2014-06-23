@@ -17,10 +17,10 @@ resourcestring
   }
 
   { Date format used to determine the file name of detail files }
-  LogFileNameDateFormat = 'ddmmyyyy_hhnn';
+  LogFileNameDateFormat = 'yyyymmdd_hhnn';
 
   { Date format used in log files }
-  LogFileLineDateFormat = 'dd-mm-yy hh:nn';
+  LogFileLineDateFormat = 'yyyy-mm-dd hh:nn';
 
   { The text added to the message if details are stored externally }
   LogFileLineDetails = ' (details: %s)';
