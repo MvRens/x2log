@@ -82,7 +82,7 @@
 			<DCCReference Include="madDisAsm_.dcp"/>
 			<DCCReference Include="madExcept_.dcp"/>
 			<DCCReference Include="X2LogDXE2.dcp"/>
-			<DCCReference Include="..\X2Log.Exception.madExcept.pas"/>
+			<DCCReference Include="..\X2Log.Exception.madExceptHandler.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>

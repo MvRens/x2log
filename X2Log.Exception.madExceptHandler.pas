@@ -1,4 +1,4 @@
-unit X2Log.Exception.madExcept;
+unit X2Log.Exception.madExceptHandler;
 
 interface
 uses

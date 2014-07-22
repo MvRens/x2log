@@ -37,6 +37,6 @@ requires
   X2LogDXE2;
 
 contains
-  X2Log.Exception.madExcept in '..\X2Log.Exception.madExcept.pas';
+  X2Log.Exception.madExceptHandler in '..\X2Log.Exception.madExceptHandler.pas';
 
 end.
