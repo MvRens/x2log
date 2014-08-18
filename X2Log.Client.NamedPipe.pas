@@ -10,6 +10,18 @@ uses
 
 
 type
+  TX2LogNamedPipeServerInfo = class(TObject)
+  private
+    FDisplayName: string;
+    FPipeName: string;
+  public
+    constructor Create(const APipeName: string);
+
+    property DisplayName: string read FDisplayName;
+    property PipeName: string read FPipeName;
+  end;
+
+
   TX2LogNamedPipeClient = class(TX2LogBaseClient, IX2LogBase)
   private
     FWorkerThread: TThread;
@@ -18,12 +30,16 @@ type
   public
     constructor Create(const APipeName: string);
     destructor Destroy; override;
+
+    class function ActiveServers: IEnumerable<TX2LogNamedPipeServerInfo>;
   end;
+
 
 
 implementation
 uses
   System.SyncObjs,
+  System.StrUtils,
   System.SysUtils,
   System.Types,
   Winapi.Windows,
@@ -69,8 +85,50 @@ type
   end;
 
 
+  TX2LogNamedPipeServerInfoList = class(TInterfacedObject, IEnumerable<TX2LogNamedPipeServerInfo>, IEnumerable)
+  private
+    FServers: TList<TX2LogNamedPipeServerInfo>;
+  protected
+    { IEnumerable }
+    function GetEnumerator: IEnumerator;
+
+    function IEnumerable<TX2LogNamedPipeServerInfo>.GetEnumerator = GetGenericEnumerator;
+    function GetGenericEnumerator: IEnumerator<TX2LogNamedPipeServerInfo>;
+
+    procedure EnumerateServers;
+
+    property Servers: TList<TX2LogNamedPipeServerInfo> read FServers;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  end;
+
+
+  TX2LogNamedPipeServerInfoEnumerator = class(TInterfacedObject, IEnumerator<TX2LogNamedPipeServerInfo>, IEnumerator)
+  private
+    FList: TList<TX2LogNamedPipeServerInfo>;
+    FEnumerator: TEnumerator<TX2LogNamedPipeServerInfo>;
+  protected
+    { IEnumerator }
+    function GetCurrent: TObject;
+    function MoveNext: Boolean;
+    procedure Reset;
+
+    function IEnumerator<TX2LogNamedPipeServerInfo>.GetCurrent = GetGenericCurrent;
+    function GetGenericCurrent: TX2LogNamedPipeServerInfo;
+
+    property List: TList<TX2LogNamedPipeServerInfo> read FList;
+    property Enumerator: TEnumerator<TX2LogNamedPipeServerInfo> read FEnumerator;
+  public
+    constructor Create(AList: TList<TX2LogNamedPipeServerInfo>);
+    destructor Destroy; override;
+  end;
+
+
+
 const
-  PipeNamePrefix = '\\.\pipe\';
+  PipePrefix = '\\.\pipe\';
+  PipeNamePrefix = 'X2Log.';
 
   TimeoutBusyPipe = 5000;
   TimeoutNoPipe = 1000;
@@ -92,6 +150,12 @@ begin
   FreeAndNil(FWorkerThread);
 
   inherited Destroy;
+end;
+
+
+class function TX2LogNamedPipeClient.ActiveServers: IEnumerable<TX2LogNamedPipeServerInfo>;
+begin
+  Result := TX2LogNamedPipeServerInfoList.Create;
 end;
 
 
@@ -152,7 +216,7 @@ var
 begin
   while not Terminated do
   begin
-    FPipeHandle := CreateFile(PChar(PipeNamePrefix + PipeName), GENERIC_READ or FILE_WRITE_ATTRIBUTES,
+    FPipeHandle := CreateFile(PChar(PipePrefix + PipeNamePrefix + PipeName), GENERIC_READ or FILE_WRITE_ATTRIBUTES,
                         0, nil, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
 
     if PipeHandle = INVALID_HANDLE_VALUE then
@@ -162,7 +226,7 @@ begin
       case lastError of
         ERROR_PIPE_BUSY:
           { Pipe exists but is connecting to another client, wait for a new slot }
-          WaitNamedPipe(PChar(PipeNamePrefix + PipeName), TimeoutBusyPipe);
+          WaitNamedPipe(PChar(PipePrefix + PipeNamePrefix + PipeName), TimeoutBusyPipe);
 
         ERROR_FILE_NOT_FOUND:
           { Pipe does not exist, try again later }
@@ -343,6 +407,110 @@ begin
     else
       MessageData.Position := 0;
   end;
+end;
+
+
+{ TX2LogNamedPipeServerInfoList }
+constructor TX2LogNamedPipeServerInfoList.Create;
+begin
+  inherited Create;
+
+  FServers := TObjectList<TX2LogNamedPipeServerInfo>.Create(True);
+  EnumerateServers;
+end;
+
+
+destructor TX2LogNamedPipeServerInfoList.Destroy;
+begin
+  FreeAndNil(FServers);
+
+  inherited Destroy;
+end;
+
+
+procedure TX2LogNamedPipeServerInfoList.EnumerateServers;
+var
+  searchRec: TSearchRec;
+
+begin
+  if System.SysUtils.FindFirst(PipePrefix + '*', faAnyFile, searchRec) = 0 then
+  try
+    repeat
+      if StartsText(PipeNamePrefix, searchRec.Name) then
+        Servers.Add(TX2LogNamedPipeServerInfo.Create(searchRec.Name));
+    until System.SysUtils.FindNext(searchRec) <> 0;
+  finally
+    System.SysUtils.FindClose(searchRec);
+  end;
+end;
+
+
+function TX2LogNamedPipeServerInfoList.GetEnumerator: IEnumerator;
+begin
+  Result := GetGenericEnumerator;
+end;
+
+
+function TX2LogNamedPipeServerInfoList.GetGenericEnumerator: IEnumerator<TX2LogNamedPipeServerInfo>;
+begin
+  Result := TX2LogNamedPipeServerInfoEnumerator.Create(Servers);
+end;
+
+
+{ TX2LogNamedPipeServerInfoEnumerator }
+constructor TX2LogNamedPipeServerInfoEnumerator.Create(AList: TList<TX2LogNamedPipeServerInfo>);
+begin
+  inherited Create;
+
+  FList := AList;
+  Reset;
+end;
+
+
+destructor TX2LogNamedPipeServerInfoEnumerator.Destroy;
+begin
+  FreeAndNil(FEnumerator);
+
+  inherited Destroy;
+end;
+
+
+function TX2LogNamedPipeServerInfoEnumerator.GetCurrent: TObject;
+begin
+  Result := GetGenericCurrent;
+end;
+
+
+function TX2LogNamedPipeServerInfoEnumerator.MoveNext: Boolean;
+begin
+  Result := Enumerator.MoveNext;
+end;
+
+
+procedure TX2LogNamedPipeServerInfoEnumerator.Reset;
+begin
+  FreeAndNil(FEnumerator);
+  FEnumerator := List.GetEnumerator;
+end;
+
+
+function TX2LogNamedPipeServerInfoEnumerator.GetGenericCurrent: TX2LogNamedPipeServerInfo;
+begin
+  Result := Enumerator.Current;
+end;
+
+
+{ TX2LogNamedPipeServerInfo }
+constructor TX2LogNamedPipeServerInfo.Create(const APipeName: string);
+begin
+  inherited Create;
+
+  FPipeName := APipeName;
+
+  if StartsText(PipeNamePrefix, APipeName) then
+    FDisplayName := Copy(APipeName, Succ(Length(PipeNamePrefix)), MaxInt)
+  else
+    FDisplayName := APipeName;
 end;
 
 end.

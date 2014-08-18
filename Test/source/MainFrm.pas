@@ -7,9 +7,10 @@ uses
   Vcl.Controls,
   Vcl.ExtCtrls,
   Vcl.Forms,
+  Vcl.ImgList,
   Vcl.StdCtrls,
 
-  X2Log.Intf, Vcl.ImgList;
+  X2Log.Intf;
 
   
 type
@@ -55,6 +56,9 @@ type
     pnlObservers: TPanel;
     bvlObservers: TBevel;
     btnGraphic: TButton;
+    lblNamedPipeServers: TLabel;
+    btnNamedPipeRefresh: TButton;
+    lbNamedPipeServers: TListBox;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -72,6 +76,7 @@ type
     procedure btnNamedPipeStopClick(Sender: TObject);
     procedure btnBinaryRawByteStringClick(Sender: TObject);
     procedure btnGraphicClick(Sender: TObject);
+    procedure btnNamedPipeRefreshClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
@@ -89,10 +94,11 @@ uses
   Winapi.Windows,
 
   X2Log,
+  X2Log.Client.NamedPipe,
   X2Log.Constants,
   X2Log.Details.Default,
   X2Log.Details.Intf,
-  X2Log.Exception.madExcept,
+  X2Log.Exception.madExceptHandler,
   X2Log.Observer.Event,
   X2Log.Observer.LogFile,
   X2Log.Observer.MonitorForm,
@@ -311,6 +317,24 @@ begin
     FNamedPipeObserver := nil;
 
     tsNamedPipe.ImageIndex := 0;
+  end;
+end;
+
+
+
+procedure TMainForm.btnNamedPipeRefreshClick(Sender: TObject);
+var
+  server: TX2LogNamedPipeServerInfo;
+
+begin
+  lbNamedPipeServers.Items.BeginUpdate;
+  try
+    lbNamedPipeServers.Items.Clear;
+
+    for server in TX2LogNamedPipeClient.ActiveServers do
+      lbNamedPipeServers.Items.Add(server.DisplayName + ' (' + server.PipeName + ')');
+  finally
+    lbNamedPipeServers.Items.EndUpdate;
   end;
 end;
 

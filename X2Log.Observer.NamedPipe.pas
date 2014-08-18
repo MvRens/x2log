@@ -101,6 +101,9 @@ const
   SDDL_REVISION_1 = 1;
 
 
+  PipeNamePrefix = '\\.\pipe\X2Log.';
+
+
 
 { TX2LogNamedPipeObserver }
 constructor TX2LogNamedPipeObserver.Create(const APipeName: string; ALogLevels: TX2LogLevels);
@@ -442,7 +445,7 @@ begin
                                                           nil) then
   begin
     try
-      pipe := CreateNamedPipe(PChar('\\.\pipe\' + PipeName), PIPE_ACCESS_OUTBOUND or FILE_FLAG_OVERLAPPED,
+      pipe := CreateNamedPipe(PChar(PipeNamePrefix + PipeName), PIPE_ACCESS_OUTBOUND or FILE_FLAG_OVERLAPPED,
                               PIPE_TYPE_MESSAGE or PIPE_READMODE_MESSAGE or PIPE_WAIT, PIPE_UNLIMITED_INSTANCES,
                               BufferSize, BufferSize, DefaultTimeout, @security);
     finally

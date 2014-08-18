@@ -179,7 +179,7 @@
 			<DCCReference Include="..\X2Log.Observer.Event.pas"/>
 			<DCCReference Include="..\X2Log.Observer.Custom.pas"/>
 			<DCCReference Include="..\X2Log.Exception.Default.pas"/>
-			<DCCReference Include="..\X2Log.Exception.madExcept.pas"/>
+			<DCCReference Include="..\X2Log.Exception.madExceptHandler.pas"/>
 			<DCCReference Include="..\X2Log.Observer.LogFile.pas"/>
 			<DCCReference Include="..\X2Log.Constants.pas"/>
 			<DCCReference Include="..\X2Log.Observer.NamedPipe.pas"/>

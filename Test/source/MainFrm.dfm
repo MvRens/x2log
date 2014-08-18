@@ -130,12 +130,24 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
+      ExplicitLeft = 16
+      ExplicitTop = 33
+      DesignSize = (
+        587
+        299)
       object lblPipeName: TLabel
-        Left = 12
+        Left = 8
         Top = 64
         Width = 53
         Height = 13
         Caption = 'Pipe name:'
+      end
+      object lblNamedPipeServers: TLabel
+        Left = 8
+        Top = 108
+        Width = 73
+        Height = 13
+        Caption = 'Active servers:'
       end
       object btnNamedPipeStart: TButton
         Left = 8
@@ -162,6 +174,25 @@ object MainForm: TMainForm
         Height = 21
         TabOrder = 2
         Text = 'X2LogTest'
+      end
+      object btnNamedPipeRefresh: TButton
+        Left = 502
+        Top = 96
+        Width = 75
+        Height = 25
+        Anchors = [akTop, akRight]
+        Caption = '&Refresh'
+        TabOrder = 3
+        OnClick = btnNamedPipeRefreshClick
+      end
+      object lbNamedPipeServers: TListBox
+        Left = 8
+        Top = 132
+        Width = 569
+        Height = 157
+        Anchors = [akLeft, akTop, akRight, akBottom]
+        ItemHeight = 13
+        TabOrder = 4
       end
     end
   end

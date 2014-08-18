@@ -10,7 +10,7 @@ uses
   X2Log.Observer.Event in '..\X2Log.Observer.Event.pas',
   X2Log.Observer.Custom in '..\X2Log.Observer.Custom.pas',
   X2Log.Exception.Default in '..\X2Log.Exception.Default.pas',
-  X2Log.Exception.madExcept in '..\X2Log.Exception.madExcept.pas',
+  X2Log.Exception.madExceptHandler in '..\X2Log.Exception.madExceptHandler.pas',
   X2Log.Observer.LogFile in '..\X2Log.Observer.LogFile.pas',
   X2Log.Constants in '..\X2Log.Constants.pas',
   X2Log.Observer.NamedPipe in '..\X2Log.Observer.NamedPipe.pas',
