@@ -156,7 +156,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       OnGetText = vstLogGetText
       OnGetImageIndex = vstLogGetImageIndex
       OnGetHint = vstLogGetHint
-      OnInitNode = vstLogInitNode
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]

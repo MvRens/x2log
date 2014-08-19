@@ -25,6 +25,10 @@ const
   CM_REENABLE = WM_APP + 1;
 
 
+var
+  DefaultMaxEntries: Cardinal = 1000;
+
+
 type
   TX2LogObserverMonitorForm = class;
   TMonitorFormDictionary = TObjectDictionary<IX2LogObservable,TX2LogObserverMonitorForm>;
@@ -66,7 +70,6 @@ type
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure vstLogInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode; var InitialStates: TVirtualNodeInitStates);
     procedure vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstLogGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
@@ -85,11 +88,14 @@ type
     FInstances: TMonitorFormDictionary;
   private
     FFreeOnClose: Boolean;
+    FClosed: Boolean;
+    FLockCount: Integer;
     FLogObservable: IX2LogObservable;
     FLogAttached: Boolean;
     FPausedLogCount: Integer;
     FDetails: IX2LogDetails;
     FVisibleLevels: TX2LogLevels;
+    FMaxEntries: Cardinal;
   protected
     class function GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
@@ -99,6 +105,9 @@ type
 
     procedure WMEnable(var Msg: TWMEnable); message WM_ENABLE;
     procedure CMReenable(var Msg: TMessage); message CM_REENABLE;
+
+    procedure AttachLog;
+    procedure DetachLog;
 
     procedure UpdateUI;
     procedure UpdateStatus;
@@ -113,7 +122,9 @@ type
 
     procedure SetVisibleDetails(AControl: TControl);
 
+    property Closed: Boolean read FClosed;
     property Details: IX2LogDetails read FDetails;
+    property LockCount: Integer read FLockCount;
     property LogObservable: IX2LogObservable read FLogObservable;
     property LogAttached: Boolean read FLogAttached;
     property Paused: Boolean read GetPaused;
@@ -122,16 +133,25 @@ type
   public
     class function Instance(ALog: IX2LogObservable): TX2LogObserverMonitorForm;
 
+    { Locked instances will always receive log messages, but will not be visible until
+      ShowInstance is called and will hide instead of closing until UnlockInstance is called. }
+    class procedure LockInstance(ALog: IX2LogObservable);
+    class procedure UnlockInstance(ALog: IX2LogObservable);
+
     class procedure ShowInstance(ALog: IX2LogObservable);
     class procedure CloseInstance(ALog: IX2LogObservable);
 
     constructor Create(AOwner: TComponent; ALogObservable: IX2LogObservable = nil); reintroduce;
     destructor Destroy; override;
 
+    procedure Lock;
+    procedure Unlock;
+
     { IX2LogObserver }
     procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 
     property FreeOnClose: Boolean read FFreeOnClose write FFreeOnClose;
+    property MaxEntries: Cardinal read FMaxEntries write FMaxEntries;
   end;
 
 
@@ -153,11 +173,12 @@ uses
 type
   TLogEntryNodeData = record
     Time: TDateTime;
+    Paused: Boolean;
     Level: TX2LogLevel;
     Message: string;
     Details: IX2LogDetails;
 
-    procedure Initialize(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+    procedure Initialize(APaused: Boolean; ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
   end;
 
   PLogEntryNodeData = ^TLogEntryNodeData;
@@ -172,9 +193,10 @@ const
 
 
 { TLogEntryNode }
-procedure TLogEntryNodeData.Initialize(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+procedure TLogEntryNodeData.Initialize(APaused: Boolean; ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   Self.Time := Now;
+  Self.Paused := APaused;
   Self.Level := ALevel;
   Self.Message := AMessage;
   Self.Details := ADetails;
@@ -201,6 +223,18 @@ begin
 
     FInstances.Add(log, Result);
   end;
+end;
+
+
+class procedure TX2LogObserverMonitorForm.LockInstance(ALog: IX2LogObservable);
+begin
+  Instance(ALog).Lock;
+end;
+
+
+class procedure TX2LogObserverMonitorForm.UnlockInstance(ALog: IX2LogObservable);
+begin
+  Instance(ALog).Unlock;
 end;
 
 
@@ -262,7 +296,9 @@ var
 begin
   inherited Create(AOwner);
 
+  FClosed := True;
   FLogObservable := ALogObservable;
+  FMaxEntries := DefaultMaxEntries;
 
   captionFormat := GetLogResourceString(@LogMonitorFormCaption);
   if Pos('%s', captionFormat) > 0 then
@@ -300,18 +336,7 @@ begin
 end;
 
 
-destructor TX2LogObserverMonitorForm.Destroy;
-begin
-  if Assigned(FLogObservable) and FLogAttached then
-    FLogObservable.Detach(Self);
-
-  RemoveInstance(Self);
-
-  inherited Destroy;
-end;
-
-
-procedure TX2LogObserverMonitorForm.FormShow(Sender: TObject);
+procedure TX2LogObserverMonitorForm.AttachLog;
 begin
   if Assigned(FLogObservable) and (not FLogAttached) then
   begin
@@ -321,18 +346,67 @@ begin
 end;
 
 
-procedure TX2LogObserverMonitorForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TX2LogObserverMonitorForm.DetachLog;
 begin
   if Assigned(FLogObservable) and FLogAttached then
   begin
     FLogObservable.Detach(Self);
     FLogAttached := False;
   end;
+end;
 
-  if FreeOnClose then
-    Action := caFree
-  else
+
+procedure TX2LogObserverMonitorForm.Lock;
+begin
+  Inc(FLockCount);
+  AttachLog;
+end;
+
+
+procedure TX2LogObserverMonitorForm.Unlock;
+begin
+  if FLockCount > 0 then
+  begin
+    Dec(FLockCount);
+
+    { Lock may have prevented a proper close, try again }
+    if Closed then
+      Close;
+  end;
+end;
+
+
+destructor TX2LogObserverMonitorForm.Destroy;
+begin
+  DetachLog;
+  RemoveInstance(Self);
+
+  inherited Destroy;
+end;
+
+
+procedure TX2LogObserverMonitorForm.FormShow(Sender: TObject);
+begin
+  FClosed := False;
+  AttachLog;
+end;
+
+
+procedure TX2LogObserverMonitorForm.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if LockCount = 0 then
+  begin
+    DetachLog;
+
+    if FreeOnClose then
+      Action := caFree
+    else
+      Action := caHide;
+  end else
+  begin
     Action := caHide;
+    FClosed := True;
+  end;
 end;
 
 
@@ -350,21 +424,35 @@ begin
       scroll: Boolean;
 
     begin
-      if not Paused then
-      begin
-        scroll := (vstLog.RootNodeCount > 0) and (vstLog.BottomNode = vstLog.GetLast);
+      scroll := (not Paused) and (vstLog.RootNodeCount > 0) and (vstLog.BottomNode = vstLog.GetLast);
 
+      vstLog.BeginUpdate;
+      try
         node := vstLog.AddChild(nil);
         nodeData := vstLog.GetNodeData(node);
-        nodeData^.Initialize(ALevel, AMessage, ADetails);
 
-        vstLog.IsVisible[node] := (ALevel in VisibleLevels);
+        { BeginUpdate causes OnInitNode to be triggered on-demand,
+          moved Initialize call here }
+        Initialize(nodeData^);
+        nodeData^.Initialize(Paused, ALevel, AMessage, ADetails);
 
-        if scroll then
-          vstLog.ScrollIntoView(node, False);
+        vstLog.IsVisible[node] := (not Paused) and (ALevel in VisibleLevels);
 
-        UpdateUI;
-      end else
+
+        while vstLog.RootNodeCount > MaxEntries do
+          vstLog.DeleteNode(vstLog.GetFirst);
+      finally
+        vstLog.EndUpdate;
+      end;
+
+
+
+      if scroll then
+        vstLog.ScrollIntoView(node, False);
+
+      UpdateUI;
+
+      if Paused then
       begin
         PausedLogCount := PausedLogCount + 1;
         UpdateStatus;
@@ -413,7 +501,7 @@ begin
     for node in vstLog.Nodes do
     begin
       nodeData := vstLog.GetNodeData(node);
-      vstLog.IsVisible[node] := (nodeData^.Level in VisibleLevels);
+      vstLog.IsVisible[node] := (not nodeData^.Paused) and (nodeData^.Level in VisibleLevels);
     end;
   finally
     vstLog.EndUpdate;
@@ -594,17 +682,6 @@ begin
 end;
 
 
-procedure TX2LogObserverMonitorForm.vstLogInitNode(Sender: TBaseVirtualTree; ParentNode, Node: PVirtualNode;
-                                                   var InitialStates: TVirtualNodeInitStates);
-var
-  nodeData: PLogEntryNodeData;
-
-begin
-  nodeData := Sender.GetNodeData(Node);
-  Initialize(nodeData^);
-end;
-
-
 procedure TX2LogObserverMonitorForm.vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   nodeData: PLogEntryNodeData;
@@ -727,7 +804,31 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.actPauseExecute(Sender: TObject);
+var
+  node: PVirtualNode;
+  nodeData: PLogEntryNodeData;
+
 begin
+  if not Paused then
+  begin
+    { Clear Paused status from nodes }
+    vstLog.BeginUpdate;
+    try
+      for node in vstLog.Nodes do
+      begin
+        nodeData := vstLog.GetNodeData(node);
+
+        if nodeData^.Paused then
+        begin
+          nodeData^.Paused := False;
+          vstLog.IsVisible[node] := (nodeData^.Level in VisibleLevels);
+        end;
+      end;
+    finally
+      vstLog.EndUpdate;
+    end;
+  end;
+
   PausedLogCount := 0;
   UpdateStatus;
 end;

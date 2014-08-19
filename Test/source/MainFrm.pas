@@ -59,6 +59,8 @@ type
     lblNamedPipeServers: TLabel;
     btnNamedPipeRefresh: TButton;
     lbNamedPipeServers: TListBox;
+    btnLock: TButton;
+    btnUnlock: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -68,6 +70,8 @@ type
     procedure edtMessageKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure btnExceptionClick(Sender: TObject);
     procedure btnMonitorFormClick(Sender: TObject);
+    procedure btnLockClick(Sender: TObject);
+    procedure btnUnlockClick(Sender: TObject);
     procedure btnEventStartClick(Sender: TObject);
     procedure btnEventStopClick(Sender: TObject);
     procedure btnFileStartClick(Sender: TObject);
@@ -134,6 +138,8 @@ begin
 
   pcDispatch.ActivePageIndex := 0;
   pcObservers.ActivePageIndex := 0;
+
+  DefaultMaxEntries := 10;
 end;
 
 
@@ -243,6 +249,18 @@ begin
 end;
 
 
+procedure TMainForm.btnLockClick(Sender: TObject);
+begin
+  TX2LogObserverMonitorForm.LockInstance(FLog);
+end;
+
+
+procedure TMainForm.btnUnlockClick(Sender: TObject);
+begin
+  TX2LogObserverMonitorForm.UnlockInstance(FLog);
+end;
+
+
 procedure TMainForm.btnEventStartClick(Sender: TObject);
 begin
   if not Assigned(FEventObserver) then
@@ -319,7 +337,6 @@ begin
     tsNamedPipe.ImageIndex := 0;
   end;
 end;
-
 
 
 procedure TMainForm.btnNamedPipeRefreshClick(Sender: TObject);

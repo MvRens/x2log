@@ -326,7 +326,9 @@ begin
     eventHandles[Clients.Count] := LogQueueSignal.Handle;
 
     waitResult := WaitForMultipleObjects(Length(eventHandles), @eventHandles[0], False, INFINITE);
-    if waitResult in [WAIT_OBJECT_0..WAIT_OBJECT_0 + Pred(High(eventHandles))] then
+
+    { WAIT_OBJECT_0 = 0, no check for minimum bounds since it's an unsigned variable ("Comparison always results to true") }
+    if waitResult < Cardinal(WAIT_OBJECT_0 + High(eventHandles)) then
     begin
       { Connect or write I/O completed }
       clientIndex := waitResult - WAIT_OBJECT_0;
@@ -336,7 +338,7 @@ begin
     begin
       { Entry queued }
       break;
-    end else if waitResult in [WAIT_ABANDONED_0..WAIT_ABANDONED_0 + High(eventHandles)] then
+    end else if (waitResult >= WAIT_ABANDONED_0) and (waitResult <= Cardinal(WAIT_ABANDONED_0 + High(eventHandles))) then
     begin
       { Client event abandoned }
       clientIndex := waitResult - WAIT_ABANDONED_0;

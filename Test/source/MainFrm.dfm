@@ -130,8 +130,6 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
-      ExplicitLeft = 16
-      ExplicitTop = 33
       DesignSize = (
         587
         299)
@@ -230,6 +228,42 @@ object MainForm: TMainForm
       Caption = 'Monitor Form Observer'
       TabOrder = 0
       OnClick = btnMonitorFormClick
+      ExplicitLeft = 151
+      ExplicitTop = -6
+    end
+    object btnLock: TButton
+      AlignWithMargins = True
+      Left = 151
+      Top = 0
+      Width = 64
+      Height = 25
+      Margins.Left = 6
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
+      Cancel = True
+      Caption = 'Lock'
+      TabOrder = 2
+      OnClick = btnLockClick
+      ExplicitLeft = 149
+    end
+    object btnUnlock: TButton
+      AlignWithMargins = True
+      Left = 221
+      Top = 0
+      Width = 64
+      Height = 25
+      Margins.Left = 6
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alLeft
+      Cancel = True
+      Caption = 'Unlock'
+      TabOrder = 3
+      OnClick = btnUnlockClick
+      ExplicitLeft = 359
     end
   end
   object pcDispatch: TPageControl
@@ -424,7 +458,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140044000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140048000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
