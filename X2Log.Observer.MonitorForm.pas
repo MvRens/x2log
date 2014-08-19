@@ -38,7 +38,7 @@ type
     vstLog: TVirtualStringTree;
     ilsLog: TImageList;
     splDetails: TSplitter;
-    HeaderControl1: THeaderControl;
+    hcDetails: THeaderControl;
     pnlDetails: TPanel;
     reDetails: TRichEdit;
     pnlLog: TPanel;
@@ -67,6 +67,9 @@ type
     lblFilter: TLabel;
     sbDetailsImage: TScrollBox;
     imgDetailsImage: TImage;
+    tbWordWrap: TToolButton;
+    tbDetailsSep1: TToolButton;
+    actWordWrap: TAction;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -84,6 +87,7 @@ type
     procedure actShowInfoExecute(Sender: TObject);
     procedure actShowWarningExecute(Sender: TObject);
     procedure actShowErrorExecute(Sender: TObject);
+    procedure actWordWrapExecute(Sender: TObject);
   private class var
     FInstances: TMonitorFormDictionary;
   private
@@ -96,6 +100,7 @@ type
     FDetails: IX2LogDetails;
     FVisibleLevels: TX2LogLevels;
     FMaxEntries: Cardinal;
+    FWordWrap: Boolean;
   protected
     class function GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
@@ -121,6 +126,7 @@ type
     procedure SetGraphicDetails(ADetails: IX2LogDetailsGraphic);
 
     procedure SetVisibleDetails(AControl: TControl);
+    procedure SetWordWrap(AValue: Boolean);
 
     property Closed: Boolean read FClosed;
     property Details: IX2LogDetails read FDetails;
@@ -532,9 +538,11 @@ var
   logDetailsGraphic: IX2LogDetailsGraphic;
   logDetailsBinary: IX2LogDetailsBinary;
   logDetailsText: IX2LogDetailsText;
+  canWrap: Boolean;
 
 begin
   FDetails := ADetails;
+  canWrap := False;
 
   if Assigned(Details) then
   begin
@@ -547,6 +555,7 @@ begin
     else if Supports(ADetails, IX2LogDetailsText, logDetailsText) then
     begin
       reDetails.Text := logDetailsText.AsString;
+      canWrap := True;
       SetVisibleDetails(reDetails);
     end;
   end else
@@ -555,6 +564,10 @@ begin
 
   actCopyDetails.Enabled := Supports(ADetails, IX2LogDetailsCopyable);
   actSaveDetails.Enabled := Supports(ADetails, IX2LogDetailsStreamable);
+  actWordWrap.Enabled := canWrap;
+  actWordWrap.Checked := canWrap and FWordWrap;
+
+  SetWordWrap(actWordWrap.Checked);
 end;
 
 
@@ -682,6 +695,17 @@ begin
 end;
 
 
+procedure TX2LogObserverMonitorForm.SetWordWrap(AValue: Boolean);
+begin
+  reDetails.WordWrap := AValue;
+
+  if AValue then
+    reDetails.ScrollBars := ssVertical
+  else
+    reDetails.ScrollBars := ssBoth;
+end;
+
+
 procedure TX2LogObserverMonitorForm.vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   nodeData: PLogEntryNodeData;
@@ -800,6 +824,13 @@ begin
       end;
     end;
   end;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actWordWrapExecute(Sender: TObject);
+begin
+  FWordWrap := actWordWrap.Checked;
+  SetWordWrap(FWordWrap);
 end;
 
 
