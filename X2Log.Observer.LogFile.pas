@@ -122,7 +122,7 @@ begin
   if Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
   begin
     detailsExtension := ExtractFileExt(FileName);
-    baseReportFileName := ChangeFileExt(FileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), Now));
+    baseReportFileName := ChangeFileExt(FileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), AEntry.DateTime));
     detailsFileName := baseReportFileName + detailsExtension;
     detailsNumber := 0;
 
@@ -170,7 +170,7 @@ begin
   { Append line to log file }
   writer := TFile.AppendText(FileName);
   try
-    writer.WriteLine('[' + FormatDateTime(GetLogResourceString(@LogFileLineDateFormat), Now) + '] ' +
+    writer.WriteLine('[' + FormatDateTime(GetLogResourceString(@LogFileLineDateFormat), AEntry.DateTime) + '] ' +
                      GetLogLevelText(AEntry.Level) + ': ' + errorMsg);
   finally
     FreeAndNil(writer);

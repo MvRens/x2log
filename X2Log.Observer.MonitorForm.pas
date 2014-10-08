@@ -18,7 +18,7 @@ uses
   Winapi.Messages,
 
   X2Log.Details.Intf,
-  X2Log.Intf;
+  X2Log.Intf, Vcl.Menus;
 
 
 const
@@ -70,6 +70,30 @@ type
     tbWordWrap: TToolButton;
     tbDetailsSep1: TToolButton;
     actWordWrap: TAction;
+    mmMain: TMainMenu;
+    mmMainFile: TMenuItem;
+    mmMainLog: TMenuItem;
+    mmMainDetails: TMenuItem;
+    mmMainWindow: TMenuItem;
+    actClose: TAction;
+    mmMainFileClose: TMenuItem;
+    mmMainLogClear: TMenuItem;
+    mmMainLogPause: TMenuItem;
+    mmMainLogSep1: TMenuItem;
+    mmMainLogVerbose: TMenuItem;
+    mmMainLogInfo: TMenuItem;
+    mmMainLogWarning: TMenuItem;
+    mmMainLogError: TMenuItem;
+    mmMainDetailsCopy: TMenuItem;
+    mmMainDetailsSave: TMenuItem;
+    mmMainDetailsWordWrap: TMenuItem;
+    mmMainDetailsSep1: TMenuItem;
+    actAlwaysOnTop: TAction;
+    mmMainWindowAlwaysOnTop: TMenuItem;
+    actSaveAs: TAction;
+    mmMainFileSep1: TMenuItem;
+    mmMainFileSaveAs: TMenuItem;
+    sdSaveAs: TSaveDialog;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -78,6 +102,7 @@ type
     procedure vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
     procedure vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+    procedure actCloseExecute(Sender: TObject);
     procedure actClearExecute(Sender: TObject);
     procedure actCopyDetailsExecute(Sender: TObject);
     procedure actSaveDetailsExecute(Sender: TObject);
@@ -88,6 +113,8 @@ type
     procedure actShowWarningExecute(Sender: TObject);
     procedure actShowErrorExecute(Sender: TObject);
     procedure actWordWrapExecute(Sender: TObject);
+    procedure actAlwaysOnTopExecute(Sender: TObject);
+    procedure actSaveAsExecute(Sender: TObject);
   private class var
     FInstances: TMonitorFormDictionary;
   private
@@ -128,6 +155,8 @@ type
     procedure SetVisibleDetails(AControl: TControl);
     procedure SetWordWrap(AValue: Boolean);
 
+    procedure ExportLog(ALog: IX2LogBase);
+
     property Closed: Boolean read FClosed;
     property Details: IX2LogDetails read FDetails;
     property LockCount: Integer read FLockCount;
@@ -154,7 +183,8 @@ type
     procedure Unlock;
 
     { IX2LogObserver }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); overload;
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); overload;
 
     property FreeOnClose: Boolean read FFreeOnClose write FFreeOnClose;
     property MaxEntries: Cardinal read FMaxEntries write FMaxEntries;
@@ -170,7 +200,8 @@ uses
   Vcl.Themes,
   Winapi.Windows,
 
-  X2Log.Constants;
+  X2Log.Constants,
+  X2Log.Observer.LogFile;
 
 
 {$R *.dfm}
@@ -184,7 +215,7 @@ type
     Message: string;
     Details: IX2LogDetails;
 
-    procedure Initialize(APaused: Boolean; ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+    procedure Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
   end;
 
   PLogEntryNodeData = ^TLogEntryNodeData;
@@ -199,9 +230,9 @@ const
 
 
 { TLogEntryNode }
-procedure TLogEntryNodeData.Initialize(APaused: Boolean; ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+procedure TLogEntryNodeData.Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
 begin
-  Self.Time := Now;
+  Self.Time := ADateTime;
   Self.Paused := APaused;
   Self.Level := ALevel;
   Self.Message := AMessage;
@@ -316,12 +347,21 @@ begin
   vstLog.Header.Columns[ColumnTime].Text := GetLogResourceString(@LogMonitorFormColumnTime);
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
 
+  mmMainFile.Caption := GetLogResourceString(@LogMonitorFormMenuFile);
+  mmMainLog.Caption := GetLogResourceString(@LogMonitorFormMenuLog);
+  mmMainDetails.Caption := GetLogResourceString(@LogMonitorFormMenuDetails);
+  mmMainWindow.Caption := GetLogResourceString(@LogMonitorFormMenuWindow);
+
+  actSaveAs.Caption := GetLogResourceString(@LogMonitorFormMenuFileSaveAs);
+  actClose.Caption := GetLogResourceString(@LogMonitorFormMenuFileClose);
   actClear.Caption := GetLogResourceString(@LogMonitorFormButtonClear);
   actPause.Caption := GetLogResourceString(@LogMonitorFormButtonPause);
   actCopyDetails.Caption := GetLogResourceString(@LogMonitorFormButtonCopyDetails);
   actSaveDetails.Caption := GetLogResourceString(@LogMonitorFormButtonSaveDetails);
+  actAlwaysOnTop.Caption := GetLogResourceString(@LogMonitorFormMenuWindowAlwaysOnTop);
 
   sdDetails.Filter := GetLogResourceString(@LogMonitorFormSaveDetailsFilter);
+  sdSaveAs.Filter := GetLogResourceString(@LogMonitorFormSaveDetailsSaveAs);
 
   lblFilter.Caption := '    ' + GetLogResourceString(@LogMonitorFormButtonFilter) + '  ';
   actShowVerbose.Caption := GetLogLevelText(TX2LogLevel.Verbose);
@@ -417,6 +457,12 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+begin
+  Log(ALevel, Now, AMessage, ADetails);
+end;
+
+
+procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
 var
   node: PVirtualNode;
   nodeData: PLogEntryNodeData;
@@ -440,7 +486,7 @@ begin
         { BeginUpdate causes OnInitNode to be triggered on-demand,
           moved Initialize call here }
         Initialize(nodeData^);
-        nodeData^.Initialize(Paused, ALevel, AMessage, ADetails);
+        nodeData^.Initialize(Paused, ALevel, ADateTime, AMessage, ADetails);
 
         vstLog.IsVisible[node] := (not Paused) and (ALevel in VisibleLevels);
 
@@ -484,6 +530,7 @@ end;
 procedure TX2LogObserverMonitorForm.UpdateUI;
 begin
   actClear.Enabled := (vstLog.RootNodeCount > 0);
+  actSaveAs.Enabled := (vstLog.RootNodeCount > 0);
 end;
 
 
@@ -706,6 +753,20 @@ begin
 end;
 
 
+procedure TX2LogObserverMonitorForm.ExportLog(ALog: IX2LogBase);
+var
+  node: PVirtualNode;
+  nodeData: PLogEntryNodeData;
+
+begin
+  for node in vstLog.Nodes do
+  begin
+    nodeData := vstLog.GetNodeData(node);
+    ALog.Log(nodeData^.Level, nodeData^.Time, nodeData^.Message, nodeData^.Details);
+  end;
+end;
+
+
 procedure TX2LogObserverMonitorForm.vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 var
   nodeData: PLogEntryNodeData;
@@ -784,6 +845,12 @@ begin
     SetDetails(nil);
 
   UpdateUI;
+end;
+
+
+procedure TX2LogObserverMonitorForm.actCloseExecute(Sender: TObject);
+begin
+  Close;
 end;
 
 
@@ -886,6 +953,33 @@ end;
 procedure TX2LogObserverMonitorForm.actShowErrorExecute(Sender: TObject);
 begin
   ToggleVisibleLevel(Sender, TX2LogLevel.Error);
+end;
+
+
+procedure TX2LogObserverMonitorForm.actAlwaysOnTopExecute(Sender: TObject);
+begin
+  actAlwaysOnTop.Checked := not actAlwaysOnTop.Checked;
+
+  if actAlwaysOnTop.Checked then
+    SetWindowPos(Self.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE)
+  else
+    SetWindowPos(Self.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE or SWP_NOMOVE or SWP_NOACTIVATE);
+end;
+
+
+procedure TX2LogObserverMonitorForm.actSaveAsExecute(Sender: TObject);
+var
+  logFile: IX2LogBase;
+
+begin
+  if sdSaveAs.Execute then
+  begin
+    { Default behaviour of the LogFile observer is to append }
+    System.SysUtils.DeleteFile(sdSaveAs.FileName);
+
+    logFile := TX2LogFileObserver.Create(sdSaveAs.FileName, X2LogLevelsAll);
+    ExportLog(logFile);
+  end;
 end;
 
 

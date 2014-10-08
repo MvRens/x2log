@@ -49,6 +49,7 @@ type
   IX2LogBase = interface
     ['{1949E8DC-6DC5-43DC-B678-55CF8274E79D}']
     procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil); overload;
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails = nil); overload;
   end;
 
 
@@ -95,6 +96,7 @@ type
     ID: Word;
     Version: Byte;
     Size: Word;
+    DateTime: TDateTime;
     Level: TX2LogLevel;
 
     {

@@ -25,9 +25,22 @@ begin
   SetLogResourceString(@LogMonitorFormButtonPause, 'Pauzeren');
   SetLogResourceString(@LogMonitorFormButtonCopyDetails, 'Kopiëren');
   SetLogResourceString(@LogMonitorFormButtonSaveDetails, 'Opslaan');
+  SetLogResourceString(@LogMonitorFormButtonWordWrapDetails, 'Terugloop');
+
+  SetLogResourceString(@LogMonitorFormButtonFilter, 'Filter:');
+
+  SetLogResourceString(@LogMonitorFormMenuFile, 'Bestand');
+  SetLogResourceString(@LogMonitorFormMenuFileSaveAs, 'Opslaan als...');
+  SetLogResourceString(@LogMonitorFormMenuFileClose, 'Sluiten');
+  SetLogResourceString(@LogMonitorFormMenuLog, 'Log');
+  SetLogResourceString(@LogMonitorFormMenuDetails, 'Details');
+  SetLogResourceString(@LogMonitorFormMenuWindow, 'Venster');
+  SetLogResourceString(@LogMonitorFormMenuWindowAlwaysOnTop, 'Altijd op voorgrond');
+
   SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauzeerd: %d melding(en) overgeslagen');
 
   SetLogResourceString(@LogMonitorFormSaveDetailsFilter, 'Alle bestanden (*.*)|*.*');
+  SetLogResourceString(@LogMonitorFormSaveDetailsSaveAs, 'Log bestanden (*.log)|*.log|Alle bestanden (*.*)|*.*');
 end;
 
 

@@ -43,14 +43,28 @@ resourcestring
   LogMonitorFormButtonPause = 'Pause';
   LogMonitorFormButtonCopyDetails = 'Copy';
   LogMonitorFormButtonSaveDetails = 'Save';
+  LogMonitorFormButtonWordWrapDetails = 'Word wrap';
 
   LogMonitorFormButtonFilter = 'Filter:';
+
+  { Caption of the menu items which are not on the toolbar }
+  LogMonitorFormMenuFile = 'File';
+  LogMonitorFormMenuFileSaveAs = 'Save as...';
+  LogMonitorFormMenuFileClose = 'Close';
+  LogMonitorFormMenuLog = 'Log';
+  LogMonitorFormMenuDetails = 'Details';
+  LogMonitorFormMenuWindow = 'Window';
+  LogMonitorFormMenuWindowAlwaysOnTop = 'Always on top';
+
 
   { Status messages }
   LogMonitorFormStatusPaused = 'Paused: %d log message(s) skipped';
 
   { Filter for Save details buttons }
   LogMonitorFormSaveDetailsFilter = 'All files (*.*)|*.*';
+
+  { Filter for Save as menu item }
+  LogMonitorFormSaveDetailsSaveAs = 'Log files (*.log)|*.log|All files (*.*)|*.*';
 
 
   function GetLogLevelText(ALogLevel: TX2LogLevel): string;

@@ -87,7 +87,7 @@ type
     FFileObserver: IX2LogObserver;
     FNamedPipeObserver: IX2LogObserver;
   protected
-    procedure DoLog(Sender: TObject; Level: TX2LogLevel; const Msg: string; Details: IX2LogDetails);
+    procedure DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg: string; Details: IX2LogDetails);
   end;
 
 
@@ -149,7 +149,7 @@ begin
 end;
 
 
-procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; const Msg: string; Details: IX2LogDetails);
+procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg: string; Details: IX2LogDetails);
 var
   text: string;
   logDetailsText: IX2LogDetailsText;

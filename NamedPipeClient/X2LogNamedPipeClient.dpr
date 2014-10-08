@@ -11,7 +11,6 @@ uses
 
 var
   client: IX2LogObservable;
-  observerForm: TX2LogObserverMonitorForm;
 
 begin
   ReportMemoryLeaksOnShutdown := True;
@@ -22,8 +21,12 @@ begin
 
   client := TX2LogNamedPipeClient.Create('X2LogTest');
   try
-    observerForm := TX2LogObserverMonitorForm.Instance(client);
-    observerForm.ShowModal;
+    with TX2LogObserverMonitorForm.Create(nil, client) do
+    try
+      ShowModal;
+    finally
+      Free;
+    end;
   finally
     client := nil;
   end;

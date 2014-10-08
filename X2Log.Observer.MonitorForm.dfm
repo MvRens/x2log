@@ -10,6 +10,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  Menu = mmMain
   OldCreateOrder = False
   Position = poScreenCenter
   ShowHint = True
@@ -181,7 +182,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 2
-          Width = 424
+          Width = 428
           WideText = 'Message'
         end>
     end
@@ -198,24 +199,24 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       ShowCaptions = True
       TabOrder = 1
       OnCustomDraw = ToolbarCustomDraw
-      object tbClear: TToolButton
-        Left = 0
-        Top = 0
-        Action = actClear
-        AutoSize = True
-      end
       object tbPause: TToolButton
-        Left = 56
+        Left = 0
         Top = 0
         Action = actPause
         AutoSize = True
         Style = tbsCheck
       end
+      object tbClear: TToolButton
+        Left = 60
+        Top = 0
+        Action = actClear
+        AutoSize = True
+      end
       object lblFilter: TLabel
         Left = 116
         Top = 0
         Width = 46
-        Height = 22
+        Height = 13
         Caption = '    Filter:  '
         Layout = tlCenter
       end
@@ -266,7 +267,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000D00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000EC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -722,15 +723,97 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     end
     object actWordWrap: TAction
       AutoCheck = True
-      Caption = '&Word wrap'
+      Caption = 'Word wrap'
       Enabled = False
       ImageIndex = 9
       OnExecute = actWordWrapExecute
+    end
+    object actClose: TAction
+      Caption = '&Close'
+      OnExecute = actCloseExecute
+    end
+    object actAlwaysOnTop: TAction
+      Caption = 'Always on top'
+      OnExecute = actAlwaysOnTopExecute
+    end
+    object actSaveAs: TAction
+      Caption = '&Save as...'
+      ImageIndex = 5
+      OnExecute = actSaveAsExecute
     end
   end
   object sdDetails: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 512
     Top = 112
+  end
+  object mmMain: TMainMenu
+    Images = ilsLog
+    Left = 448
+    Top = 112
+    object mmMainFile: TMenuItem
+      Caption = 'File'
+      object mmMainFileSaveAs: TMenuItem
+        Action = actSaveAs
+      end
+      object mmMainFileSep1: TMenuItem
+        Caption = '-'
+      end
+      object mmMainFileClose: TMenuItem
+        Action = actClose
+      end
+    end
+    object mmMainLog: TMenuItem
+      Caption = 'Log'
+      object mmMainLogPause: TMenuItem
+        Action = actPause
+        AutoCheck = True
+      end
+      object mmMainLogClear: TMenuItem
+        Action = actClear
+      end
+      object mmMainLogSep1: TMenuItem
+        Caption = '-'
+      end
+      object mmMainLogVerbose: TMenuItem
+        Action = actShowVerbose
+      end
+      object mmMainLogInfo: TMenuItem
+        Action = actShowInfo
+      end
+      object mmMainLogWarning: TMenuItem
+        Action = actShowWarning
+      end
+      object mmMainLogError: TMenuItem
+        Action = actShowError
+      end
+    end
+    object mmMainDetails: TMenuItem
+      Caption = 'Details'
+      object mmMainDetailsCopy: TMenuItem
+        Action = actCopyDetails
+      end
+      object mmMainDetailsSave: TMenuItem
+        Action = actSaveDetails
+      end
+      object mmMainDetailsSep1: TMenuItem
+        Caption = '-'
+      end
+      object mmMainDetailsWordWrap: TMenuItem
+        Action = actWordWrap
+        AutoCheck = True
+      end
+    end
+    object mmMainWindow: TMenuItem
+      Caption = 'Window'
+      object mmMainWindowAlwaysOnTop: TMenuItem
+        Action = actAlwaysOnTop
+      end
+    end
+  end
+  object sdSaveAs: TSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 512
+    Top = 176
   end
 end

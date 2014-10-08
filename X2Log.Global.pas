@@ -24,7 +24,8 @@ type
     class procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
     { Facade for IX2LogBase }
-    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); overload;
+    class procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); overload;
 
     class procedure Verbose(const AMessage: string; const ADetails: string = '');
     class procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
@@ -84,6 +85,12 @@ end;
 class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
 begin
   Instance.Log(ALevel, AMessage, ADetails);
+end;
+
+
+class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+begin
+  Instance.Log(ALevel, ADateTime, AMessage, ADetails);
 end;
 
 

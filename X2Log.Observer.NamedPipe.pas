@@ -216,6 +216,7 @@ begin
   header.Version := X2LogMessageVersion;
   header.Size := SizeOf(header);
   header.Level := AEntry.Level;
+  header.DateTime := AEntry.DateTime;
 
   WriteBuffer.WriteBuffer(header, SizeOf(header));
 

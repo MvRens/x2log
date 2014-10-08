@@ -22,7 +22,7 @@ type
   end;
 
 
-  TX2LogNamedPipeClient = class(TX2LogBaseClient, IX2LogBase)
+  TX2LogNamedPipeClient = class(TX2LogBaseClient)
   private
     FWorkerThread: TThread;
   protected
@@ -393,7 +393,7 @@ begin
         end;
       end;
 
-      Client.Log(header.Level, msg, details);
+      Client.Log(header.Level, header.DateTime, msg, details);
     except
       on E:EReadError do
         ClosePipe;
