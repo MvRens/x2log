@@ -2,7 +2,9 @@ program X2LogNamedPipeClient;
 
 uses
 //  FastMM4,
+  System.Classes,
   Vcl.Forms,
+  Vcl.Imaging.jpeg,
   X2Log.Intf,
   X2Log.Client.NamedPipe,
   X2Log.Observer.MonitorForm;
@@ -13,6 +15,9 @@ var
   client: IX2LogObservable;
 
 begin
+  { To deserialize the graphic, make sure GetClass succeeds }
+  RegisterClass(TJPEGImage);
+
   ReportMemoryLeaksOnShutdown := True;
 
   Application.Initialize;

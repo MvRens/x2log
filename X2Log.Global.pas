@@ -24,8 +24,10 @@ type
     class procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
 
     { Facade for IX2LogBase }
-    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); overload;
-    class procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); overload;
+    class procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload;
+    class procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload;
+
+    class function Category(const ACategory: string): IX2Log;
 
     class procedure Verbose(const AMessage: string; const ADetails: string = '');
     class procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
@@ -82,15 +84,21 @@ begin
 end;
 
 
-class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+class function TX2GlobalLog.Category(const ACategory: string): IX2Log;
 begin
-  Instance.Log(ALevel, AMessage, ADetails);
+  Result := Instance.Category(ACategory);
 end;
 
 
-class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
-  Instance.Log(ALevel, ADateTime, AMessage, ADetails);
+  Instance.Log(ALevel, AMessage, ACategory, ADetails);
+end;
+
+
+class procedure TX2GlobalLog.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
+begin
+  Instance.Log(ALevel, ADateTime, AMessage, ACategory, ADetails);
 end;
 
 

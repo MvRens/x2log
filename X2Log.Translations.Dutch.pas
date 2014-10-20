@@ -19,6 +19,7 @@ begin
 
   SetLogResourceString(@LogMonitorFormCaption, '%s - Live Log');
   SetLogResourceString(@LogMonitorFormColumnTime, 'Tijd');
+  SetLogResourceString(@LogMonitorFormColumnCategory, 'Categorie');
   SetLogResourceString(@LogMonitorFormColumnMessage, 'Melding');
 
   SetLogResourceString(@LogMonitorFormButtonClear, 'Wissen');

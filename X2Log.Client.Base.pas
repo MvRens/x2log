@@ -19,8 +19,8 @@ type
     destructor Destroy; override;
 
     { IX2LogBase }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil); overload; virtual;
-    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails = nil); overload; virtual;
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload; virtual;
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload; virtual;
 
     { IX2LogObservable }
     procedure Attach(AObserver: IX2LogObserver);
@@ -64,23 +64,23 @@ begin
 end;
 
 
-procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 var
   observer: IX2LogObserver;
 
 begin
   for observer in Observers do
-    observer.Log(ALevel, AMessage, ADetails);
+    observer.Log(ALevel, AMessage, ACategory, ADetails);
 end;
 
 
-procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogBaseClient.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 var
   observer: IX2LogObserver;
 
 begin
   for observer in Observers do
-    observer.Log(ALevel, ADateTime, AMessage, ADetails);
+    observer.Log(ALevel, ADateTime, AMessage, ACategory, ADetails);
 end;
 
 end.

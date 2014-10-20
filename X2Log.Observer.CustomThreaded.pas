@@ -20,7 +20,7 @@ type
   protected
     function CreateWorkerThread: TX2LogObserverWorkerThread; virtual; abstract;
 
-    procedure DoLog(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); override;
+    procedure DoLog(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails); override;
 
     property WorkerThread: TX2LogObserverWorkerThread read FWorkerThread;
   public
@@ -34,9 +34,10 @@ type
     FDetails: IX2LogDetails;
     FLevel: TX2LogLevel;
     FDateTime: TDateTime;
+    FCategory: string;
     FMessage: string;
   public
-    constructor Create(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); overload;
+    constructor Create(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails); overload;
     constructor Create(AEntry: TX2LogQueueEntry); overload;
 
     procedure Assign(Source: TPersistent); override;
@@ -44,6 +45,7 @@ type
     property DateTime: TDateTime read FDateTime;
     property Details: IX2LogDetails read FDetails;
     property Level: TX2LogLevel read FLevel;
+    property Category: string read FCategory;
     property Message: string read FMessage;
   end;
 
@@ -71,7 +73,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
   end;
 
 
@@ -97,20 +99,21 @@ begin
 end;
 
 
-procedure TX2LogCustomThreadedObserver.DoLog(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogCustomThreadedObserver.DoLog(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
-  WorkerThread.Log(ALevel, ADateTime, AMessage, ADetails);
+  WorkerThread.Log(ALevel, ADateTime, AMessage, ACategory, ADetails);
 end;
 
 
 
 { TX2LogQueueEntry }
-constructor TX2LogQueueEntry.Create(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+constructor TX2LogQueueEntry.Create(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
   inherited Create;
 
   FLevel := ALevel;
   FDateTime := ADateTime;
+  FCategory := ACategory;
   FMessage := AMessage;
   FDetails := ADetails;
 end;
@@ -135,6 +138,7 @@ begin
 
     FLevel := entrySource.Level;
     FDateTime := entrySource.DateTime;
+    FCategory := entrySource.Category;
     FMessage := entrySource.Message;
     FDetails := entrySource.Details;
   end else
@@ -168,11 +172,11 @@ begin
 end;
 
 
-procedure TX2LogObserverWorkerThread.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogObserverWorkerThread.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
   TMonitor.Enter(LogQueue);
   try
-    LogQueue.Enqueue(TX2LogQueueEntry.Create(ALevel, ADateTime, AMessage, ADetails));
+    LogQueue.Enqueue(TX2LogQueueEntry.Create(ALevel, ADateTime, AMessage, ACategory, ADetails));
   finally
     TMonitor.Exit(LogQueue);
   end;

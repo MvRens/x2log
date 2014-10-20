@@ -183,8 +183,8 @@ type
     procedure Unlock;
 
     { IX2LogObserver }
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails); overload;
-    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails); overload;
+    procedure Log(ALevel: TX2LogLevel; const AMessage, ACategory: string; ADetails: IX2LogDetails); overload;
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails); overload;
 
     property FreeOnClose: Boolean read FFreeOnClose write FFreeOnClose;
     property MaxEntries: Cardinal read FMaxEntries write FMaxEntries;
@@ -212,10 +212,11 @@ type
     Time: TDateTime;
     Paused: Boolean;
     Level: TX2LogLevel;
+    Category: string;
     Message: string;
     Details: IX2LogDetails;
 
-    procedure Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+    procedure Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
   end;
 
   PLogEntryNodeData = ^TLogEntryNodeData;
@@ -224,17 +225,19 @@ type
 const
   ColumnLevel = 0;
   ColumnTime = 1;
-  ColumnMessage = 2;
+  ColumnCategory = 2;
+  ColumnMessage = 3;
 
   LevelImageIndex: array[TX2LogLevel] of TImageIndex = (0, 1, 2, 3);
 
 
 { TLogEntryNode }
-procedure TLogEntryNodeData.Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+procedure TLogEntryNodeData.Initialize(APaused: Boolean; ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
   Self.Time := ADateTime;
   Self.Paused := APaused;
   Self.Level := ALevel;
+  Self.Category := ACategory;
   Self.Message := AMessage;
   Self.Details := ADetails;
 end;
@@ -345,6 +348,7 @@ begin
 
   vstLog.NodeDataSize := SizeOf(TLogEntryNodeData);
   vstLog.Header.Columns[ColumnTime].Text := GetLogResourceString(@LogMonitorFormColumnTime);
+  vstLog.Header.Columns[ColumnCategory].Text := GetLogResourceString(@LogMonitorFormColumnCategory);
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
 
   mmMainFile.Caption := GetLogResourceString(@LogMonitorFormMenuFile);
@@ -456,13 +460,13 @@ begin
 end;
 
 
-procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 begin
-  Log(ALevel, Now, AMessage, ADetails);
+  Log(ALevel, Now, AMessage, ACategory, ADetails);
 end;
 
 
-procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails);
+procedure TX2LogObserverMonitorForm.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
 var
   node: PVirtualNode;
   nodeData: PLogEntryNodeData;
@@ -486,7 +490,7 @@ begin
         { BeginUpdate causes OnInitNode to be triggered on-demand,
           moved Initialize call here }
         Initialize(nodeData^);
-        nodeData^.Initialize(Paused, ALevel, ADateTime, AMessage, ADetails);
+        nodeData^.Initialize(Paused, ALevel, ADateTime, AMessage, ACategory, ADetails);
 
         vstLog.IsVisible[node] := (not Paused) and (ALevel in VisibleLevels);
 
@@ -762,7 +766,7 @@ begin
   for node in vstLog.Nodes do
   begin
     nodeData := vstLog.GetNodeData(node);
-    ALog.Log(nodeData^.Level, nodeData^.Time, nodeData^.Message, nodeData^.Details);
+    ALog.Log(nodeData^.Level, nodeData^.Time, nodeData^.Message, nodeData^.Category, nodeData^.Details);
   end;
 end;
 
@@ -789,6 +793,9 @@ begin
   case Column of
     ColumnTime:
       CellText := DateTimeToStr(nodeData^.Time);
+
+    ColumnCategory:
+      CellText := nodeData^.Category;
 
     ColumnMessage:
       CellText := nodeData^.Message;

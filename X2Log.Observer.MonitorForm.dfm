@@ -19,7 +19,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
   PixelsPerInch = 96
   TextHeight = 13
   object splDetails: TSplitter
-    Left = 602
+    Left = 682
     Top = 0
     Width = 6
     Height = 496
@@ -29,9 +29,9 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     ExplicitHeight = 519
   end
   object pnlDetails: TPanel
-    Left = 608
+    Left = 688
     Top = 0
-    Width = 382
+    Width = 302
     Height = 496
     Align = alRight
     BevelOuter = bvNone
@@ -39,7 +39,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     object tbDetails: TToolBar
       Left = 0
       Top = 0
-      Width = 382
+      Width = 302
       Height = 22
       AutoSize = True
       ButtonWidth = 80
@@ -76,7 +76,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     object pnlBorder: TPanel
       Left = 0
       Top = 22
-      Width = 382
+      Width = 302
       Height = 474
       Align = alClient
       BevelKind = bkFlat
@@ -85,21 +85,21 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       object hcDetails: THeaderControl
         Left = 0
         Top = 0
-        Width = 378
+        Width = 298
         Height = 19
         Sections = <
           item
             AutoSize = True
             ImageIndex = -1
             Text = 'Details'
-            Width = 378
+            Width = 298
           end>
         NoSizing = True
       end
       object reDetails: TRichEdit
         Left = 0
         Top = 19
-        Width = 378
+        Width = 298
         Height = 451
         Align = alClient
         BorderStyle = bsNone
@@ -118,7 +118,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       object sbDetailsImage: TScrollBox
         Left = 0
         Top = 19
-        Width = 378
+        Width = 298
         Height = 451
         HorzScrollBar.Tracking = True
         VertScrollBar.Tracking = True
@@ -141,7 +141,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
   object pnlLog: TPanel
     Left = 0
     Top = 0
-    Width = 602
+    Width = 682
     Height = 496
     Align = alClient
     BevelOuter = bvNone
@@ -149,10 +149,10 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     object vstLog: TVirtualStringTree
       Left = 0
       Top = 22
-      Width = 602
+      Width = 682
       Height = 474
       Align = alClient
-      Header.AutoSizeIndex = 2
+      Header.AutoSizeIndex = 3
       Header.Font.Charset = DEFAULT_CHARSET
       Header.Font.Color = clWindowText
       Header.Font.Height = -11
@@ -182,14 +182,19 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 2
-          Width = 428
+          Width = 150
+          WideText = 'Category'
+        end
+        item
+          Position = 3
+          Width = 354
           WideText = 'Message'
         end>
     end
     object tbLog: TToolBar
       Left = 0
       Top = 0
-      Width = 602
+      Width = 682
       Height = 22
       AutoSize = True
       ButtonWidth = 67
@@ -216,7 +221,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 116
         Top = 0
         Width = 46
-        Height = 13
+        Height = 22
         Caption = '    Filter:  '
         Layout = tlCenter
       end
@@ -267,7 +272,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000EC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000F40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

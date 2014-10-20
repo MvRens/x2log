@@ -48,8 +48,8 @@ type
   { Logging }
   IX2LogBase = interface
     ['{1949E8DC-6DC5-43DC-B678-55CF8274E79D}']
-    procedure Log(ALevel: TX2LogLevel; const AMessage: string; ADetails: IX2LogDetails = nil); overload;
-    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; ADetails: IX2LogDetails = nil); overload;
+    procedure Log(ALevel: TX2LogLevel; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload;
+    procedure Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage: string; const ACategory: string = ''; ADetails: IX2LogDetails = nil); overload;
   end;
 
 
@@ -74,6 +74,8 @@ type
   IX2Log = interface(IX2LogObservable)
     ['{A6FF38F9-EDA8-4C76-9C95-2C0317560D78}']
     procedure SetExceptionStrategy(AStrategy: IX2LogExceptionStrategy);
+
+    function Category(const ACategory: string): IX2Log;
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
     procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
@@ -102,12 +104,15 @@ type
     {
     Payload:
 
+      CategoryLength: Cardinal
+      Category: WideString
       MessageLength: Cardinal
       Message: WideString
       DetailsLength: Cardinal
       Details: WideString
     }
   end;
+
 
   TX2LogMessageHeader = TX2LogMessageHeaderV1;
 

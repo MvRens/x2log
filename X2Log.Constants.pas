@@ -11,6 +11,11 @@ resourcestring
   LogLevelWarning = 'Warning';
   LogLevelError = 'Error';
 
+  LogCategorySeparator = ' - ';
+
+  // Note: currently not translatable
+  LogCategoryDefault = '';
+
 
   {
     X2Log.Observer.LogFile
@@ -36,6 +41,7 @@ resourcestring
 
   { Caption of the columns in the live log view }
   LogMonitorFormColumnTime = 'Time';
+  LogMonitorFormColumnCategory = 'Category';
   LogMonitorFormColumnMessage = 'Message';
 
   { Caption of the toolbar buttons }

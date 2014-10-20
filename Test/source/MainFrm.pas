@@ -61,6 +61,7 @@ type
     lbNamedPipeServers: TListBox;
     btnLock: TButton;
     btnUnlock: TButton;
+    btnCategory: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -81,13 +82,14 @@ type
     procedure btnBinaryRawByteStringClick(Sender: TObject);
     procedure btnGraphicClick(Sender: TObject);
     procedure btnNamedPipeRefreshClick(Sender: TObject);
+    procedure btnCategoryClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
     FFileObserver: IX2LogObserver;
     FNamedPipeObserver: IX2LogObserver;
   protected
-    procedure DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg: string; Details: IX2LogDetails);
+    procedure DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg, Category: string; Details: IX2LogDetails);
   end;
 
 
@@ -149,13 +151,13 @@ begin
 end;
 
 
-procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg: string; Details: IX2LogDetails);
+procedure TMainForm.DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg, Category: string; Details: IX2LogDetails);
 var
   text: string;
   logDetailsText: IX2LogDetailsText;
 
 begin
-  text := GetLogLevelText(Level) + ': ' + Msg;
+  text := GetLogLevelText(Level) + ': ' + Category + ': ' + Msg;
 
   if Supports(Details, IX2LogDetailsText, logDetailsText) then
     text := text + ' (' + logDetailsText.AsString + ')';
@@ -182,6 +184,7 @@ begin
     Key := 0;
   end;
 end;
+
 
 procedure TMainForm.btnCloseClick(Sender: TObject);
 begin
@@ -240,6 +243,12 @@ begin
     on E:Exception do
       FLog.Exception(E);
   end;
+end;
+
+
+procedure TMainForm.btnCategoryClick(Sender: TObject);
+begin
+  FLog.Category('Test').Info(edtMessage.Text);
 end;
 
 

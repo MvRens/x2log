@@ -220,6 +220,9 @@ begin
 
   WriteBuffer.WriteBuffer(header, SizeOf(header));
 
+  { Category }
+  TStreamUtil.WriteString(WriteBuffer, AEntry.Category);
+
   { Message }
   TStreamUtil.WriteString(WriteBuffer, AEntry.Message);
 

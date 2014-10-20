@@ -345,6 +345,7 @@ var
   detailsSize: Cardinal;
   detailsStream: TMemoryStream;
   serializer: IX2LogDetailsSerializer;
+  category: string;
 
 begin
   if MessageData.Size > 0 then
@@ -364,6 +365,9 @@ begin
         MessageData.Seek(headerDiff, soFromCurrent)
       end else if headerDiff < 0 then
         raise EReadError.Create('Header too small');
+
+      { Category }
+      category := TStreamUtil.ReadString(MessageData);
 
       { Message }
       msg := TStreamUtil.ReadString(MessageData);
@@ -393,7 +397,7 @@ begin
         end;
       end;
 
-      Client.Log(header.Level, header.DateTime, msg, details);
+      Client.Log(header.Level, header.DateTime, msg, category, details);
     except
       on E:EReadError do
         ClosePipe;
