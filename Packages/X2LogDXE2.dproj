@@ -107,6 +107,7 @@
 			<DCCReference Include="..\X2Log.Details.Registry.pas"/>
 			<DCCReference Include="..\X2Log.Util.Stream.pas"/>
 			<DCCReference Include="..\X2Log.Translations.Dutch.pas"/>
+			<DCCReference Include="..\X2Log.Decorator.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

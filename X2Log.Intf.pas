@@ -90,6 +90,7 @@ type
     procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
 
     procedure Exception(AException: Exception; const AMessage: string = '');
+    procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
   end;
   
 
