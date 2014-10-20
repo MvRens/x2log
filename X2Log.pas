@@ -22,7 +22,7 @@ type
     FExceptionStrategy: IX2LogExceptionStrategy;
   protected
     { IX2LogExceptionCategory }
-    procedure Exception(AException: Exception; const AMessage: string = ''; const ACategory: string = ''); overload;
+    procedure Exception(AException: Exception; const AMessage: string = ''; const ACategory: string = ''); virtual; overload;
 
     property ExceptionStrategy: IX2LogExceptionStrategy read FExceptionStrategy;
   public
