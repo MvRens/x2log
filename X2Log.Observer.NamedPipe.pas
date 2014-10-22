@@ -146,8 +146,6 @@ end;
 
 procedure TX2LogNamedPipeClient.Send(AEntry: TX2LogQueueEntry);
 begin
-  OutputDebugString(PChar(AEntry.Message));
-
   if not Assigned(WriteBuffer) then
     DoSend(AEntry)
   else

@@ -22,7 +22,8 @@ uses
   X2Log.Details.Default in '..\X2Log.Details.Default.pas',
   X2Log.Details.Registry in '..\X2Log.Details.Registry.pas',
   X2Log.Details.Intf in '..\X2Log.Details.Intf.pas',
-  X2Log.Util.Stream in '..\X2Log.Util.Stream.pas';
+  X2Log.Util.Stream in '..\X2Log.Util.Stream.pas',
+  X2Log.Decorator in '..\X2Log.Decorator.pas';
 
 {$R *.res}
 

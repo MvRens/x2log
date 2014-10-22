@@ -62,6 +62,13 @@ type
     btnLock: TButton;
     btnUnlock: TButton;
     btnCategory: TButton;
+    tsTimer: TTabSheet;
+    lblTimer: TLabel;
+    lblInterval: TLabel;
+    edtInterval: TEdit;
+    btnTimerStart: TButton;
+    btnTimerStop: TButton;
+    Timer: TTimer;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -83,6 +90,9 @@ type
     procedure btnGraphicClick(Sender: TObject);
     procedure btnNamedPipeRefreshClick(Sender: TObject);
     procedure btnCategoryClick(Sender: TObject);
+    procedure btnTimerStartClick(Sender: TObject);
+    procedure btnTimerStopClick(Sender: TObject);
+    procedure TimerTimer(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
@@ -362,6 +372,34 @@ begin
   finally
     lbNamedPipeServers.Items.EndUpdate;
   end;
+end;
+
+
+procedure TMainForm.btnTimerStartClick(Sender: TObject);
+begin
+  Timer.Interval := StrToIntDef(edtInterval.Text, 5) * 1000;
+  Timer.Enabled := True;
+
+  btnTimerStart.Enabled := False;
+  btnTimerStop.Enabled := True;
+end;
+
+
+procedure TMainForm.btnTimerStopClick(Sender: TObject);
+begin
+  Timer.Enabled := False;
+
+  btnTimerStart.Enabled := True;
+  btnTimerStop.Enabled := False;
+end;
+
+
+procedure TMainForm.TimerTimer(Sender: TObject);
+begin
+  FLog.Warning('Batch start');
+  FLog.Info('Message 1');
+  FLog.Info('Message 2');
+  FLog.Info('Message 3');
 end;
 
 end.

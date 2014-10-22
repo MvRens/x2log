@@ -150,7 +150,7 @@ end;
 constructor TX2LogObserverWorkerThread.Create;
 begin
   FThreadStartSignal := TEvent.Create(nil, True, False, '');
-  FLogQueueSignal := TEvent.Create(nil, False, False, '');
+  FLogQueueSignal := TEvent.Create(nil, True, False, '');
   FLogQueue := TObjectQueue<TX2LogQueueEntry>.Create(True);
 
   inherited Create(False);
@@ -177,11 +177,10 @@ begin
   TMonitor.Enter(LogQueue);
   try
     LogQueue.Enqueue(TX2LogQueueEntry.Create(ALevel, ADateTime, AMessage, ACategory, ADetails));
+    LogQueueSignal.SetEvent;
   finally
     TMonitor.Exit(LogQueue);
   end;
-
-  LogQueueSignal.SetEvent;
 end;
 
 
@@ -205,7 +204,9 @@ begin
       TMonitor.Enter(LogQueue);
       try
         if LogQueue.Count > 0 then
-          entry := LogQueue.Extract;
+          entry := LogQueue.Extract
+        else
+          LogQueueSignal.ResetEvent;
       finally
         TMonitor.Exit(LogQueue);
       end;

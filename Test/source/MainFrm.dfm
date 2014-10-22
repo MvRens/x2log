@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 0
   Caption = 'X'#178'Log Test'
   ClientHeight = 544
-  ClientWidth = 611
+  ClientWidth = 647
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,23 +20,25 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 8
     Top = 176
-    Width = 595
+    Width = 631
     Height = 327
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsEvent
+    ActivePage = tsNamedPipe
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
+    ExplicitWidth = 595
     object tsEvent: TTabSheet
       Caption = 'Event'
+      ExplicitWidth = 587
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
         Top = 40
-        Width = 571
+        Width = 607
         Height = 251
         Margins.Left = 8
         Margins.Top = 40
@@ -46,6 +48,7 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
+        ExplicitWidth = 571
       end
       object btnEventStart: TButton
         Left = 8
@@ -68,6 +71,10 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File'
+      ExplicitWidth = 587
+      DesignSize = (
+        623
+        299)
       object lblFilename: TLabel
         Left = 12
         Top = 64
@@ -96,8 +103,9 @@ object MainForm: TMainForm
       object edtFilename: TEdit
         Left = 88
         Top = 61
-        Width = 489
+        Width = 525
         Height = 21
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 2
         Text = 'X2LogTest\Test.log'
       end
@@ -130,8 +138,9 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
+      ExplicitWidth = 587
       DesignSize = (
-        587
+        623
         299)
       object lblPipeName: TLabel
         Left = 8
@@ -168,13 +177,14 @@ object MainForm: TMainForm
       object edtPipeName: TEdit
         Left = 88
         Top = 61
-        Width = 489
+        Width = 525
         Height = 21
+        Anchors = [akLeft, akTop, akRight]
         TabOrder = 2
         Text = 'X2LogTest'
       end
       object btnNamedPipeRefresh: TButton
-        Left = 502
+        Left = 538
         Top = 96
         Width = 75
         Height = 25
@@ -182,15 +192,17 @@ object MainForm: TMainForm
         Caption = '&Refresh'
         TabOrder = 3
         OnClick = btnNamedPipeRefreshClick
+        ExplicitLeft = 502
       end
       object lbNamedPipeServers: TListBox
         Left = 8
         Top = 132
-        Width = 569
+        Width = 605
         Height = 157
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 13
         TabOrder = 4
+        ExplicitWidth = 569
       end
     end
   end
@@ -198,7 +210,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 8
     Top = 511
-    Width = 595
+    Width = 631
     Height = 25
     Margins.Left = 8
     Margins.Top = 0
@@ -207,8 +219,9 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 595
     object btnClose: TButton
-      Left = 520
+      Left = 556
       Top = 0
       Width = 75
       Height = 25
@@ -217,6 +230,7 @@ object MainForm: TMainForm
       Caption = 'Close'
       TabOrder = 1
       OnClick = btnCloseClick
+      ExplicitLeft = 520
     end
     object btnMonitorForm: TButton
       Left = 0
@@ -266,19 +280,21 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 8
     Top = 32
-    Width = 595
+    Width = 631
     Height = 104
     Margins.Left = 8
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 0
-    ActivePage = tsBinary
+    ActivePage = tsTimer
     Align = alTop
     TabOrder = 2
+    ExplicitWidth = 595
     object tsText: TTabSheet
       Caption = 'Text'
+      ExplicitWidth = 587
       DesignSize = (
-        587
+        623
         76)
       object lblMessage: TLabel
         Left = 16
@@ -326,12 +342,13 @@ object MainForm: TMainForm
       object edtMessage: TEdit
         Left = 92
         Top = 12
-        Width = 477
+        Width = 513
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 4
         Text = 'Hello world!'
         OnKeyDown = edtMessageKeyDown
+        ExplicitWidth = 477
       end
       object btnCategory: TButton
         Left = 416
@@ -346,8 +363,9 @@ object MainForm: TMainForm
     object tsException: TTabSheet
       Caption = 'Exception'
       ImageIndex = 1
+      ExplicitWidth = 587
       DesignSize = (
-        587
+        623
         76)
       object lblException: TLabel
         Left = 16
@@ -368,17 +386,19 @@ object MainForm: TMainForm
       object edtException: TEdit
         Left = 92
         Top = 12
-        Width = 477
+        Width = 513
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         TabOrder = 1
         Text = 'Horrible things are happening.'
         OnKeyDown = edtExceptionKeyDown
+        ExplicitWidth = 477
       end
     end
     object tsBinary: TTabSheet
       Caption = 'Binary'
       ImageIndex = 2
+      ExplicitWidth = 587
       object btnBinaryRawByteString: TButton
         Left = 12
         Top = 15
@@ -398,12 +418,60 @@ object MainForm: TMainForm
         OnClick = btnGraphicClick
       end
     end
+    object tsTimer: TTabSheet
+      Caption = 'Timer'
+      ImageIndex = 3
+      ExplicitWidth = 587
+      object lblTimer: TLabel
+        Left = 8
+        Top = 12
+        Width = 580
+        Height = 13
+        Caption = 
+          'Send out a series of log messages at regular intervals. Tests an' +
+          ' issue with the thread queue in the named pipe observer.'
+      end
+      object lblInterval: TLabel
+        Left = 8
+        Top = 43
+        Width = 92
+        Height = 13
+        Caption = 'Interval (seconds):'
+      end
+      object edtInterval: TEdit
+        Left = 130
+        Top = 40
+        Width = 89
+        Height = 21
+        TabOrder = 0
+        Text = '1'
+      end
+      object btnTimerStart: TButton
+        Left = 228
+        Top = 38
+        Width = 75
+        Height = 25
+        Caption = 'Start'
+        TabOrder = 1
+        OnClick = btnTimerStartClick
+      end
+      object btnTimerStop: TButton
+        Left = 309
+        Top = 38
+        Width = 75
+        Height = 25
+        Caption = 'Stop'
+        Enabled = False
+        TabOrder = 2
+        OnClick = btnTimerStopClick
+      end
+    end
   end
   object pnlDispatch: TPanel
     AlignWithMargins = True
     Left = 8
     Top = 0
-    Width = 595
+    Width = 631
     Height = 24
     Margins.Left = 8
     Margins.Top = 0
@@ -420,6 +488,7 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
+    ExplicitWidth = 595
     object bvlDispatch: TBevel
       Left = 80
       Top = 12
@@ -432,7 +501,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 8
     Top = 144
-    Width = 595
+    Width = 631
     Height = 24
     Margins.Left = 8
     Margins.Top = 8
@@ -449,6 +518,7 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 4
+    ExplicitWidth = 595
     object bvlObservers: TBevel
       Left = 80
       Top = 12
@@ -463,7 +533,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140050000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140054000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -544,5 +614,12 @@ object MainForm: TMainForm
       801801000000000080180100000000008018010000000000C03C030000000000
       E07E070000000000FFFFFF000000000000000000000000000000000000000000
       000000000000}
+  end
+  object Timer: TTimer
+    Enabled = False
+    Interval = 10000
+    OnTimer = TimerTimer
+    Left = 464
+    Top = 176
   end
 end

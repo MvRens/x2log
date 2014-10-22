@@ -194,6 +194,7 @@
 			<DCCReference Include="..\X2Log.Details.Registry.pas"/>
 			<DCCReference Include="..\X2Log.Details.Intf.pas"/>
 			<DCCReference Include="..\X2Log.Util.Stream.pas"/>
+			<DCCReference Include="..\X2Log.Decorator.pas"/>
 			<RcItem Include="resources\Graphic.jpg">
 				<ResourceType>RCDATA</ResourceType>
 				<ResourceId>GraphicDetails</ResourceId>
