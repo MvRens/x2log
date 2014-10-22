@@ -117,7 +117,11 @@ var
 
 begin
   ForceDirectories(ExtractFilePath(FileName));
-  errorMsg := AEntry.Message;
+
+  if Length(AEntry.Category) > 0 then
+    errorMsg := Format(GetLogResourceString(@LogFileLineCategory), [AEntry.Message, AEntry.Category])
+  else
+    errorMsg := Format(GetLogResourceString(@LogFileLineNoCategory), [AEntry.Message]);
 
   if Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
   begin
@@ -160,7 +164,7 @@ begin
 
     //      ErrorLogs.Add(reportFileName);
 
-          errorMsg := errorMsg + Format(GetLogResourceString(@LogFileLineDetails), [ExtractFileName(detailsFileName)]);
+          errorMsg := Format(GetLogResourceString(@LogFileLineDetails), [errorMsg, ExtractFileName(detailsFileName)]);
           break;
         end;
       until False;

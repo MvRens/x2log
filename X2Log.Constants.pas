@@ -21,14 +21,32 @@ resourcestring
     X2Log.Observer.LogFile
   }
 
+  { The format of the log line without a category
+
+      0: Message
+  }
+  LogFileLineNoCategory = '%0:s';
+
+  { The format of the log line with a category
+
+      0: Message
+      1: Category
+  }
+  LogFileLineCategory = '%1:s: %0:s';
+
+
   { Date format used to determine the file name of detail files }
   LogFileNameDateFormat = 'yyyymmdd_hhnn';
 
   { Date format used in log files }
   LogFileLineDateFormat = 'yyyy-mm-dd hh:nn';
 
-  { The text added to the message if details are stored externally }
-  LogFileLineDetails = ' (details: %s)';
+  { The format of the log message when details are stored externally
+
+      0: Message
+      1: Details filename
+   }
+  LogFileLineDetails = '%0:s (details: %1:s)';
 
 
   {
