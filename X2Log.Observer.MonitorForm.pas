@@ -12,13 +12,14 @@ uses
   Vcl.ExtCtrls,
   Vcl.Forms,
   Vcl.ImgList,
+  Vcl.Menus,
   Vcl.StdCtrls,
   Vcl.ToolWin,
   VirtualTrees,
   Winapi.Messages,
 
   X2Log.Details.Intf,
-  X2Log.Intf, Vcl.Menus;
+  X2Log.Intf;
 
 
 const
@@ -99,7 +100,6 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure vstLogFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstLogGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
-    procedure vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
     procedure vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
     procedure actCloseExecute(Sender: TObject);
@@ -799,20 +799,6 @@ begin
 
     ColumnMessage:
       CellText := nodeData^.Message;
-  end;
-end;
-
-
-procedure TX2LogObserverMonitorForm.vstLogGetHint(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
-                                                  var LineBreakStyle: TVTTooltipLineBreakStyle; var HintText: string);
-var
-  nodeData: PLogEntryNodeData;
-
-begin
-  if Column = ColumnLevel then
-  begin
-    nodeData := Sender.GetNodeData(Node);
-    HintText := GetLogLevelText(nodeData^.Level);
   end;
 end;
 

@@ -159,7 +159,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Header.Font.Name = 'Tahoma'
       Header.Font.Style = []
       Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoVisible]
-      HintMode = hmHint
+      HintMode = hmTooltip
       Images = ilsLog
       TabOrder = 0
       TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toThemeAware]
@@ -168,7 +168,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       OnFreeNode = vstLogFreeNode
       OnGetText = vstLogGetText
       OnGetImageIndex = vstLogGetImageIndex
-      OnGetHint = vstLogGetHint
       Columns = <
         item
           Options = [coAllowClick, coDraggable, coEnabled, coParentBidiMode, coParentColor, coShowDropMark, coVisible, coAllowFocus]
@@ -267,12 +266,14 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Margins.Bottom = 0
     Panels = <>
     SimplePanel = True
+    ExplicitLeft = 20
+    ExplicitTop = 503
   end
   object ilsLog: TImageList
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000F40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000F80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
