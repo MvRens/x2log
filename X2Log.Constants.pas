@@ -50,6 +50,15 @@ resourcestring
 
 
   {
+    X2Log.Observer.RollingLogFile
+  }
+
+  { Date format used in the rolling log file's file name }
+  RollingLogFileDateFormat = 'yyyy.mm.dd';
+
+
+
+  {
     X2Log.Observer.MonitorForm
   }
 

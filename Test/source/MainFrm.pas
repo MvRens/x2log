@@ -69,6 +69,16 @@ type
     btnTimerStart: TButton;
     btnTimerStop: TButton;
     Timer: TTimer;
+    tsRollingFile: TTabSheet;
+    lblRollingFileName: TLabel;
+    btnRollingFileStart: TButton;
+    btnRollingFileStop: TButton;
+    edtRollingFileName: TEdit;
+    rbRollingProgramData: TRadioButton;
+    rbRollingUserData: TRadioButton;
+    rbRollingAbsolute: TRadioButton;
+    lblRollingDays: TLabel;
+    edtRollingDays: TEdit;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -93,10 +103,13 @@ type
     procedure btnTimerStartClick(Sender: TObject);
     procedure btnTimerStopClick(Sender: TObject);
     procedure TimerTimer(Sender: TObject);
+    procedure btnRollingFileStartClick(Sender: TObject);
+    procedure btnRollingFileStopClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
     FFileObserver: IX2LogObserver;
+    FRollingFileObserver: IX2LogObserver;
     FNamedPipeObserver: IX2LogObserver;
   protected
     procedure DoLog(Sender: TObject; Level: TX2LogLevel; DateTime: TDateTime; const Msg, Category: string; Details: IX2LogDetails);
@@ -119,6 +132,7 @@ uses
   X2Log.Observer.LogFile,
   X2Log.Observer.MonitorForm,
   X2Log.Observer.NamedPipe,
+  X2Log.Observer.RollingLogFile,
   X2Log.Global;
 
 
@@ -330,6 +344,41 @@ begin
     FFileObserver := nil;
 
     tsFile.ImageIndex := 0;
+  end;
+end;
+
+
+procedure TMainForm.btnRollingFileStartClick(Sender: TObject);
+var
+  days: Integer;
+
+begin
+  if not Assigned(FRollingFileObserver) then
+  begin
+    days := StrToIntDef(edtRollingDays.Text, 7);
+
+    if rbRollingProgramData.Checked then
+      FRollingFileObserver := TX2RollingLogFileObserver.CreateInProgramData(edtFilename.Text, days)
+    else if rbRollingUserData.Checked then
+      FRollingFileObserver := TX2RollingLogFileObserver.CreateInUserAppData(edtFilename.Text, days)
+    else
+      FRollingFileObserver := TX2RollingLogFileObserver.Create(edtFilename.Text, days);
+
+    FLog.Attach(FRollingFileObserver);
+
+    tsRollingFile.ImageIndex := 1;
+  end;
+end;
+
+
+procedure TMainForm.btnRollingFileStopClick(Sender: TObject);
+begin
+  if Assigned(FRollingFileObserver) then
+  begin
+    FLog.Detach(FRollingFileObserver);
+    FRollingFileObserver := nil;
+
+    tsRollingFile.ImageIndex := 0;
   end;
 end;
 

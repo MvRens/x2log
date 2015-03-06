@@ -17,10 +17,25 @@ type
     FFileName: string;
   protected
     function CreateWorkerThread: TX2LogObserverWorkerThread; override;
+
+    property FileName: string read FFileName;
   public
     constructor Create(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
     constructor CreateInProgramData(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
     constructor CreateInUserAppData(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+  end;
+
+
+  TX2LogFileWorkerThread = class(TX2LogObserverWorkerThread)
+  private
+    FFileName: string;
+  protected
+    function GetFileName: string; virtual;
+    procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
+
+    property FileName: string read GetFileName;
+  public
+    constructor Create(const AFileName: string);
   end;
 
 
@@ -33,19 +48,6 @@ uses
   Winapi.Windows,
 
   X2Log.Constants;
-
-
-type
-  TX2LogFileWorkerThread = class(TX2LogObserverWorkerThread)
-  private
-    FFileName: string;
-  protected
-    procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
-
-    property FileName: string read FFileName;
-  public
-    constructor Create(const AFileName: string);
-  end;
 
 
 
@@ -90,7 +92,7 @@ end;
 
 function TX2LogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2LogFileWorkerThread.Create(FFileName);
+  Result := TX2LogFileWorkerThread.Create(FileName);
 end;
 
 
@@ -179,6 +181,12 @@ begin
   finally
     FreeAndNil(writer);
   end;
+end;
+
+
+function TX2LogFileWorkerThread.GetFileName: string;
+begin
+  Result := FFileName;
 end;
 
 end.

@@ -26,14 +26,12 @@ object MainForm: TMainForm
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsNamedPipe
+    ActivePage = tsRollingFile
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
-    ExplicitWidth = 595
     object tsEvent: TTabSheet
       Caption = 'Event'
-      ExplicitWidth = 587
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
@@ -48,7 +46,6 @@ object MainForm: TMainForm
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        ExplicitWidth = 571
       end
       object btnEventStart: TButton
         Left = 8
@@ -71,7 +68,6 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File'
-      ExplicitWidth = 587
       DesignSize = (
         623
         299)
@@ -122,7 +118,7 @@ object MainForm: TMainForm
       object rbUserData: TRadioButton
         Left = 88
         Top = 111
-        Width = 113
+        Width = 141
         Height = 17
         Caption = 'User Application Data'
         TabOrder = 4
@@ -136,9 +132,89 @@ object MainForm: TMainForm
         TabOrder = 5
       end
     end
+    object tsRollingFile: TTabSheet
+      Caption = 'Rolling File'
+      DesignSize = (
+        623
+        299)
+      object lblRollingFileName: TLabel
+        Left = 12
+        Top = 64
+        Width = 46
+        Height = 13
+        Caption = 'Filename:'
+      end
+      object lblRollingDays: TLabel
+        Left = 12
+        Top = 176
+        Width = 67
+        Height = 13
+        Caption = 'Days to keep:'
+      end
+      object btnRollingFileStart: TButton
+        Left = 8
+        Top = 8
+        Width = 75
+        Height = 25
+        Caption = 'Start'
+        TabOrder = 0
+        OnClick = btnRollingFileStartClick
+      end
+      object btnRollingFileStop: TButton
+        Left = 89
+        Top = 8
+        Width = 75
+        Height = 25
+        Caption = 'Stop'
+        TabOrder = 1
+        OnClick = btnRollingFileStopClick
+      end
+      object edtRollingFileName: TEdit
+        Left = 88
+        Top = 61
+        Width = 525
+        Height = 21
+        Anchors = [akLeft, akTop, akRight]
+        TabOrder = 2
+        Text = 'X2LogTest\Test.log'
+      end
+      object rbRollingProgramData: TRadioButton
+        Left = 88
+        Top = 88
+        Width = 113
+        Height = 17
+        Caption = 'Program Data'
+        Checked = True
+        TabOrder = 3
+        TabStop = True
+      end
+      object rbRollingUserData: TRadioButton
+        Left = 88
+        Top = 111
+        Width = 141
+        Height = 17
+        Caption = 'User Application Data'
+        TabOrder = 4
+      end
+      object rbRollingAbsolute: TRadioButton
+        Left = 88
+        Top = 134
+        Width = 113
+        Height = 17
+        Caption = 'Absolute path'
+        TabOrder = 5
+      end
+      object edtRollingDays: TEdit
+        Left = 88
+        Top = 173
+        Width = 61
+        Height = 21
+        TabOrder = 6
+        Text = '7'
+      end
+    end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
-      ExplicitWidth = 587
       DesignSize = (
         623
         299)
@@ -192,7 +268,6 @@ object MainForm: TMainForm
         Caption = '&Refresh'
         TabOrder = 3
         OnClick = btnNamedPipeRefreshClick
-        ExplicitLeft = 502
       end
       object lbNamedPipeServers: TListBox
         Left = 8
@@ -202,7 +277,6 @@ object MainForm: TMainForm
         Anchors = [akLeft, akTop, akRight, akBottom]
         ItemHeight = 13
         TabOrder = 4
-        ExplicitWidth = 569
       end
     end
   end
@@ -219,7 +293,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 595
     object btnClose: TButton
       Left = 556
       Top = 0
@@ -230,7 +303,6 @@ object MainForm: TMainForm
       Caption = 'Close'
       TabOrder = 1
       OnClick = btnCloseClick
-      ExplicitLeft = 520
     end
     object btnMonitorForm: TButton
       Left = 0
@@ -289,10 +361,8 @@ object MainForm: TMainForm
     ActivePage = tsTimer
     Align = alTop
     TabOrder = 2
-    ExplicitWidth = 595
     object tsText: TTabSheet
       Caption = 'Text'
-      ExplicitWidth = 587
       DesignSize = (
         623
         76)
@@ -348,7 +418,6 @@ object MainForm: TMainForm
         TabOrder = 4
         Text = 'Hello world!'
         OnKeyDown = edtMessageKeyDown
-        ExplicitWidth = 477
       end
       object btnCategory: TButton
         Left = 416
@@ -363,7 +432,6 @@ object MainForm: TMainForm
     object tsException: TTabSheet
       Caption = 'Exception'
       ImageIndex = 1
-      ExplicitWidth = 587
       DesignSize = (
         623
         76)
@@ -392,13 +460,11 @@ object MainForm: TMainForm
         TabOrder = 1
         Text = 'Horrible things are happening.'
         OnKeyDown = edtExceptionKeyDown
-        ExplicitWidth = 477
       end
     end
     object tsBinary: TTabSheet
       Caption = 'Binary'
       ImageIndex = 2
-      ExplicitWidth = 587
       object btnBinaryRawByteString: TButton
         Left = 12
         Top = 15
@@ -421,7 +487,6 @@ object MainForm: TMainForm
     object tsTimer: TTabSheet
       Caption = 'Timer'
       ImageIndex = 3
-      ExplicitWidth = 587
       object lblTimer: TLabel
         Left = 8
         Top = 12
@@ -488,7 +553,6 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 3
-    ExplicitWidth = 595
     object bvlDispatch: TBevel
       Left = 80
       Top = 12
@@ -518,7 +582,6 @@ object MainForm: TMainForm
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 4
-    ExplicitWidth = 595
     object bvlObservers: TBevel
       Left = 80
       Top = 12
@@ -533,7 +596,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140054000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140058000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
