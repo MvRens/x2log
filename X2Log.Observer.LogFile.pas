@@ -14,28 +14,28 @@ uses
 type
   TX2LogFileObserver = class(TX2LogCustomThreadedObserver)
   private
-    FFileName: string;
+    FOutputFileName: string;
   protected
     function CreateWorkerThread: TX2LogObserverWorkerThread; override;
 
-    property FileName: string read FFileName;
+    property OutputFileName: string read FOutputFileName;
   public
-    constructor Create(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInProgramData(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInUserAppData(const AFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+    constructor Create(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+    constructor CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+    constructor CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
   end;
 
 
   TX2LogFileWorkerThread = class(TX2LogObserverWorkerThread)
   private
-    FFileName: string;
+    FOutputFileName: string;
   protected
-    function GetFileName: string; virtual;
+    function GetFileName(AEntry: TX2LogQueueEntry): string; virtual;
     procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
 
-    property FileName: string read GetFileName;
+    property OutputFileName: string read FOutputFileName;
   public
-    constructor Create(const AFileName: string);
+    constructor Create(const AOutputFileName: string);
   end;
 
 
@@ -52,15 +52,15 @@ uses
 
 
 { TX2LogFileObserver }
-constructor TX2LogFileObserver.Create(const AFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.Create(const AOutputFileName: string; ALogLevels: TX2LogLevels);
 begin
-  FFileName := AFileName;
+  FOutputFileName := AOutputFileName;
 
   inherited Create(ALogLevels);
 end;
 
 
-constructor TX2LogFileObserver.CreateInProgramData(const AFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels);
 var
   path: PWideChar;
 
@@ -68,14 +68,14 @@ begin
   GetMem(path, MAX_PATH);
   try
     OleCheck(SHGetFolderPath(0, CSIDL_COMMON_APPDATA, 0, SHGFP_TYPE_CURRENT, path));
-    Create(IncludeTrailingPathDelimiter(path) + AFileName, ALogLevels);
+    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels);
   finally
     FreeMem(path);
   end;
 end;
 
 
-constructor TX2LogFileObserver.CreateInUserAppData(const AFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels);
 var
   path: PWideChar;
 
@@ -83,7 +83,7 @@ begin
   GetMem(path, MAX_PATH);
   try
     OleCheck(SHGetFolderPath(0, CSIDL_APPDATA, 0, SHGFP_TYPE_CURRENT, path));
-    Create(IncludeTrailingPathDelimiter(path) + AFileName, ALogLevels);
+    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels);
   finally
     FreeMem(path);
   end;
@@ -92,14 +92,14 @@ end;
 
 function TX2LogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2LogFileWorkerThread.Create(FileName);
+  Result := TX2LogFileWorkerThread.Create(OutputFileName);
 end;
 
 
 { TX2LogFileWorkerThread }
-constructor TX2LogFileWorkerThread.Create(const AFileName: string);
+constructor TX2LogFileWorkerThread.Create(const AOutputFileName: string);
 begin
-  FFileName := AFileName;
+  FOutputFileName := AOutputFileName;
 
   inherited Create;
 end;
@@ -107,6 +107,7 @@ end;
 
 procedure TX2LogFileWorkerThread.ProcessEntry(AEntry: TX2LogQueueEntry);
 var
+  fileName: string;
   baseReportFileName: string;
   errorMsg: string;
   detailsExtension: string;
@@ -118,7 +119,8 @@ var
   logDetailsStreamable: IX2LogDetailsStreamable;
 
 begin
-  ForceDirectories(ExtractFilePath(FileName));
+  fileName := GetFileName(AEntry);
+  ForceDirectories(ExtractFilePath(fileName));
 
   if Length(AEntry.Category) > 0 then
     errorMsg := Format(GetLogResourceString(@LogFileLineCategory), [AEntry.Message, AEntry.Category])
@@ -127,8 +129,8 @@ begin
 
   if Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
   begin
-    detailsExtension := ExtractFileExt(FileName);
-    baseReportFileName := ChangeFileExt(FileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), AEntry.DateTime));
+    detailsExtension := ExtractFileExt(fileName);
+    baseReportFileName := ChangeFileExt(fileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), AEntry.DateTime));
     detailsFileName := baseReportFileName + detailsExtension;
     detailsNumber := 0;
 
@@ -174,7 +176,7 @@ begin
   end;
 
   { Append line to log file }
-  writer := TFile.AppendText(FileName);
+  writer := TFile.AppendText(fileName);
   try
     writer.WriteLine('[' + FormatDateTime(GetLogResourceString(@LogFileLineDateFormat), AEntry.DateTime) + '] ' +
                      GetLogLevelText(AEntry.Level) + ': ' + errorMsg);
@@ -184,9 +186,9 @@ begin
 end;
 
 
-function TX2LogFileWorkerThread.GetFileName: string;
+function TX2LogFileWorkerThread.GetFileName(AEntry: TX2LogQueueEntry): string;
 begin
-  Result := FFileName;
+  Result := FOutputFileName;
 end;
 
 end.

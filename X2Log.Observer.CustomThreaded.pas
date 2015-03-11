@@ -52,7 +52,6 @@ type
 
   TX2LogObserverWorkerThread = class(TThread)
   private
-    FFileName: string;
     FLogQueue: TObjectQueue<TX2LogQueueEntry>;
     FLogQueueSignal: TEvent;
     FThreadStartSignal: TEvent;
@@ -66,7 +65,6 @@ type
     procedure WaitForEntry; virtual;
     procedure ProcessEntry(AEntry: TX2LogQueueEntry); virtual; abstract;
 
-    property FileName: string read FFileName;
     property LogQueue: TObjectQueue<TX2LogQueueEntry> read FLogQueue;
     property LogQueueSignal: TEvent read FLogQueueSignal;
   public

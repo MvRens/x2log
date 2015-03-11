@@ -35,7 +35,7 @@ type
     FFormatSettings: TFormatSettings;
     FDateFormat: string;
   protected
-    function GetFileName: string; override;
+    function GetFileName(AEntry: TX2LogQueueEntry): string; override;
     function GetDateFileName(ADate: TDateTime): string;
 
     procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
@@ -85,7 +85,7 @@ end;
 
 function TX2RollingLogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2RollingLogFileWorkerThread.Create(FileName, Days);
+  Result := TX2RollingLogFileWorkerThread.Create(OutputFileName, Days);
 end;
 
 
@@ -100,9 +100,9 @@ begin
 end;
 
 
-function TX2RollingLogFileWorkerThread.GetFileName: string;
+function TX2RollingLogFileWorkerThread.GetFileName(AEntry: TX2LogQueueEntry): string;
 begin
-  Result := GetDateFileName(Date);
+  Result := GetDateFileName(AEntry.DateTime);
 end;
 
 
@@ -111,7 +111,7 @@ var
   baseFileName: string;
 
 begin
-  baseFileName := inherited GetFileName;
+  baseFileName := OutputFileName;
   Result := ChangeFileExt(baseFileName, '') + '.' +
             FormatDateTime(FDateFormat, ADate, FFormatSettings) +
             ExtractFileExt(baseFileName);
@@ -140,7 +140,7 @@ var
   fileName: string;
 
 begin
-  baseFileName := inherited GetFileName;
+  baseFileName := OutputFileName;
   fileMask := ChangeFileExt(ExtractFileName(baseFileName), '') + '.*' +
               ExtractFileExt(baseFileName);
 
