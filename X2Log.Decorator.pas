@@ -8,6 +8,8 @@ uses
 
 
 type
+  TX2LogCategoryDecoratorClass = class of TX2LogCategoryDecorator;
+
   TX2LogCategoryDecorator = class(TInterfacedObject, IX2Log)
   private
     FCategoryName: string;
@@ -106,7 +108,7 @@ end;
 function TX2LogCategoryDecorator.Category(const ACategory: string): IX2Log;
 begin
   if Assigned(DecoratedLog) then
-    Result := Self.Create(DecoratedLog, GetCategory(ACategory));
+    Result := (TX2LogCategoryDecoratorClass(Self.ClassType)).Create(DecoratedLog, GetCategory(ACategory));
 end;
 
 

@@ -271,8 +271,25 @@ end;
 
 
 procedure TMainForm.btnCategoryClick(Sender: TObject);
+
+  procedure Category2(ALog: IX2Log);
+  begin
+    ALog.Info(edtMessage.Text);
+  end;
+
+
+  procedure Category1(ALog: IX2Log);
+  begin
+    ALog.Info('Category 1');
+    Category2(ALog.Category('Sub-category'));
+    ALog.Info('/Category 1');
+  end;
+
+
 begin
-  FLog.Category('Test').Info(edtMessage.Text);
+  FLog.Info('Categories');
+  Category1(FLog.Category('Test'));
+  FLog.Info('/Categories');
 end;
 
 
