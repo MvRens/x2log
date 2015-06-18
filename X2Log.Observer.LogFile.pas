@@ -15,27 +15,31 @@ type
   TX2LogFileObserver = class(TX2LogCustomThreadedObserver)
   private
     FOutputFileName: string;
+    FLogDetails: Boolean;
   protected
     function CreateWorkerThread: TX2LogObserverWorkerThread; override;
 
     property OutputFileName: string read FOutputFileName;
+    property LogDetails: Boolean read FLogDetails;
   public
-    constructor Create(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+    constructor Create(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
+    constructor CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
+    constructor CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
   end;
 
 
   TX2LogFileWorkerThread = class(TX2LogObserverWorkerThread)
   private
     FOutputFileName: string;
+    FLogDetails: Boolean;
   protected
     function GetFileName(AEntry: TX2LogQueueEntry): string; virtual;
     procedure ProcessEntry(AEntry: TX2LogQueueEntry); override;
 
     property OutputFileName: string read FOutputFileName;
+    property LogDetails: Boolean read FLogDetails;
   public
-    constructor Create(const AOutputFileName: string);
+    constructor Create(const AOutputFileName: string; ALogDetails: Boolean = True);
   end;
 
 
@@ -52,7 +56,7 @@ uses
 
 
 { TX2LogFileObserver }
-constructor TX2LogFileObserver.Create(const AOutputFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.Create(const AOutputFileName: string; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 begin
   FOutputFileName := AOutputFileName;
 
@@ -60,7 +64,7 @@ begin
 end;
 
 
-constructor TX2LogFileObserver.CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.CreateInProgramData(const AOutputFileName: string; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 var
   path: PWideChar;
 
@@ -68,14 +72,14 @@ begin
   GetMem(path, MAX_PATH);
   try
     OleCheck(SHGetFolderPath(0, CSIDL_COMMON_APPDATA, 0, SHGFP_TYPE_CURRENT, path));
-    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels);
+    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels, ALogDetails);
   finally
     FreeMem(path);
   end;
 end;
 
 
-constructor TX2LogFileObserver.CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels);
+constructor TX2LogFileObserver.CreateInUserAppData(const AOutputFileName: string; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 var
   path: PWideChar;
 
@@ -83,7 +87,7 @@ begin
   GetMem(path, MAX_PATH);
   try
     OleCheck(SHGetFolderPath(0, CSIDL_APPDATA, 0, SHGFP_TYPE_CURRENT, path));
-    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels);
+    Create(IncludeTrailingPathDelimiter(path) + AOutputFileName, ALogLevels, ALogDetails);
   finally
     FreeMem(path);
   end;
@@ -92,14 +96,15 @@ end;
 
 function TX2LogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2LogFileWorkerThread.Create(OutputFileName);
+  Result := TX2LogFileWorkerThread.Create(OutputFileName, LogDetails);
 end;
 
 
 { TX2LogFileWorkerThread }
-constructor TX2LogFileWorkerThread.Create(const AOutputFileName: string);
+constructor TX2LogFileWorkerThread.Create(const AOutputFileName: string; ALogDetails: Boolean);
 begin
   FOutputFileName := AOutputFileName;
+  FLogDetails := ALogDetails;
 
   inherited Create;
 end;
@@ -127,7 +132,7 @@ begin
   else
     errorMsg := Format(GetLogResourceString(@LogFileLineNoCategory), [AEntry.Message]);
 
-  if Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
+  if LogDetails and Supports(AEntry.Details, IX2LogDetailsStreamable, logDetailsStreamable) then
   begin
     detailsExtension := ExtractFileExt(fileName);
     baseReportFileName := ChangeFileExt(fileName, '_' + FormatDateTime(GetLogResourceString(@LogFileNameDateFormat), AEntry.DateTime));

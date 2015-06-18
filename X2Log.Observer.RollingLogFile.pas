@@ -22,9 +22,9 @@ type
 
     property Days: Integer read FDays;
   public
-    constructor Create(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInProgramData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
-    constructor CreateInUserAppData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault);
+    constructor Create(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
+    constructor CreateInProgramData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
+    constructor CreateInUserAppData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
   end;
 
 
@@ -44,7 +44,7 @@ type
     property Days: Integer read FDays;
     property LastCleanupDate: TDateTime read FLastCleanupDate write FLastCleanupDate;
   public
-    constructor Create(const AFileName: string; ADays: Integer);
+    constructor Create(const AFileName: string; ADays: Integer; ALogDetails: Boolean = True);
   end;
 
 
@@ -59,38 +59,38 @@ uses
 
 
 { TX2RollingLogFileObserver }
-constructor TX2RollingLogFileObserver.Create(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels);
+constructor TX2RollingLogFileObserver.Create(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 begin
   FDays := ADays;
 
-  inherited Create(AFileName, ALogLevels);
+  inherited Create(AFileName, ALogLevels, ALogDetails);
 end;
 
 
-constructor TX2RollingLogFileObserver.CreateInProgramData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels);
+constructor TX2RollingLogFileObserver.CreateInProgramData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 begin
   FDays := ADays;
 
-  inherited CreateInProgramData(AFileName, ALogLevels);
+  inherited CreateInProgramData(AFileName, ALogLevels, ALogDetails);
 end;
 
 
-constructor TX2RollingLogFileObserver.CreateInUserAppData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels);
+constructor TX2RollingLogFileObserver.CreateInUserAppData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 begin
   FDays := ADays;
 
-  inherited CreateInUserAppData(AFileName, ALogLevels);
+  inherited CreateInUserAppData(AFileName, ALogLevels, ALogDetails);
 end;
 
 
 function TX2RollingLogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2RollingLogFileWorkerThread.Create(OutputFileName, Days);
+  Result := TX2RollingLogFileWorkerThread.Create(OutputFileName, Days, LogDetails);
 end;
 
 
 { TX2RollingLogFileWorkerThread }
-constructor TX2RollingLogFileWorkerThread.Create(const AFileName: string; ADays: Integer);
+constructor TX2RollingLogFileWorkerThread.Create(const AFileName: string; ADays: Integer; ALogDetails: Boolean);
 begin
   FDays := ADays;
   FFormatSettings := TFormatSettings.Create;
