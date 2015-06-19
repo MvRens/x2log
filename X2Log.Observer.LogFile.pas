@@ -59,6 +59,7 @@ uses
 constructor TX2LogFileObserver.Create(const AOutputFileName: string; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
 begin
   FOutputFileName := AOutputFileName;
+  FLogDetails := ALogDetails;
 
   inherited Create(ALogLevels);
 end;

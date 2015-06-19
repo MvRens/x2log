@@ -96,7 +96,7 @@ begin
   FFormatSettings := TFormatSettings.Create;
   FDateFormat := GetLogResourceString(@RollingLogFileDateFormat);
 
-  inherited Create(AFileName);
+  inherited Create(AFileName, ALogDetails);
 end;
 
 
