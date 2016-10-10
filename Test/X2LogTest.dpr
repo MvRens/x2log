@@ -24,7 +24,8 @@ uses
   X2Log.Details.Intf in '..\X2Log.Details.Intf.pas',
   X2Log.Util.Stream in '..\X2Log.Util.Stream.pas',
   X2Log.Decorator in '..\X2Log.Decorator.pas',
-  X2Log.Observer.RollingLogFile in '..\X2Log.Observer.RollingLogFile.pas';
+  X2Log.Observer.RollingLogFile in '..\X2Log.Observer.RollingLogFile.pas',
+  X2Log.Intf.NamedPipe in '..\X2Log.Intf.NamedPipe.pas';
 
 {$R *.res}
 

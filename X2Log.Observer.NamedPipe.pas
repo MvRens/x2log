@@ -28,6 +28,7 @@ uses
   Winapi.Windows,
 
   X2Log.Details.Registry,
+  X2Log.Intf.NamedPipe,
   X2Log.Util.Stream;
 
 

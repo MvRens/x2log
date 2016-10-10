@@ -46,6 +46,7 @@ uses
 
   X2Log.Details.Default,
   X2Log.Details.Registry,
+  X2Log.Intf.NamedPipe,
   X2Log.Util.Stream;
 
 
