@@ -17,6 +17,14 @@ type
   end;
 
 
+  IX2LogDetailsDictionary = interface(IX2LogDetails)
+    ['{24211DC0-F359-466B-A9CD-AF6AA3AE85F4}']
+    function GetValue(const Key: string): Variant;
+
+    property Values[const Key: string]: Variant read GetValue;
+  end;
+
+
   IX2LogDetailsBinary = interface(IX2LogDetails)
     ['{265739E7-BB65-434B-BCD3-BB89B936A854}']
     function GetAsStream: TStream;

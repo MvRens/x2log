@@ -3,6 +3,7 @@ unit X2Log.Details.Default;
 interface
 uses
   System.Classes,
+  System.Generics.Collections,
   Vcl.Graphics,
 
   X2Log.Details.Intf,
@@ -32,6 +33,29 @@ type
     procedure SaveToStream(AStream: TStream);
   end;
 
+
+  TX2LogDictionaryDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsDictionary,
+                                                     IX2LogDetailsCopyable, IX2LogDetailsStreamable)
+  private
+    FValues: TDictionary<string, Variant>;
+  public
+    class function CreateIfNotEmpty(AValues: array of const): TX2LogDictionaryDetails;
+
+    constructor Create(AValues: array of const);
+    destructor Destroy; override;
+
+    { IX2LogDetails }
+    function GetSerializerIID: TGUID;
+
+    { IX2LogDetailsDictionary }
+    function GetValue(const Key: string): Variant;
+
+    { IX2LogDetailsCopyable }
+    procedure CopyToClipboard;
+
+    { IX2LogDetailsStreamable }
+    procedure SaveToStream(AStream: TStream);
+  end;
 
 
   TX2LogBinaryDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsBinary,
@@ -98,6 +122,7 @@ uses
 
 const
   StringDetailsSerializerIID: TGUID = '{4223C30E-6E80-4D66-9EDC-F8688A7413D2}';
+  DictionaryDetailsSerializerIID: TGUID = '{1D28FF6E-8AA7-41FA-96D7-0CE921D9CA2E}';
   BinaryDetailsSerializerIID: TGUID = '{05F6E8BD-118E-41B3-B626-1F190CC2A7D3}';
   GraphicDetailsSerializerIID: TGUID = '{BD31E42A-83DC-4947-A862-79ABAE8D5056}';
 
@@ -105,6 +130,14 @@ const
 
 type
   TX2LogStringDetailsSerializer = class(TInterfacedObject, IX2LogDetailsSerializer)
+  public
+    { IX2LogDetailsSerializer }
+    procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
+    function Deserialize(AStream: TStream): IX2LogDetails;
+  end;
+
+
+  TX2LogDictionaryDetailsSerializer = class(TInterfacedObject, IX2LogDetailsSerializer)
   public
     { IX2LogDetailsSerializer }
     procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
@@ -175,6 +208,58 @@ begin
   finally
     FreeAndNil(writer);
   end;
+end;
+
+
+{ TX2LogDictionaryDetails }
+class function TX2LogDictionaryDetails.CreateIfNotEmpty(AValues: array of const): TX2LogDictionaryDetails;
+begin
+  if Length(AValues) > 0 then
+    Result := TX2LogDictionaryDetails.Create(AValues)
+  else
+    Result := nil;
+end;
+
+
+constructor TX2LogDictionaryDetails.Create(AValues: array of const);
+begin
+  inherited Create;
+
+  FValues := TDictionary<string, Variant>.Create();
+
+  // TODO parse AValues
+end;
+
+
+destructor TX2LogDictionaryDetails.Destroy;
+begin
+  FreeAndNil(FValues);
+
+  inherited Destroy;
+end;
+
+
+function TX2LogDictionaryDetails.GetSerializerIID: TGUID;
+begin
+  Result := DictionaryDetailsSerializerIID;
+end;
+
+
+function TX2LogDictionaryDetails.GetValue(const Key: string): Variant;
+begin
+  // TODO
+end;
+
+
+procedure TX2LogDictionaryDetails.CopyToClipboard;
+begin
+  // TODO
+end;
+
+
+procedure TX2LogDictionaryDetails.SaveToStream(AStream: TStream);
+begin
+  // TODO
 end;
 
 
@@ -311,6 +396,18 @@ begin
 end;
 
 
+{ TX2LogDictionaryDetailsSerializer }
+function TX2LogDictionaryDetailsSerializer.Deserialize(AStream: TStream): IX2LogDetails;
+begin
+  // TODO
+end;
+
+procedure TX2LogDictionaryDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+begin
+  // TODO
+end;
+
+
 { TX2LogBinaryDetailsSerializer }
 procedure TX2LogBinaryDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
 var
@@ -376,6 +473,7 @@ end;
 
 initialization
   TX2LogDetailsRegistry.Register(StringDetailsSerializerIID, TX2LogStringDetailsSerializer.Create);
+  TX2LogDetailsRegistry.Register(DictionaryDetailsSerializerIID, TX2LogDictionaryDetailsSerializer.Create);
   TX2LogDetailsRegistry.Register(BinaryDetailsSerializerIID, TX2LogBinaryDetailsSerializer.Create);
   TX2LogDetailsRegistry.Register(GraphicDetailsSerializerIID, TX2LogGraphicDetailsSerializer.Create);
 

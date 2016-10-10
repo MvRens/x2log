@@ -79,47 +79,23 @@ type
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
     procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure VerboseS(const AMessage: string; ANamedParams: array of const); overload;
 
     procedure Info(const AMessage: string; const ADetails: string = '');
     procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure InfoS(const AMessage: string; ANamedParams: array of const); overload;
 
     procedure Warning(const AMessage: string; const ADetails: string = '');
     procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure WarningS(const AMessage: string; ANamedParams: array of const); overload;
 
     procedure Error(const AMessage: string; const ADetails: string = '');
     procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure ErrorS(const AMessage: string; ANamedParams: array of const); overload;
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
   end;
-  
-
-
-  TX2LogMessageHeaderV1 = packed record
-    ID: Word;
-    Version: Byte;
-    Size: Word;
-    DateTime: TDateTime;
-    Level: TX2LogLevel;
-
-    {
-    Payload:
-
-      CategoryLength: Cardinal
-      Category: WideString
-      MessageLength: Cardinal
-      Message: WideString
-      DetailsLength: Cardinal
-      Details: WideString
-    }
-  end;
-
-
-  TX2LogMessageHeader = TX2LogMessageHeaderV1;
-
-const
-  X2LogMessageHeader: Word = $B258;
-  X2LogMessageVersion: Byte = 1;
 
 
 implementation

@@ -37,15 +37,19 @@ type
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
     procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure VerboseS(const AMessage: string; ANamedParams: array of const);
 
     procedure Info(const AMessage: string; const ADetails: string = '');
     procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure InfoS(const AMessage: string; ANamedParams: array of const);
 
     procedure Warning(const AMessage: string; const ADetails: string = '');
     procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure WarningS(const AMessage: string; ANamedParams: array of const);
 
     procedure Error(const AMessage: string; const ADetails: string = '');
     procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure ErrorS(const AMessage: string; ANamedParams: array of const);
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
@@ -126,6 +130,13 @@ begin
 end;
 
 
+procedure TX2LogCategoryDecorator.VerboseS(const AMessage: string; ANamedParams: array of const);
+begin
+  if Assigned(DecoratedLog) then
+    DecoratedLog.Log(TX2LogLevel.Verbose, Now, AMessage, CategoryName, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
+end;
+
+
 procedure TX2LogCategoryDecorator.Info(const AMessage, ADetails: string);
 begin
   if Assigned(DecoratedLog) then
@@ -139,6 +150,12 @@ begin
     DecoratedLog.Log(TX2LogLevel.Info, AMessage, CategoryName, ADetails);
 end;
 
+
+procedure TX2LogCategoryDecorator.InfoS(const AMessage: string; ANamedParams: array of const);
+begin
+  if Assigned(DecoratedLog) then
+    DecoratedLog.Log(TX2LogLevel.Info, Now, AMessage, CategoryName, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
+end;
 
 procedure TX2LogCategoryDecorator.Warning(const AMessage, ADetails: string);
 begin
@@ -154,6 +171,12 @@ begin
 end;
 
 
+procedure TX2LogCategoryDecorator.WarningS(const AMessage: string; ANamedParams: array of const);
+begin
+  if Assigned(DecoratedLog) then
+    DecoratedLog.Log(TX2LogLevel.Warning, Now, AMessage, CategoryName, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
+end;
+
 procedure TX2LogCategoryDecorator.Error(const AMessage, ADetails: string);
 begin
   if Assigned(DecoratedLog) then
@@ -165,6 +188,13 @@ procedure TX2LogCategoryDecorator.ErrorEx(const AMessage: string; ADetails: IX2L
 begin
   if Assigned(DecoratedLog) then
     DecoratedLog.Log(TX2LogLevel.Error, AMessage, CategoryName, ADetails);
+end;
+
+
+procedure TX2LogCategoryDecorator.ErrorS(const AMessage: string; ANamedParams: array of const);
+begin
+  if Assigned(DecoratedLog) then
+    DecoratedLog.Log(TX2LogLevel.Error, Now, AMessage, CategoryName, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
 end;
 
 

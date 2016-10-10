@@ -1,0 +1,6 @@
+__history/
+Test/lib/
+Test/bin/
+*.tvsconfig
+*.local
+*.identcache

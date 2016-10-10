@@ -26,15 +26,19 @@ type
 
     procedure Verbose(const AMessage: string; const ADetails: string = '');
     procedure VerboseEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure VerboseS(const AMessage: string; ANamedParams: array of const);
 
     procedure Info(const AMessage: string; const ADetails: string = '');
     procedure InfoEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure InfoS(const AMessage: string; ANamedParams: array of const);
 
     procedure Warning(const AMessage: string; const ADetails: string = '');
     procedure WarningEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure WarningS(const AMessage: string; ANamedParams: array of const);
 
     procedure Error(const AMessage: string; const ADetails: string = '');
     procedure ErrorEx(const AMessage: string; ADetails: IX2LogDetails = nil);
+    procedure ErrorS(const AMessage: string; ANamedParams: array of const);
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
@@ -85,6 +89,12 @@ begin
 end;
 
 
+procedure TX2Log.VerboseS(const AMessage: string; ANamedParams: array of const);
+begin
+  Log(TX2LogLevel.Verbose, Now, AMessage, LogCategoryDefault, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
+end;
+
+
 procedure TX2Log.Info(const AMessage, ADetails: string);
 begin
   Log(TX2LogLevel.Info, AMessage, LogCategoryDefault, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
@@ -94,6 +104,12 @@ end;
 procedure TX2Log.InfoEx(const AMessage: string; ADetails: IX2LogDetails);
 begin
   Log(TX2LogLevel.Info, AMessage, LogCategoryDefault, ADetails);
+end;
+
+
+procedure TX2Log.InfoS(const AMessage: string; ANamedParams: array of const);
+begin
+  Log(TX2LogLevel.Info, Now, AMessage, LogCategoryDefault, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
 end;
 
 
@@ -109,6 +125,12 @@ begin
 end;
 
 
+procedure TX2Log.WarningS(const AMessage: string; ANamedParams: array of const);
+begin
+  Log(TX2LogLevel.Warning, Now, AMessage, LogCategoryDefault, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
+end;
+
+
 procedure TX2Log.Error(const AMessage, ADetails: string);
 begin
   Log(TX2LogLevel.Error, AMessage, LogCategoryDefault, TX2LogStringDetails.CreateIfNotEmpty(ADetails));
@@ -118,6 +140,12 @@ end;
 procedure TX2Log.ErrorEx(const AMessage: string; ADetails: IX2LogDetails);
 begin
   Log(TX2LogLevel.Error, AMessage, LogCategoryDefault, ADetails);
+end;
+
+
+procedure TX2Log.ErrorS(const AMessage: string; ANamedParams: array of const);
+begin
+  Log(TX2LogLevel.Error, Now, AMessage, LogCategoryDefault, TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams));
 end;
 
 
