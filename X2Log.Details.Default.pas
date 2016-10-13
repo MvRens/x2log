@@ -34,10 +34,40 @@ type
   end;
 
 
-  TX2LogDictionaryDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsDictionary,
-                                                     IX2LogDetailsCopyable, IX2LogDetailsStreamable)
+  TX2LogDictionaryValueClass = class of TX2LogDictionaryValue;
+
+  TX2LogDictionaryValue = class(TObject)
   private
-    FValues: TDictionary<string, Variant>;
+    FValueType: TX2LogValueType;
+  protected
+    constructor Create(AValueType: TX2LogValueType; AStream: TStream); virtual;
+
+    procedure LoadFromStream(AStream: TStream); virtual; abstract;
+    procedure SaveToStream(AStream: TStream); virtual; abstract;
+
+    property ValueType: TX2LogValueType read FValueType;
+  end;
+
+
+  IX2LogDetailsDictionaryAccess = interface(IX2LogDetailsDictionary)
+    ['{60C46488-9DBD-4596-8BE9-916C61006F0E}']
+    function GetValue(const Key: string): TX2LogDictionaryValue;
+
+    property Value[const Key: string]: TX2LogDictionaryValue read GetValue;
+  end;
+
+  TX2LogValueDictionary = TObjectDictionary<string, TX2LogDictionaryValue>;
+
+
+  TX2LogDictionaryDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsDictionary,
+                                                     IX2LogDetailsDictionaryAccess)
+  private
+    FValues: TX2LogValueDictionary;
+  protected
+    constructor CreateOwned(AValues: TX2LogValueDictionary);
+
+    { IX2LogDetailsDictionaryAccess }
+    function GetValue(const Key: string): TX2LogDictionaryValue;
   public
     class function CreateIfNotEmpty(AValues: array of const): TX2LogDictionaryDetails;
 
@@ -48,13 +78,14 @@ type
     function GetSerializerIID: TGUID;
 
     { IX2LogDetailsDictionary }
-    function GetValue(const Key: string): Variant;
+    function GetKeys: TEnumerable<string>;
+    function GetValueType(const Key: string): TX2LogValueType;
 
-    { IX2LogDetailsCopyable }
-    procedure CopyToClipboard;
-
-    { IX2LogDetailsStreamable }
-    procedure SaveToStream(AStream: TStream);
+    function GetStringValue(const Key: string): string;
+    function GetBooleanValue(const Key: string): Boolean;
+    function GetIntValue(const Key: string): Int64;
+    function GetFloatValue(const Key: string): Extended;
+    function GetDateTimeValue(const Key: string): TDateTime;
   end;
 
 
@@ -112,6 +143,7 @@ type
 implementation
 uses
   System.SysUtils,
+  System.Variants,
   Vcl.ClipBrd,
   Winapi.Windows,
 
@@ -158,6 +190,61 @@ type
     { IX2LogDetailsSerializer }
     procedure Serialize(ADetails: IX2LogDetails; AStream: TStream);
     function Deserialize(AStream: TStream): IX2LogDetails;
+  end;
+
+
+  TX2LogDictionaryStringValue = class(TX2LogDictionaryValue)
+  private
+    FValue: string;
+  protected
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
+
+    property Value: string read FValue write FValue;
+  end;
+
+
+  TX2LogDictionaryBooleanValue = class(TX2LogDictionaryValue)
+  private
+    FValue: Boolean;
+  protected
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
+
+    property Value: Boolean read FValue write FValue;
+  end;
+
+
+  TX2LogDictionaryIntValue = class(TX2LogDictionaryValue)
+  private
+    FValue: Int64;
+  protected
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
+
+    property Value: Int64 read FValue write FValue;
+  end;
+
+
+  TX2LogDictionaryFloatValue = class(TX2LogDictionaryValue)
+  private
+    FValue: Extended;
+  protected
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
+
+    property Value: Extended read FValue write FValue;
+  end;
+
+
+  TX2LogDictionaryDateTimeValue = class(TX2LogDictionaryValue)
+  private
+    FValue: TDateTime;
+  protected
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
+
+    property Value: TDateTime read FValue write FValue;
   end;
 
 
@@ -221,13 +308,76 @@ begin
 end;
 
 
-constructor TX2LogDictionaryDetails.Create(AValues: array of const);
+constructor TX2LogDictionaryDetails.CreateOwned(AValues: TX2LogValueDictionary);
 begin
   inherited Create;
 
-  FValues := TDictionary<string, Variant>.Create();
+  FValues := AValues;
+end;
 
-  // TODO parse AValues
+
+constructor TX2LogDictionaryDetails.Create(AValues: array of const);
+var
+  paramIndex: Integer;
+  param: TVarRec;
+  key: string;
+  value: Variant;
+
+begin
+  inherited Create;
+
+  FValues := TX2LogValueDictionary.Create([doOwnsValues]);
+
+  if Length(AValues) mod 2 = 1 then
+    raise Exception.Create('AParams must contains a multiple of 2 number of items');
+
+  paramIndex := 0;
+  while paramIndex < High(AValues) do
+  begin
+    param := AValues[paramIndex];
+
+    case param.VType of
+      vtChar:           key := string(param.VChar);
+      vtString:         key := string(param.VString^);
+      vtPChar:          key := string(param.VPChar);
+      vtAnsiString:     key := string(PChar(param.VAnsiString));
+      vtWideChar:       key := string(param.VWideChar);
+      vtPWideChar:      key := string(param.VPWideChar);
+      vtWideString:     key := string(WideString(param.VWideString));
+      {$IF CompilerVersion >= 23}
+      vtUnicodeString:  key := string(UnicodeString(param.VUnicodeString));
+      {$IFEND}
+    else
+      raise Exception.CreateFmt('Parameter name at index %d is not a string value',
+                                [paramIndex div 2]);
+    end;
+
+    Inc(paramIndex);
+
+    param := AValues[paramIndex];
+    case param.VType of
+      vtInteger:        value := param.VInteger;
+      vtBoolean:        value := param.VBoolean;
+      vtChar:           value := string(param.VChar);
+      vtExtended:       value := param.VExtended^;
+      vtString:         value := string(param.VString^);
+      vtPChar:          value := string(param.VPChar);
+      vtWideChar:       value := string(param.VWideChar);
+      vtPWideChar:      value := string(param.VPWideChar);
+      vtAnsiString:     value := string(PChar(param.VAnsiString));
+      vtCurrency:       value := param.VCurrency^;
+      vtWideString:     value := string(WideString(param.VWideString));
+      vtInt64:          value := param.VInt64^;
+      {$IF CompilerVersion >= 23}
+      vtUnicodeString:  value := string(UnicodeString(param.VUnicodeString));
+      {$IFEND}
+    else
+      raise Exception.CreateFmt('Unsupported value type %d at index %d', [param.VType, paramIndex]);
+    end;
+
+    Inc(paramIndex);
+  end;
+
 end;
 
 
@@ -245,21 +395,51 @@ begin
 end;
 
 
-function TX2LogDictionaryDetails.GetValue(const Key: string): Variant;
+function TX2LogDictionaryDetails.GetKeys: TEnumerable<string>;
 begin
-  // TODO
+  Result := FValues.Keys;
 end;
 
 
-procedure TX2LogDictionaryDetails.CopyToClipboard;
+function TX2LogDictionaryDetails.GetValueType(const Key: string): TX2LogValueType;
 begin
-  // TODO
+  Result := FValues[Key].ValueType;
 end;
 
 
-procedure TX2LogDictionaryDetails.SaveToStream(AStream: TStream);
+function TX2LogDictionaryDetails.GetStringValue(const Key: string): string;
 begin
-  // TODO
+  Result := (FValues[Key] as TX2LogDictionaryStringValue).Value;
+end;
+
+
+function TX2LogDictionaryDetails.GetBooleanValue(const Key: string): Boolean;
+begin
+  Result := (FValues[Key] as TX2LogDictionaryBooleanValue).Value;
+end;
+
+
+function TX2LogDictionaryDetails.GetIntValue(const Key: string): Int64;
+begin
+  Result := (FValues[Key] as TX2LogDictionaryIntValue).Value;
+end;
+
+
+function TX2LogDictionaryDetails.GetFloatValue(const Key: string): Extended;
+begin
+  Result := (FValues[Key] as TX2LogDictionaryFloatValue).Value;
+end;
+
+
+function TX2LogDictionaryDetails.GetDateTimeValue(const Key: string): TDateTime;
+begin
+  Result := (FValues[Key] as TX2LogDictionaryDateTimeValue).Value;
+end;
+
+
+function TX2LogDictionaryDetails.GetValue(const Key: string): TX2LogDictionaryValue;
+begin
+  Result := FValues[Key];
 end;
 
 
@@ -397,14 +577,81 @@ end;
 
 
 { TX2LogDictionaryDetailsSerializer }
-function TX2LogDictionaryDetailsSerializer.Deserialize(AStream: TStream): IX2LogDetails;
+procedure TX2LogDictionaryDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+var
+  details: IX2LogDetailsDictionaryAccess;
+  key: string;
+  value: TX2LogDictionaryValue;
+  payload: TMemoryStream;
+
 begin
-  // TODO
+  details := (ADetails as IX2LogDetailsDictionaryAccess);
+
+  payload := TMemoryStream.Create;
+  try
+    for key in details.Keys do
+    begin
+      TStreamUtil.WriteString(AStream, key);
+
+      value := details.Value[key];
+      TStreamUtil.WriteByte(AStream, Ord(value.ValueType));
+
+      payload.Clear;
+      value.SaveToStream(payload);
+
+      TStreamUtil.WriteCardinal(AStream, payload.Size);
+      if payload.Size > 0 then
+        AStream.CopyFrom(payload, 0);
+    end;
+  finally
+    FreeAndNil(payload);
+  end;
+
+  TStreamUtil.WriteString(AStream, '');
 end;
 
-procedure TX2LogDictionaryDetailsSerializer.Serialize(ADetails: IX2LogDetails; AStream: TStream);
+
+function TX2LogDictionaryDetailsSerializer.Deserialize(AStream: TStream): IX2LogDetails;
+var
+  values: TX2LogValueDictionary;
+  key: string;
+  valueType: TX2LogValueType;
+  payloadSize: Cardinal;
+  valueClass: TX2LogDictionaryValueClass;
+
 begin
-  // TODO
+  Result := nil;
+
+  values := TX2LogValueDictionary.Create([doOwnsValues]);
+  try
+    while True do
+    begin
+      key := TStreamUtil.ReadString(AStream);
+      if Length(key) = 0 then
+        break;
+
+      valueType := TX2LogValueType(TStreamUtil.ReadByte(AStream));
+      payloadSize := TStreamUtil.ReadCardinal(AStream);
+
+      valueClass := nil;
+      case valueType of
+        StringValue:    valueClass := TX2LogDictionaryStringValue;
+        BooleanValue:   valueClass := TX2LogDictionaryBooleanValue;
+        IntValue:       valueClass := TX2LogDictionaryIntValue;
+        FloatValue:     valueClass := TX2LogDictionaryFloatValue;
+        DateTimeValue:  valueClass := TX2LogDictionaryDateTimeValue;
+      else
+        AStream.Seek(payloadSize, soFromCurrent);
+      end;
+
+      if Assigned(valueClass) then
+        values.Add(key, valueClass.Create(valueType, AStream));
+    end;
+
+    Result := TX2LogDictionaryDetails.CreateOwned(values);
+  finally
+    FreeAndNil(values);
+  end;
 end;
 
 
@@ -468,6 +715,80 @@ begin
       raise;
     end;
   end;
+end;
+
+
+{ TX2LogDictionaryValue }
+constructor TX2LogDictionaryValue.Create(AValueType: TX2LogValueType; AStream: TStream);
+begin
+  FValueType := AValueType;
+
+  LoadFromStream(AStream);
+end;
+
+
+{ TX2LogDictionaryStringValue }
+procedure TX2LogDictionaryStringValue.LoadFromStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryStringValue.LoadFromStream
+end;
+
+
+procedure TX2LogDictionaryStringValue.SaveToStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryStringValue.SaveToStream
+end;
+
+
+{ TX2LogDictionaryBooleanValue }
+procedure TX2LogDictionaryBooleanValue.LoadFromStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryBooleanValue.LoadFromStream
+end;
+
+
+procedure TX2LogDictionaryBooleanValue.SaveToStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryBooleanValue.SaveToStream
+end;
+
+
+{ TX2LogDictionaryIntValue }
+procedure TX2LogDictionaryIntValue.LoadFromStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryIntValue.LoadFromStream
+end;
+
+
+procedure TX2LogDictionaryIntValue.SaveToStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryIntValue.SaveToStream
+end;
+
+
+{ TX2LogDictionaryFloatValue }
+procedure TX2LogDictionaryFloatValue.LoadFromStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryFloatValue.LoadFromStream
+end;
+
+
+procedure TX2LogDictionaryFloatValue.SaveToStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryFloatValue.SaveToStream
+end;
+
+
+{ TX2LogDictionaryDateTimeValue }
+procedure TX2LogDictionaryDateTimeValue.LoadFromStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryDateTimeValue.LoadFromStream
+end;
+
+
+procedure TX2LogDictionaryDateTimeValue.SaveToStream(AStream: TStream);
+begin
+  // TODO TX2LogDictionaryDateTimeValue.SaveToStream
 end;
 
 

@@ -3,6 +3,7 @@ unit X2Log.Details.Intf;
 interface
 uses
   System.Classes,
+  System.Generics.Collections,
   Vcl.Graphics,
 
   X2Log.Intf;
@@ -17,11 +18,27 @@ type
   end;
 
 
+  TX2LogValueType = (StringValue, BooleanValue, IntValue, FloatValue, DateTimeValue);
+
   IX2LogDetailsDictionary = interface(IX2LogDetails)
     ['{24211DC0-F359-466B-A9CD-AF6AA3AE85F4}']
-    function GetValue(const Key: string): Variant;
+    function GetKeys: TEnumerable<string>;
+    function GetValueType(const Key: string): TX2LogValueType;
 
-    property Values[const Key: string]: Variant read GetValue;
+    function GetStringValue(const Key: string): string;
+    function GetBooleanValue(const Key: string): Boolean;
+    function GetIntValue(const Key: string): Int64;
+    function GetFloatValue(const Key: string): Extended;
+    function GetDateTimeValue(const Key: string): TDateTime;
+
+    property Keys: TEnumerable<string> read GetKeys;
+    property ValueType[const Key: string]: TX2LogValueType read GetValueType;
+
+    property StringValue[const Key: string]: string read GetStringValue;
+    property BooleanValue[const Key: string]: Boolean read GetBooleanValue;
+    property IntValue[const Key: string]: Int64 read GetIntValue;
+    property FloatValue[const Key: string]: Extended read GetFloatValue;
+    property DateTimeValue[const Key: string]: TDateTime read GetDateTimeValue;
   end;
 
 

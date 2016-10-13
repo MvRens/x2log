@@ -10,6 +10,9 @@ type
   protected
     class function GetEncoding(AEncoding: TEncoding): TEncoding;
   public
+    class function ReadByte(AStream: TStream): Byte;
+    class procedure WriteByte(AStream: TStream; AValue: Byte);
+
     class function ReadCardinal(AStream: TStream): Cardinal;
     class procedure WriteCardinal(AStream: TStream; AValue: Cardinal);
 
@@ -27,6 +30,18 @@ begin
     Result := AEncoding
   else
     Result := TEncoding.UTF8;
+end;
+
+
+class function TStreamUtil.ReadByte(AStream: TStream): Byte;
+begin
+  AStream.ReadBuffer(Result, SizeOf(Byte));
+end;
+
+
+class procedure TStreamUtil.WriteByte(AStream: TStream; AValue: Byte);
+begin
+  AStream.WriteBuffer(AValue, SizeOf(Byte));
 end;
 
 
