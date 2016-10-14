@@ -79,6 +79,8 @@ type
     rbRollingAbsolute: TRadioButton;
     lblRollingDays: TLabel;
     edtRollingDays: TEdit;
+    tsStructured: TTabSheet;
+    btnValueTypes: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -105,6 +107,7 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure btnRollingFileStartClick(Sender: TObject);
     procedure btnRollingFileStopClick(Sender: TObject);
+    procedure btnValueTypesClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
@@ -466,6 +469,17 @@ begin
   FLog.Info('Message 1');
   FLog.Info('Message 2');
   FLog.Info('Message 3');
+end;
+
+
+procedure TMainForm.btnValueTypesClick(Sender: TObject);
+begin
+  FLog.InfoS('Testing the various value types',
+    ['String', 'Hello world!',
+     'DateTime', Now,
+     'Has the large hadron collider destroyed the world yet?', False,
+     'Float', 3.1415,
+     'Integer', 89740987342]);
 end;
 
 end.

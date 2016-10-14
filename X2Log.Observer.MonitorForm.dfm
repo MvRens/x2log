@@ -136,6 +136,19 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
           AutoSize = True
         end
       end
+      object vleDetailsDictionary: TValueListEditor
+        Left = 0
+        Top = 19
+        Width = 298
+        Height = 451
+        Align = alClient
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
+        TabOrder = 3
+        ExplicitTop = 0
+        ColWidths = (
+          150
+          142)
+      end
     end
   end
   object pnlLog: TPanel
@@ -266,14 +279,12 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Margins.Bottom = 0
     Panels = <>
     SimplePanel = True
-    ExplicitLeft = 20
-    ExplicitTop = 503
   end
   object ilsLog: TImageList
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000F80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000FC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

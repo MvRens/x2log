@@ -19,7 +19,7 @@ uses
   Winapi.Messages,
 
   X2Log.Details.Intf,
-  X2Log.Intf;
+  X2Log.Intf, Vcl.Grids, Vcl.ValEdit;
 
 
 const
@@ -95,6 +95,7 @@ type
     mmMainFileSep1: TMenuItem;
     mmMainFileSaveAs: TMenuItem;
     sdSaveAs: TSaveDialog;
+    vleDetailsDictionary: TValueListEditor;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -151,6 +152,7 @@ type
     procedure SetDetails(ADetails: IX2LogDetails);
     procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
     procedure SetGraphicDetails(ADetails: IX2LogDetailsGraphic);
+    procedure SetDictionaryDetails(ADetails: IX2LogDetailsDictionary);
 
     procedure SetVisibleDetails(AControl: TControl);
     procedure SetWordWrap(AValue: Boolean);
@@ -588,6 +590,7 @@ procedure TX2LogObserverMonitorForm.SetDetails(ADetails: IX2LogDetails);
 var
   logDetailsGraphic: IX2LogDetailsGraphic;
   logDetailsBinary: IX2LogDetailsBinary;
+  logDetailsDictionary: IX2LogDetailsDictionary;
   logDetailsText: IX2LogDetailsText;
   canWrap: Boolean;
 
@@ -602,6 +605,9 @@ begin
 
     else if Supports(ADetails, IX2LogDetailsBinary, logDetailsBinary) then
       SetBinaryDetails(logDetailsBinary)
+
+    else if Supports(ADetails, IX2LogDetailsDictionary, logDetailsDictionary) then
+      SetDictionaryDetails(logDetailsDictionary)
 
     else if Supports(ADetails, IX2LogDetailsText, logDetailsText) then
     begin
@@ -727,6 +733,33 @@ begin
 end;
 
 
+procedure TX2LogObserverMonitorForm.SetDictionaryDetails(ADetails: IX2LogDetailsDictionary);
+var
+  key: string;
+  displayValue: string;
+
+begin
+  vleDetailsDictionary.Strings.Clear;
+
+  for key in ADetails.Keys do
+  begin
+    displayValue := '<error>';
+
+    case ADetails.ValueType[key] of
+      StringValue: displayValue := ADetails.StringValue[key];
+      BooleanValue: displayValue := BoolToStr(ADetails.BooleanValue[key], True);
+      IntValue: displayValue := IntToStr(ADetails.IntValue[key]);
+      FloatValue: displayValue := FormatFloat('0.########', ADetails.FloatValue[key]);
+      DateTimeValue: displayValue := DateTimeToStr(ADetails.DateTimeValue[key]);
+    end;
+
+    vleDetailsDictionary.Values[key] := displayValue;
+  end;
+
+  SetVisibleDetails(vleDetailsDictionary);
+end;
+
+
 procedure TX2LogObserverMonitorForm.SetVisibleDetails(AControl: TControl);
 begin
   if Assigned(AControl) then
@@ -737,12 +770,16 @@ begin
 
   reDetails.Visible := (AControl = reDetails);
   sbDetailsImage.Visible := (AControl = sbDetailsImage);
+  vleDetailsDictionary.Visible := (AControl = vleDetailsDictionary);
 
   if not reDetails.Visible then
     reDetails.Clear;
 
   if not sbDetailsImage.Visible then
     imgDetailsImage.Picture.Assign(nil);
+
+  if not vleDetailsDictionary.Visible then
+    vleDetailsDictionary.Strings.Clear;
 end;
 
 

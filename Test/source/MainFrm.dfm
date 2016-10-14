@@ -26,7 +26,7 @@ object MainForm: TMainForm
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsRollingFile
+    ActivePage = tsNamedPipe
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
@@ -531,6 +531,19 @@ object MainForm: TMainForm
         OnClick = btnTimerStopClick
       end
     end
+    object tsStructured: TTabSheet
+      Caption = 'Structured'
+      ImageIndex = 4
+      object btnValueTypes: TButton
+        Left = 12
+        Top = 15
+        Width = 121
+        Height = 21
+        Caption = 'Value types test'
+        TabOrder = 0
+        OnClick = btnValueTypesClick
+      end
+    end
   end
   object pnlDispatch: TPanel
     AlignWithMargins = True
@@ -596,7 +609,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140058000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C0101020014005C000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
