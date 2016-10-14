@@ -40,9 +40,9 @@ type
   private
     FValueType: TX2LogValueType;
   protected
-    constructor Create(AValueType: TX2LogValueType; AStream: TStream); virtual;
+    constructor Create(AValueType: TX2LogValueType; AStream: TStream = nil; ASize: Cardinal = 0); overload; virtual;
 
-    procedure LoadFromStream(AStream: TStream); virtual; abstract;
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); virtual; abstract;
     procedure SaveToStream(AStream: TStream); virtual; abstract;
 
     property ValueType: TX2LogValueType read FValueType;
@@ -143,7 +143,6 @@ type
 implementation
 uses
   System.SysUtils,
-  System.Variants,
   Vcl.ClipBrd,
   Winapi.Windows,
 
@@ -197,7 +196,9 @@ type
   private
     FValue: string;
   protected
-    procedure LoadFromStream(AStream: TStream); override;
+    constructor Create(const AValue: string); overload;
+
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
     property Value: string read FValue write FValue;
@@ -208,7 +209,9 @@ type
   private
     FValue: Boolean;
   protected
-    procedure LoadFromStream(AStream: TStream); override;
+    constructor Create(AValue: Boolean); overload;
+
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
     property Value: Boolean read FValue write FValue;
@@ -219,7 +222,9 @@ type
   private
     FValue: Int64;
   protected
-    procedure LoadFromStream(AStream: TStream); override;
+    constructor Create(AValue: Int64); overload;
+
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
     property Value: Int64 read FValue write FValue;
@@ -230,7 +235,9 @@ type
   private
     FValue: Extended;
   protected
-    procedure LoadFromStream(AStream: TStream); override;
+    constructor Create(AValue: Extended); overload;
+
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
     property Value: Extended read FValue write FValue;
@@ -241,7 +248,9 @@ type
   private
     FValue: TDateTime;
   protected
-    procedure LoadFromStream(AStream: TStream); override;
+    constructor Create(AValue: TDateTime); overload;
+
+    procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
     property Value: TDateTime read FValue write FValue;
@@ -321,7 +330,7 @@ var
   paramIndex: Integer;
   param: TVarRec;
   key: string;
-  value: Variant;
+  value: TX2LogDictionaryValue;
 
 begin
   inherited Create;
@@ -356,28 +365,29 @@ begin
 
     param := AValues[paramIndex];
     case param.VType of
-      vtInteger:        value := param.VInteger;
-      vtBoolean:        value := param.VBoolean;
-      vtChar:           value := string(param.VChar);
-      vtExtended:       value := param.VExtended^;
-      vtString:         value := string(param.VString^);
-      vtPChar:          value := string(param.VPChar);
-      vtWideChar:       value := string(param.VWideChar);
-      vtPWideChar:      value := string(param.VPWideChar);
-      vtAnsiString:     value := string(PChar(param.VAnsiString));
-      vtCurrency:       value := param.VCurrency^;
-      vtWideString:     value := string(WideString(param.VWideString));
-      vtInt64:          value := param.VInt64^;
+      vtInteger:        value := TX2LogDictionaryIntValue.Create(param.VInteger);
+      vtBoolean:        value := TX2LogDictionaryBooleanValue.Create(param.VBoolean);
+      vtChar:           value := TX2LogDictionaryStringValue.Create(string(param.VChar));
+      vtExtended:       value := TX2LogDictionaryFloatValue.Create(param.VExtended^);
+      vtString:         value := TX2LogDictionaryStringValue.Create(string(param.VString^));
+      vtPChar:          value := TX2LogDictionaryStringValue.Create(string(param.VPChar));
+      vtWideChar:       value := TX2LogDictionaryStringValue.Create(param.VWideChar);
+      vtPWideChar:      value := TX2LogDictionaryStringValue.Create(param.VPWideChar);
+      vtAnsiString:     value := TX2LogDictionaryStringValue.Create(PChar(param.VAnsiString));
+      vtCurrency:       value := TX2LogDictionaryFloatValue.Create(param.VCurrency^);
+      vtWideString:     value := TX2LogDictionaryStringValue.Create(WideString(param.VWideString));
+      vtInt64:          value := TX2LogDictionaryIntValue.Create(param.VInt64^);
       {$IF CompilerVersion >= 23}
-      vtUnicodeString:  value := string(UnicodeString(param.VUnicodeString));
+      vtUnicodeString:  value := TX2LogDictionaryStringValue.Create(UnicodeString(param.VUnicodeString));
       {$IFEND}
     else
       raise Exception.CreateFmt('Unsupported value type %d at index %d', [param.VType, paramIndex]);
     end;
 
+    FValues.Add(key, value);
+
     Inc(paramIndex);
   end;
-
 end;
 
 
@@ -719,76 +729,131 @@ end;
 
 
 { TX2LogDictionaryValue }
-constructor TX2LogDictionaryValue.Create(AValueType: TX2LogValueType; AStream: TStream);
+constructor TX2LogDictionaryValue.Create(AValueType: TX2LogValueType; AStream: TStream; ASize: Cardinal);
 begin
+  inherited Create;
+
   FValueType := AValueType;
 
-  LoadFromStream(AStream);
+  if Assigned(AStream) then
+    LoadFromStream(AStream, ASize);
 end;
 
 
 { TX2LogDictionaryStringValue }
-procedure TX2LogDictionaryStringValue.LoadFromStream(AStream: TStream);
+constructor TX2LogDictionaryStringValue.Create(const AValue: string);
 begin
-  // TODO TX2LogDictionaryStringValue.LoadFromStream
+  inherited Create(StringValue);
+
+  Value := AValue;
+end;
+
+
+procedure TX2LogDictionaryStringValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
+begin
+  Value := TStreamUtil.ReadString(AStream, nil, False, ASize);
 end;
 
 
 procedure TX2LogDictionaryStringValue.SaveToStream(AStream: TStream);
 begin
-  // TODO TX2LogDictionaryStringValue.SaveToStream
+  TStreamUtil.WriteString(AStream, Value, nil, False);
 end;
 
 
 { TX2LogDictionaryBooleanValue }
-procedure TX2LogDictionaryBooleanValue.LoadFromStream(AStream: TStream);
+constructor TX2LogDictionaryBooleanValue.Create(AValue: Boolean);
 begin
-  // TODO TX2LogDictionaryBooleanValue.LoadFromStream
+  inherited Create(BooleanValue);
+
+  Value := AValue;
+end;
+
+
+procedure TX2LogDictionaryBooleanValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
+begin
+  if ASize <> SizeOf(Boolean) then
+    raise EInvalidOperation.CreateFmt('Size (%d) does not match Boolean', [ASize]);
+
+  AStream.ReadBuffer(FValue, ASize);
 end;
 
 
 procedure TX2LogDictionaryBooleanValue.SaveToStream(AStream: TStream);
 begin
-  // TODO TX2LogDictionaryBooleanValue.SaveToStream
+  AStream.WriteBuffer(Value, SizeOf(Boolean));
 end;
 
 
 { TX2LogDictionaryIntValue }
-procedure TX2LogDictionaryIntValue.LoadFromStream(AStream: TStream);
+constructor TX2LogDictionaryIntValue.Create(AValue: Int64);
 begin
-  // TODO TX2LogDictionaryIntValue.LoadFromStream
+  inherited Create(IntValue);
+
+  Value := AValue;
+end;
+
+
+procedure TX2LogDictionaryIntValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
+begin
+  if ASize <> SizeOf(Int64) then
+    raise EInvalidOperation.CreateFmt('Size (%d) does not match Int64', [ASize]);
+
+  AStream.ReadBuffer(FValue, ASize);
 end;
 
 
 procedure TX2LogDictionaryIntValue.SaveToStream(AStream: TStream);
 begin
-  // TODO TX2LogDictionaryIntValue.SaveToStream
+  AStream.WriteBuffer(Value, SizeOf(Int64));
 end;
 
 
 { TX2LogDictionaryFloatValue }
-procedure TX2LogDictionaryFloatValue.LoadFromStream(AStream: TStream);
+constructor TX2LogDictionaryFloatValue.Create(AValue: Extended);
 begin
-  // TODO TX2LogDictionaryFloatValue.LoadFromStream
+  inherited Create(FloatValue);
+
+  Value := AValue;
+end;
+
+
+procedure TX2LogDictionaryFloatValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
+begin
+  if ASize <> SizeOf(Extended) then
+    raise EInvalidOperation.CreateFmt('Size (%d) does not match Extended', [ASize]);
+
+  AStream.ReadBuffer(FValue, ASize);
 end;
 
 
 procedure TX2LogDictionaryFloatValue.SaveToStream(AStream: TStream);
 begin
-  // TODO TX2LogDictionaryFloatValue.SaveToStream
+  AStream.WriteBuffer(Value, SizeOf(Extended));
 end;
 
 
 { TX2LogDictionaryDateTimeValue }
-procedure TX2LogDictionaryDateTimeValue.LoadFromStream(AStream: TStream);
+constructor TX2LogDictionaryDateTimeValue.Create(AValue: TDateTime);
 begin
-  // TODO TX2LogDictionaryDateTimeValue.LoadFromStream
+  inherited Create(DateTimeValue);
+
+  Value := AValue;
+end;
+
+
+procedure TX2LogDictionaryDateTimeValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
+begin
+  if ASize <> SizeOf(TDateTime) then
+    raise EInvalidOperation.CreateFmt('Size (%d) does not match TDateTime', [ASize]);
+
+  AStream.ReadBuffer(FValue, ASize);
 end;
 
 
 procedure TX2LogDictionaryDateTimeValue.SaveToStream(AStream: TStream);
 begin
-  // TODO TX2LogDictionaryDateTimeValue.SaveToStream
+  AStream.WriteBuffer(Value, SizeOf(TDateTime));
 end;
 
 

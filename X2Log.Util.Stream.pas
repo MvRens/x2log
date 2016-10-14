@@ -16,8 +16,8 @@ type
     class function ReadCardinal(AStream: TStream): Cardinal;
     class procedure WriteCardinal(AStream: TStream; AValue: Cardinal);
 
-    class function ReadString(AStream: TStream; AEncoding: TEncoding = nil): string;
-    class procedure WriteString(AStream: TStream; const AValue: string; AEncoding: TEncoding = nil);
+    class function ReadString(AStream: TStream; AEncoding: TEncoding = nil; AReadSize: Boolean = True; ASize: Cardinal = 0): string;
+    class procedure WriteString(AStream: TStream; const AValue: string; AEncoding: TEncoding = nil; AWriteSize: Boolean = True);
   end;
 
 implementation
@@ -57,13 +57,17 @@ begin
 end;
 
 
-class function TStreamUtil.ReadString(AStream: TStream; AEncoding: TEncoding): string;
+class function TStreamUtil.ReadString(AStream: TStream; AEncoding: TEncoding; AReadSize: Boolean; ASize: Cardinal): string;
 var
   bytes: TBytes;
   bytesLength: Cardinal;
 
 begin
-  bytesLength := ReadCardinal(AStream);
+  if AReadSize then
+    bytesLength := ReadCardinal(AStream)
+  else
+    bytesLength := ASize;
+
   if bytesLength > 0 then
   begin
     SetLength(bytes, bytesLength);
@@ -75,7 +79,7 @@ begin
 end;
 
 
-class procedure TStreamUtil.WriteString(AStream: TStream; const AValue: string; AEncoding: TEncoding);
+class procedure TStreamUtil.WriteString(AStream: TStream; const AValue: string; AEncoding: TEncoding; AWriteSize: Boolean);
 var
   bytes: TBytes;
   bytesLength: Cardinal;
@@ -84,7 +88,9 @@ begin
   bytes := GetEncoding(AEncoding).GetBytes(AValue);
   bytesLength := Length(bytes);
 
-  WriteCardinal(AStream, bytesLength);
+  if AWriteSize then
+    WriteCardinal(AStream, bytesLength);
+
   if bytesLength > 0 then
     AStream.WriteBuffer(bytes[0], bytesLength);
 end;
