@@ -12,6 +12,9 @@
 			<Projects Include="X2LogFormsDXE2.dproj">
 				<Dependencies/>
 			</Projects>
+			<Projects Include="X2LogJsonDXE2.dproj">
+				<Dependencies/>
+			</Projects>
 		</ItemGroup>
 		<ProjectExtensions>
 			<Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
 		<Target Name="X2LogFormsDXE2:Make">
 			<MSBuild Projects="X2LogFormsDXE2.dproj" Targets="Make"/>
 		</Target>
+		<Target Name="X2LogJsonDXE2">
+			<MSBuild Projects="X2LogJsonDXE2.dproj"/>
+		</Target>
+		<Target Name="X2LogJsonDXE2:Clean">
+			<MSBuild Projects="X2LogJsonDXE2.dproj" Targets="Clean"/>
+		</Target>
+		<Target Name="X2LogJsonDXE2:Make">
+			<MSBuild Projects="X2LogJsonDXE2.dproj" Targets="Make"/>
+		</Target>
 		<Target Name="Build">
-			<CallTarget Targets="X2LogDXE2;X2LogMadExceptDXE2;X2LogFormsDXE2"/>
+			<CallTarget Targets="X2LogDXE2;X2LogMadExceptDXE2;X2LogFormsDXE2;X2LogJsonDXE2"/>
 		</Target>
 		<Target Name="Clean">
-			<CallTarget Targets="X2LogDXE2:Clean;X2LogMadExceptDXE2:Clean;X2LogFormsDXE2:Clean"/>
+			<CallTarget Targets="X2LogDXE2:Clean;X2LogMadExceptDXE2:Clean;X2LogFormsDXE2:Clean;X2LogJsonDXE2:Clean"/>
 		</Target>
 		<Target Name="Make">
-			<CallTarget Targets="X2LogDXE2:Make;X2LogMadExceptDXE2:Make;X2LogFormsDXE2:Make"/>
+			<CallTarget Targets="X2LogDXE2:Make;X2LogMadExceptDXE2:Make;X2LogFormsDXE2:Make;X2LogJsonDXE2:Make"/>
 		</Target>
 		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')" Project="$(BDS)\Bin\CodeGear.Group.Targets"/>
 	</Project>

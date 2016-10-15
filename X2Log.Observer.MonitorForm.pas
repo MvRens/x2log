@@ -745,25 +745,12 @@ end;
 procedure TX2LogObserverMonitorForm.SetDictionaryDetails(ADetails: IX2LogDetailsDictionary);
 var
   key: string;
-  displayValue: string;
 
 begin
   vleDetailsDictionary.Strings.Clear;
 
   for key in ADetails.Keys do
-  begin
-    displayValue := '<error>';
-
-    case ADetails.ValueType[key] of
-      StringValue: displayValue := ADetails.StringValue[key];
-      BooleanValue: displayValue := BoolToStr(ADetails.BooleanValue[key], True);
-      IntValue: displayValue := IntToStr(ADetails.IntValue[key]);
-      FloatValue: displayValue := FormatFloat('0.########', ADetails.FloatValue[key]);
-      DateTimeValue: displayValue := DateTimeToStr(ADetails.DateTimeValue[key]);
-    end;
-
-    vleDetailsDictionary.Values[key] := displayValue;
-  end;
+    vleDetailsDictionary.Values[key] := ADetails.DisplayValue[key];
 
   FCopyHandler := CopyDictionaryDetails;
   SetVisibleDetails(vleDetailsDictionary);

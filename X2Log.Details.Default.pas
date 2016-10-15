@@ -45,6 +45,9 @@ type
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); virtual; abstract;
     procedure SaveToStream(AStream: TStream); virtual; abstract;
 
+    function GetDisplayValue: string; virtual; abstract;
+
+    property DisplayValue: string read GetDisplayValue;
     property ValueType: TX2LogValueType read FValueType;
   end;
 
@@ -80,6 +83,7 @@ type
     { IX2LogDetailsDictionary }
     function GetKeys: TEnumerable<string>;
     function GetValueType(const Key: string): TX2LogValueType;
+    function GetDisplayValue(const Key: string): string;
 
     function GetStringValue(const Key: string): string;
     function GetBooleanValue(const Key: string): Boolean;
@@ -201,6 +205,8 @@ type
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
+    function GetDisplayValue: string; override;
+
     property Value: string read FValue write FValue;
   end;
 
@@ -213,6 +219,8 @@ type
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
+
+    function GetDisplayValue: string; override;
 
     property Value: Boolean read FValue write FValue;
   end;
@@ -227,6 +235,8 @@ type
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
+    function GetDisplayValue: string; override;
+
     property Value: Int64 read FValue write FValue;
   end;
 
@@ -240,6 +250,8 @@ type
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
 
+    function GetDisplayValue: string; override;
+
     property Value: Extended read FValue write FValue;
   end;
 
@@ -252,6 +264,8 @@ type
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
+
+    function GetDisplayValue: string; override;
 
     property Value: TDateTime read FValue write FValue;
   end;
@@ -421,6 +435,12 @@ end;
 function TX2LogDictionaryDetails.GetValueType(const Key: string): TX2LogValueType;
 begin
   Result := FValues[Key].ValueType;
+end;
+
+
+function TX2LogDictionaryDetails.GetDisplayValue(const Key: string): string;
+begin
+  Result := FValues[Key].DisplayValue;
 end;
 
 
@@ -768,6 +788,12 @@ begin
 end;
 
 
+function TX2LogDictionaryStringValue.GetDisplayValue: string;
+begin
+  Result := Value;
+end;
+
+
 { TX2LogDictionaryBooleanValue }
 constructor TX2LogDictionaryBooleanValue.Create(AValue: Boolean);
 begin
@@ -789,6 +815,12 @@ end;
 procedure TX2LogDictionaryBooleanValue.SaveToStream(AStream: TStream);
 begin
   AStream.WriteBuffer(Value, SizeOf(Boolean));
+end;
+
+
+function TX2LogDictionaryBooleanValue.GetDisplayValue: string;
+begin
+  Result := BoolToStr(Value, True);
 end;
 
 
@@ -816,6 +848,12 @@ begin
 end;
 
 
+function TX2LogDictionaryIntValue.GetDisplayValue: string;
+begin
+  Result := IntToStr(Value);
+end;
+
+
 { TX2LogDictionaryFloatValue }
 constructor TX2LogDictionaryFloatValue.Create(AValue: Extended);
 begin
@@ -840,6 +878,12 @@ begin
 end;
 
 
+function TX2LogDictionaryFloatValue.GetDisplayValue: string;
+begin
+  Result := FormatFloat('0.########', Value);
+end;
+
+
 { TX2LogDictionaryDateTimeValue }
 constructor TX2LogDictionaryDateTimeValue.Create(AValue: TDateTime);
 begin
@@ -861,6 +905,12 @@ end;
 procedure TX2LogDictionaryDateTimeValue.SaveToStream(AStream: TStream);
 begin
   AStream.WriteBuffer(Value, SizeOf(TDateTime));
+end;
+
+
+function TX2LogDictionaryDateTimeValue.GetDisplayValue: string;
+begin
+  Result := DateTimeToStr(Value);
 end;
 
 

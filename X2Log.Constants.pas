@@ -48,6 +48,12 @@ resourcestring
    }
   LogFileLineDetails = '%0:s (details: %1:s)';
 
+  { The format of the log message when structured information is present
+
+      0: Message
+      1: Comma-separated key-value pairs
+  }
+  LogFileLineStructured = '%0:s [%1:s]';
 
   {
     X2Log.Observer.RollingLogFile

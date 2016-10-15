@@ -109,6 +109,9 @@
 			<DCCReference Include="..\X2Log.Translations.Dutch.pas"/>
 			<DCCReference Include="..\X2Log.Decorator.pas"/>
 			<DCCReference Include="..\X2Log.Observer.RollingLogFile.pas"/>
+			<DCCReference Include="..\X2Log.TextFormatter.Default.pas"/>
+			<DCCReference Include="..\X2Log.TextFormatter.Intf.pas"/>
+			<DCCReference Include="..\X2Log.Intf.NamedPipe.pas"/>
 			<BuildConfiguration Include="Base">
 				<Key>Base</Key>
 			</BuildConfiguration>

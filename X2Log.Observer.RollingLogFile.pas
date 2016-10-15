@@ -6,7 +6,8 @@ uses
 
   X2Log.Intf,
   X2Log.Observer.CustomThreaded,
-  X2Log.Observer.LogFile;
+  X2Log.Observer.LogFile,
+  X2Log.TextFormatter.Intf;
 
 
 const
@@ -22,9 +23,9 @@ type
 
     property Days: Integer read FDays;
   public
-    constructor Create(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
-    constructor CreateInProgramData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
-    constructor CreateInUserAppData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True);
+    constructor Create(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True; ATextFormatter: IX2LogTextFormatter = nil);
+    constructor CreateInProgramData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True; ATextFormatter: IX2LogTextFormatter = nil);
+    constructor CreateInUserAppData(const AFileName: string; ADays: Integer = X2LogDefaultDays; ALogLevels: TX2LogLevels = X2LogLevelsDefault; ALogDetails: Boolean = True; ATextFormatter: IX2LogTextFormatter = nil);
   end;
 
 
@@ -44,7 +45,7 @@ type
     property Days: Integer read FDays;
     property LastCleanupDate: TDateTime read FLastCleanupDate write FLastCleanupDate;
   public
-    constructor Create(const AFileName: string; ADays: Integer; ALogDetails: Boolean = True);
+    constructor Create(const AFileName: string; ADays: Integer; ATextFormatter: IX2LogTextFormatter; ALogDetails: Boolean = True);
   end;
 
 
@@ -59,44 +60,44 @@ uses
 
 
 { TX2RollingLogFileObserver }
-constructor TX2RollingLogFileObserver.Create(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
+constructor TX2RollingLogFileObserver.Create(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean; ATextFormatter: IX2LogTextFormatter);
 begin
   FDays := ADays;
 
-  inherited Create(AFileName, ALogLevels, ALogDetails);
+  inherited Create(AFileName, ALogLevels, ALogDetails, ATextFormatter);
 end;
 
 
-constructor TX2RollingLogFileObserver.CreateInProgramData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
+constructor TX2RollingLogFileObserver.CreateInProgramData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean; ATextFormatter: IX2LogTextFormatter);
 begin
   FDays := ADays;
 
-  inherited CreateInProgramData(AFileName, ALogLevels, ALogDetails);
+  inherited CreateInProgramData(AFileName, ALogLevels, ALogDetails, ATextFormatter);
 end;
 
 
-constructor TX2RollingLogFileObserver.CreateInUserAppData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean);
+constructor TX2RollingLogFileObserver.CreateInUserAppData(const AFileName: string; ADays: Integer; ALogLevels: TX2LogLevels; ALogDetails: Boolean; ATextFormatter: IX2LogTextFormatter);
 begin
   FDays := ADays;
 
-  inherited CreateInUserAppData(AFileName, ALogLevels, ALogDetails);
+  inherited CreateInUserAppData(AFileName, ALogLevels, ALogDetails, ATextFormatter);
 end;
 
 
 function TX2RollingLogFileObserver.CreateWorkerThread: TX2LogObserverWorkerThread;
 begin
-  Result := TX2RollingLogFileWorkerThread.Create(OutputFileName, Days, LogDetails);
+  Result := TX2RollingLogFileWorkerThread.Create(OutputFileName, Days, GetTextFormatter, LogDetails);
 end;
 
 
 { TX2RollingLogFileWorkerThread }
-constructor TX2RollingLogFileWorkerThread.Create(const AFileName: string; ADays: Integer; ALogDetails: Boolean);
+constructor TX2RollingLogFileWorkerThread.Create(const AFileName: string; ADays: Integer; ATextFormatter: IX2LogTextFormatter; ALogDetails: Boolean);
 begin
   FDays := ADays;
   FFormatSettings := TFormatSettings.Create;
   FDateFormat := GetLogResourceString(@RollingLogFileDateFormat);
 
-  inherited Create(AFileName, ALogDetails);
+  inherited Create(AFileName, ATextFormatter, ALogDetails);
 end;
 
 

@@ -81,6 +81,12 @@ type
     edtRollingDays: TEdit;
     tsStructured: TTabSheet;
     btnValueTypes: TButton;
+    pnlFileTextFormatter: TPanel;
+    rbFileTextFormatterDefault: TRadioButton;
+    rbFileTextFormatterJson: TRadioButton;
+    pnlRollingFileTextFormatter: TPanel;
+    rbRollingFileTextFormatterDefault: TRadioButton;
+    rbRollingFileTextFormatterJson: TRadioButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -136,6 +142,8 @@ uses
   X2Log.Observer.MonitorForm,
   X2Log.Observer.NamedPipe,
   X2Log.Observer.RollingLogFile,
+  X2Log.TextFormatter.Intf,
+  X2Log.TextFormatter.Json,
   X2Log.Global;
 
 
@@ -339,15 +347,22 @@ end;
 
 
 procedure TMainForm.btnFileStartClick(Sender: TObject);
+var
+  textFormatter: IX2LogTextFormatter;
+
 begin
   if not Assigned(FFileObserver) then
   begin
+    textFormatter := nil;
+    if rbFileTextFormatterJson.Checked then
+      textFormatter := TX2LogJsonTextFormatter.Create;
+
     if rbProgramData.Checked then
-      FFileObserver := TX2LogFileObserver.CreateInProgramData(edtFilename.Text)
+      FFileObserver := TX2LogFileObserver.CreateInProgramData(edtFilename.Text, X2LogLevelsDefault, True, textFormatter)
     else if rbUserData.Checked then
-      FFileObserver := TX2LogFileObserver.CreateInUserAppData(edtFilename.Text)
+      FFileObserver := TX2LogFileObserver.CreateInUserAppData(edtFilename.Text, X2LogLevelsDefault, True, textFormatter)
     else
-      FFileObserver := TX2LogFileObserver.Create(edtFilename.Text);
+      FFileObserver := TX2LogFileObserver.Create(edtFilename.Text, X2LogLevelsDefault, True, textFormatter);
 
     FLog.Attach(FFileObserver);
 
@@ -371,18 +386,23 @@ end;
 procedure TMainForm.btnRollingFileStartClick(Sender: TObject);
 var
   days: Integer;
+  textFormatter: IX2LogTextFormatter;
 
 begin
   if not Assigned(FRollingFileObserver) then
   begin
+    textFormatter := nil;
+    if rbFileTextFormatterJson.Checked then
+      textFormatter := TX2LogJsonTextFormatter.Create;
+
     days := StrToIntDef(edtRollingDays.Text, 7);
 
     if rbRollingProgramData.Checked then
-      FRollingFileObserver := TX2RollingLogFileObserver.CreateInProgramData(edtFilename.Text, days)
+      FRollingFileObserver := TX2RollingLogFileObserver.CreateInProgramData(edtFilename.Text, days, X2LogLevelsDefault, True, textFormatter)
     else if rbRollingUserData.Checked then
-      FRollingFileObserver := TX2RollingLogFileObserver.CreateInUserAppData(edtFilename.Text, days)
+      FRollingFileObserver := TX2RollingLogFileObserver.CreateInUserAppData(edtFilename.Text, days, X2LogLevelsDefault, True, textFormatter)
     else
-      FRollingFileObserver := TX2RollingLogFileObserver.Create(edtFilename.Text, days);
+      FRollingFileObserver := TX2RollingLogFileObserver.Create(edtFilename.Text, days, X2LogLevelsDefault, True, textFormatter);
 
     FLog.Attach(FRollingFileObserver);
 

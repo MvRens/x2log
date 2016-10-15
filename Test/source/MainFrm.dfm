@@ -26,7 +26,7 @@ object MainForm: TMainForm
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 8
-    ActivePage = tsNamedPipe
+    ActivePage = tsRollingFile
     Align = alClient
     Images = ilsObservers
     TabOrder = 0
@@ -131,6 +131,32 @@ object MainForm: TMainForm
         Caption = 'Absolute path'
         TabOrder = 5
       end
+      object pnlFileTextFormatter: TPanel
+        Left = 88
+        Top = 176
+        Width = 532
+        Height = 49
+        BevelOuter = bvNone
+        TabOrder = 6
+        object rbFileTextFormatterDefault: TRadioButton
+          Left = 0
+          Top = 0
+          Width = 113
+          Height = 17
+          Caption = 'Default'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object rbFileTextFormatterJson: TRadioButton
+          Left = 0
+          Top = 23
+          Width = 113
+          Height = 17
+          Caption = 'Json'
+          TabOrder = 1
+        end
+      end
     end
     object tsRollingFile: TTabSheet
       Caption = 'Rolling File'
@@ -211,6 +237,32 @@ object MainForm: TMainForm
         Height = 21
         TabOrder = 6
         Text = '7'
+      end
+      object pnlRollingFileTextFormatter: TPanel
+        Left = 88
+        Top = 224
+        Width = 532
+        Height = 49
+        BevelOuter = bvNone
+        TabOrder = 7
+        object rbRollingFileTextFormatterDefault: TRadioButton
+          Left = 0
+          Top = 0
+          Width = 113
+          Height = 17
+          Caption = 'Default'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object rbRollingFileTextFormatterJson: TRadioButton
+          Left = 0
+          Top = 23
+          Width = 113
+          Height = 17
+          Caption = 'Json'
+          TabOrder = 1
+        end
       end
     end
     object tsNamedPipe: TTabSheet
@@ -609,7 +661,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140060000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140068000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

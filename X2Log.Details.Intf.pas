@@ -25,6 +25,7 @@ type
     function GetKeys: TEnumerable<string>;
     function GetValueType(const Key: string): TX2LogValueType;
 
+    function GetDisplayValue(const Key: string): string;
     function GetStringValue(const Key: string): string;
     function GetBooleanValue(const Key: string): Boolean;
     function GetIntValue(const Key: string): Int64;
@@ -33,6 +34,7 @@ type
 
     property Keys: TEnumerable<string> read GetKeys;
     property ValueType[const Key: string]: TX2LogValueType read GetValueType;
+    property DisplayValue[const Key: string]: string read GetDisplayValue;
 
     property StringValue[const Key: string]: string read GetStringValue;
     property BooleanValue[const Key: string]: Boolean read GetBooleanValue;
