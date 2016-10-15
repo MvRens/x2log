@@ -109,7 +109,8 @@ type
 
   { Use this wrapper when passing a TDateTime to one of the structured logging
     methods, otherwise Delphi will pass it as a floating point value. }
-  function DT(AValue: TDateTime): IX2LogDateTime;
+  function LogDT: IX2LogDateTime; overload;
+  function LogDT(AValue: TDateTime): IX2LogDateTime; overload;
 
 
 implementation
@@ -125,7 +126,13 @@ type
 
 
 
-function DT(AValue: TDateTime): IX2LogDateTime;
+function LogDT: IX2LogDateTime;
+begin
+  Result := LogDT(Now);
+end;
+
+
+function LogDT(AValue: TDateTime): IX2LogDateTime;
 begin
   Result := TX2LogDateTime.Create(AValue);
 end;

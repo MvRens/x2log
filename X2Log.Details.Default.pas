@@ -331,6 +331,7 @@ var
   param: TVarRec;
   key: string;
   value: TX2LogDictionaryValue;
+  logDateTime: IX2LogDateTime;
 
 begin
   inherited Create;
@@ -375,6 +376,12 @@ begin
       vtPWideChar:      value := TX2LogDictionaryStringValue.Create(param.VPWideChar);
       vtAnsiString:     value := TX2LogDictionaryStringValue.Create(PChar(param.VAnsiString));
       vtCurrency:       value := TX2LogDictionaryFloatValue.Create(param.VCurrency^);
+      vtInterface:
+        if Supports(IInterface(param.VInterface), IX2LogDateTime, logDateTime) then
+          value := TX2LogDictionaryDateTimeValue.Create(logDateTime.Value)
+        else
+          raise Exception.CreateFmt('Unsupported value type %d at index %d', [param.VType, paramIndex]);
+
       vtWideString:     value := TX2LogDictionaryStringValue.Create(WideString(param.VWideString));
       vtInt64:          value := TX2LogDictionaryIntValue.Create(param.VInt64^);
       {$IF CompilerVersion >= 23}

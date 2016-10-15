@@ -476,7 +476,7 @@ procedure TMainForm.btnValueTypesClick(Sender: TObject);
 begin
   FLog.InfoS('Testing the various value types',
     ['String', 'Hello world!',
-     'DateTime', Now,
+     'DateTime', LogDT,
      'Has the large hadron collider destroyed the world yet?', False,
      'Float', 3.1415,
      'Integer', 89740987342]);

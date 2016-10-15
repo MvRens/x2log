@@ -144,7 +144,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Align = alClient
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
         TabOrder = 3
-        ExplicitTop = 0
+        OnKeyDown = vleDetailsDictionaryKeyDown
         ColWidths = (
           150
           142)
@@ -284,7 +284,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000FC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000000110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

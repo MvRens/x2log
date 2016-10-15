@@ -5,21 +5,23 @@ uses
   System.Classes,
   System.Generics.Collections,
   System.Types,
-  Vcl.ActnList, 
+  Vcl.ActnList,
   Vcl.ComCtrls,
   Vcl.Controls,
   Vcl.Dialogs,
   Vcl.ExtCtrls,
   Vcl.Forms,
+  Vcl.Grids,
   Vcl.ImgList,
   Vcl.Menus,
   Vcl.StdCtrls,
   Vcl.ToolWin,
+  Vcl.ValEdit,
   VirtualTrees,
   Winapi.Messages,
 
   X2Log.Details.Intf,
-  X2Log.Intf, Vcl.Grids, Vcl.ValEdit;
+  X2Log.Intf;
 
 
 const
@@ -33,6 +35,8 @@ var
 type
   TX2LogObserverMonitorForm = class;
   TMonitorFormDictionary = TObjectDictionary<IX2LogObservable,TX2LogObserverMonitorForm>;
+
+  TCopyHandler = procedure of object;
 
 
   TX2LogObserverMonitorForm = class(TForm, IX2LogObserver)
@@ -103,6 +107,7 @@ type
     procedure vstLogGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType; var CellText: string);
     procedure vstLogGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: Integer);
     procedure vstLogFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex);
+    procedure vleDetailsDictionaryKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure actCloseExecute(Sender: TObject);
     procedure actClearExecute(Sender: TObject);
     procedure actCopyDetailsExecute(Sender: TObject);
@@ -129,6 +134,7 @@ type
     FVisibleLevels: TX2LogLevels;
     FMaxEntries: Cardinal;
     FWordWrap: Boolean;
+    FCopyHandler: TCopyHandler;
   protected
     class function GetInstance(ALog: IX2LogObservable; out AForm: TX2LogObserverMonitorForm): Boolean;
     class procedure RemoveInstance(AForm: TX2LogObserverMonitorForm);
@@ -153,6 +159,7 @@ type
     procedure SetBinaryDetails(ADetails: IX2LogDetailsBinary);
     procedure SetGraphicDetails(ADetails: IX2LogDetailsGraphic);
     procedure SetDictionaryDetails(ADetails: IX2LogDetailsDictionary);
+    procedure CopyDictionaryDetails;
 
     procedure SetVisibleDetails(AControl: TControl);
     procedure SetWordWrap(AValue: Boolean);
@@ -376,6 +383,7 @@ begin
   actShowError.Caption := GetLogLevelText(TX2LogLevel.Error);
 
   FVisibleLevels := [Low(TX2LogLevel)..High(TX2LogLevel)];
+  SetVisibleDetails(nil);
   UpdateUI;
 end;
 
@@ -597,6 +605,7 @@ var
 begin
   FDetails := ADetails;
   canWrap := False;
+  FCopyHandler := nil;
 
   if Assigned(Details) then
   begin
@@ -619,7 +628,7 @@ begin
     SetVisibleDetails(nil);
 
 
-  actCopyDetails.Enabled := Supports(ADetails, IX2LogDetailsCopyable);
+  actCopyDetails.Enabled := Assigned(FCopyHandler) or Supports(ADetails, IX2LogDetailsCopyable);
   actSaveDetails.Enabled := Supports(ADetails, IX2LogDetailsStreamable);
   actWordWrap.Enabled := canWrap;
   actWordWrap.Checked := canWrap and FWordWrap;
@@ -756,7 +765,30 @@ begin
     vleDetailsDictionary.Values[key] := displayValue;
   end;
 
+  FCopyHandler := CopyDictionaryDetails;
   SetVisibleDetails(vleDetailsDictionary);
+end;
+
+
+procedure TX2LogObserverMonitorForm.CopyDictionaryDetails;
+var
+  y: Integer;
+  x: Integer;
+  selectedText: TStringBuilder;
+
+begin
+  selectedText := TStringBuilder.Create;
+  try
+    for y := vleDetailsDictionary.Selection.Top to vleDetailsDictionary.Selection.Bottom do
+    begin
+      for x := vleDetailsDictionary.Selection.Left to vleDetailsDictionary.Selection.Right do
+        selectedText.Append(vleDetailsDictionary.Cells[x, y]);
+    end;
+
+    Clipboard.AsText := selectedText.ToString;
+  finally
+    FreeAndNil(selectedText);
+  end;
 end;
 
 
@@ -878,6 +910,16 @@ begin
 end;
 
 
+procedure TX2LogObserverMonitorForm.vleDetailsDictionaryKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if (Shift = [ssCtrl]) and (Key = Ord('C')) then
+  begin
+    CopyDictionaryDetails;
+    Key := 0;
+  end;
+end;
+
+
 procedure TX2LogObserverMonitorForm.actCloseExecute(Sender: TObject);
 begin
   Close;
@@ -898,7 +940,10 @@ var
   logDetailsCopyable: IX2LogDetailsCopyable;
 
 begin
-  if Supports(Details, IX2LogDetailsCopyable, logDetailsCopyable) then
+  if Assigned(FCopyHandler) then
+    FCopyHandler
+
+  else if Supports(Details, IX2LogDetailsCopyable, logDetailsCopyable) then
     logDetailsCopyable.CopyToClipboard;
 end;
 
