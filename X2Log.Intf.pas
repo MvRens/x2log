@@ -98,6 +98,51 @@ type
   end;
 
 
+
+type
+  IX2LogDateTime = interface
+    ['{F0E6196B-C7E7-46C9-8764-D457AB957534}']
+    function GetValue: TDateTime;
+
+    property Value: TDateTime read GetValue;
+  end;
+
+  { Use this wrapper when passing a TDateTime to one of the structured logging
+    methods, otherwise Delphi will pass it as a floating point value. }
+  function DT(AValue: TDateTime): IX2LogDateTime;
+
+
 implementation
+type
+  TX2LogDateTime = class(TInterfacedObject, IX2LogDateTime)
+  private
+    FValue: TDateTime;
+  public
+    constructor Create(AValue: TDateTime);
+
+    function GetValue: TDateTime;
+  end;
+
+
+
+function DT(AValue: TDateTime): IX2LogDateTime;
+begin
+  Result := TX2LogDateTime.Create(AValue);
+end;
+
+
+{ TX2LogDateTime }
+constructor TX2LogDateTime.Create(AValue: TDateTime);
+begin
+  inherited Create;
+
+  FValue := AValue;
+end;
+
+
+function TX2LogDateTime.GetValue: TDateTime;
+begin
+  Result := FValue;
+end;
 
 end.
