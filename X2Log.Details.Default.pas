@@ -682,10 +682,11 @@ begin
       end;
 
       if Assigned(valueClass) then
-        values.Add(key, valueClass.Create(valueType, AStream));
+        values.Add(key, valueClass.Create(valueType, AStream, payloadSize));
     end;
 
     Result := TX2LogDictionaryDetails.CreateOwned(values);
+    values := nil;
   finally
     FreeAndNil(values);
   end;
