@@ -42,6 +42,7 @@ type
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
+    procedure ExceptionS(AException: Exception; const AMessage: string; ANamedParams: array of const);
   end;
 
 
@@ -158,14 +159,67 @@ end;
 procedure TX2Log.ExceptionEx(AException: Exception; const AMessage, ACategory: string);
 var
   msg: string;
+  exceptionMsg: string;
+  detailsText: TStringBuilder;
   details: IX2LogDetails;
 
 begin
   msg := AMessage;
   details := nil;
 
-  ExceptionStrategy.Execute(AException, msg, details);
+  detailsText := TStringBuilder.Create;
+  try
+    ExceptionStrategy.Execute(AException, exceptionMsg,
+      procedure(const AKey, AValue: string)
+      begin
+        detailsText.Append(AKey).Append(': ').Append(AValue).AppendLine;
+      end);
+
+    if Length(exceptionMsg) > 0 then
+    begin
+      if Length(msg) > 0 then
+        msg := msg + ': ';
+
+      msg := msg + exceptionMsg;
+    end;
+
+    details := TX2LogStringDetails.CreateIfNotEmpty(detailsText.ToString);
+  finally
+    FreeAndNil(detailsText);
+  end;
+
   Log(TX2LogLevel.Error, msg, ACategory, details);
+end;
+
+
+procedure TX2Log.ExceptionS(AException: Exception; const AMessage: string; ANamedParams: array of const);
+var
+  details: IX2LogDetailsDictionaryWriter;
+  exceptionMsg: string;
+
+begin
+  details := TX2LogDictionaryDetails.CreateIfNotEmpty(ANamedParams);
+
+  ExceptionStrategy.Execute(AException, exceptionMsg,
+    procedure(const AKey, AValue: string)
+    begin
+      if not Assigned(details) then
+        details := TX2LogDictionaryDetails.Create([]);
+
+      details.SetStringValue(AKey, AValue);
+    end);
+
+
+  if Length(exceptionMsg) > 0 then
+  begin
+    if not Assigned(details) then
+      details := TX2LogDictionaryDetails.Create([]);
+
+    details.SetStringValue('Message', exceptionMsg);
+  end;
+
+
+  Log(TX2LogLevel.Error, Now, AMessage, LogCategoryDefault, details);
 end;
 
 end.

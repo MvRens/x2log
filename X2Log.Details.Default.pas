@@ -62,8 +62,17 @@ type
   TX2LogValueDictionary = TObjectDictionary<string, TX2LogDictionaryValue>;
 
 
+  IX2LogDetailsDictionaryWriter = interface(IX2LogDetailsDictionary)
+    procedure SetStringValue(const Key: string; const AValue: string);
+    procedure SetBooleanValue(const Key: string; const AValue: Boolean);
+    procedure SetIntValue(const Key: string; const AValue: Int64);
+    procedure SetFloatValue(const Key: string; const AValue: Extended);
+    procedure SetDateTimeValue(const Key: string; const AValue: TDateTime);
+  end;
+
+
   TX2LogDictionaryDetails = class(TInterfacedObject, IX2LogDetails, IX2LogDetailsDictionary,
-                                                     IX2LogDetailsDictionaryAccess)
+                                                     IX2LogDetailsDictionaryAccess, IX2LogDetailsDictionaryWriter)
   private
     FValues: TX2LogValueDictionary;
   protected
@@ -90,6 +99,13 @@ type
     function GetIntValue(const Key: string): Int64;
     function GetFloatValue(const Key: string): Extended;
     function GetDateTimeValue(const Key: string): TDateTime;
+
+    { IX2LogDetailsDictionaryWriter }
+    procedure SetStringValue(const Key: string; const AValue: string);
+    procedure SetBooleanValue(const Key: string; const AValue: Boolean);
+    procedure SetIntValue(const Key: string; const AValue: Int64);
+    procedure SetFloatValue(const Key: string; const AValue: Extended);
+    procedure SetDateTimeValue(const Key: string; const AValue: TDateTime);
   end;
 
 
@@ -477,6 +493,36 @@ end;
 function TX2LogDictionaryDetails.GetValue(const Key: string): TX2LogDictionaryValue;
 begin
   Result := FValues[Key];
+end;
+
+
+procedure TX2LogDictionaryDetails.SetBooleanValue(const Key: string; const AValue: Boolean);
+begin
+  FValues.Add(Key, TX2LogDictionaryBooleanValue.Create(AValue));
+end;
+
+
+procedure TX2LogDictionaryDetails.SetDateTimeValue(const Key: string; const AValue: TDateTime);
+begin
+  FValues.Add(Key, TX2LogDictionaryDateTimeValue.Create(AValue));
+end;
+
+
+procedure TX2LogDictionaryDetails.SetFloatValue(const Key: string; const AValue: Extended);
+begin
+  FValues.Add(Key, TX2LogDictionaryFloatValue.Create(AValue));
+end;
+
+
+procedure TX2LogDictionaryDetails.SetIntValue(const Key: string; const AValue: Int64);
+begin
+  FValues.Add(Key, TX2LogDictionaryIntValue.Create(AValue));
+end;
+
+
+procedure TX2LogDictionaryDetails.SetStringValue(const Key, AValue: string);
+begin
+  FValues.Add(Key, TX2LogDictionaryStringValue.Create(AValue));
 end;
 
 

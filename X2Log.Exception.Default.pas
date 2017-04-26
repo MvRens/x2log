@@ -11,7 +11,7 @@ type
   TX2LogDefaultExceptionStrategy = class(TInterfacedObject, IX2LogExceptionStrategy)
   public
     { IX2LogExceptionStrategy }
-    procedure Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails); virtual;
+    procedure Execute(AException: Exception; out AMessage: string; AAddDetails: TX2LogExceptionDetailsProc); virtual;
   end;
 
 
@@ -19,12 +19,9 @@ implementation
 
 
 { TX2LogDefaultExceptionStrategy }
-procedure TX2LogDefaultExceptionStrategy.Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails);
+procedure TX2LogDefaultExceptionStrategy.Execute(AException: Exception; out AMessage: string; AAddDetails: TX2LogExceptionDetailsProc);
 begin
-  if Length(AMessage) > 0 then
-    AMessage := AMessage + ': ';
-
-  AMessage := AMessage + AException.Message;
+  AMessage := AException.Message;
 end;
 
 end.

@@ -58,9 +58,11 @@ type
   end;
 
 
+  TX2LogExceptionDetailsProc = reference to procedure(const AKey, AValue: string);
+
   IX2LogExceptionStrategy = interface
     ['{C0B7950E-BE0A-4A21-A7C5-F8322FD4E205}']
-    procedure Execute(AException: Exception; var AMessage: string; var ADetails: IX2LogDetails);
+    procedure Execute(AException: Exception; out AMessage: string; AAddDetails: TX2LogExceptionDetailsProc);
   end;
 
 
@@ -95,6 +97,7 @@ type
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
+    procedure ExceptionS(AException: Exception; const AMessage: string; ANamedParams: array of const);
   end;
 
 

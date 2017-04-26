@@ -53,6 +53,7 @@ type
 
     procedure Exception(AException: Exception; const AMessage: string = '');
     procedure ExceptionEx(AException: Exception; const AMessage: string = ''; const ACategory: string = '');
+    procedure ExceptionS(AException: Exception; const AMessage: string; ANamedParams: array of const);
   end;
 
 
@@ -209,6 +210,13 @@ procedure TX2LogCategoryDecorator.ExceptionEx(AException: Exception; const AMess
 begin
   if Assigned(DecoratedLog) then
     DecoratedLog.ExceptionEx(AException, AMessage, GetCategory(ACategory));
+end;
+
+
+procedure TX2LogCategoryDecorator.ExceptionS(AException: Exception; const AMessage: string; ANamedParams: array of const);
+begin
+  if Assigned(DecoratedLog) then
+    DecoratedLog.ExceptionS(AException, AMessage, ANamedParams);
 end;
 
 

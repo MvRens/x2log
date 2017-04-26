@@ -87,6 +87,7 @@ type
     pnlRollingFileTextFormatter: TPanel;
     rbRollingFileTextFormatterDefault: TRadioButton;
     rbRollingFileTextFormatterJson: TRadioButton;
+    btnStructuredException: TButton;
     
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -114,6 +115,7 @@ type
     procedure btnRollingFileStartClick(Sender: TObject);
     procedure btnRollingFileStopClick(Sender: TObject);
     procedure btnValueTypesClick(Sender: TObject);
+    procedure btnStructuredExceptionClick(Sender: TObject);
   private
     FLog: IX2Log;
     FEventObserver: IX2LogObserver;
@@ -500,6 +502,17 @@ begin
      'Has the large hadron collider destroyed the world yet?', False,
      'Float', 3.1415,
      'Integer', 89740987342]);
+end;
+
+
+procedure TMainForm.btnStructuredExceptionClick(Sender: TObject);
+begin
+  try
+    raise Exception.Create('Stuff''s broken!');
+  except
+    on E:Exception do
+      FLog.ExceptionS(e, 'I totally expected that.', ['HasExtraInfo', False]);
+  end;
 end;
 
 end.

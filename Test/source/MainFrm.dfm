@@ -32,6 +32,10 @@ object MainForm: TMainForm
     TabOrder = 0
     object tsEvent: TTabSheet
       Caption = 'Event'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object mmoEvent: TMemo
         AlignWithMargins = True
         Left = 8
@@ -68,6 +72,10 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -160,6 +168,10 @@ object MainForm: TMainForm
     end
     object tsRollingFile: TTabSheet
       Caption = 'Rolling File'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -267,6 +279,10 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -410,11 +426,15 @@ object MainForm: TMainForm
     Margins.Top = 8
     Margins.Right = 8
     Margins.Bottom = 0
-    ActivePage = tsStructured
+    ActivePage = tsText
     Align = alTop
     TabOrder = 2
     object tsText: TTabSheet
       Caption = 'Text'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         623
         76)
@@ -484,6 +504,10 @@ object MainForm: TMainForm
     object tsException: TTabSheet
       Caption = 'Exception'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         623
         76)
@@ -517,6 +541,10 @@ object MainForm: TMainForm
     object tsBinary: TTabSheet
       Caption = 'Binary'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnBinaryRawByteString: TButton
         Left = 12
         Top = 15
@@ -539,6 +567,10 @@ object MainForm: TMainForm
     object tsTimer: TTabSheet
       Caption = 'Timer'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lblTimer: TLabel
         Left = 8
         Top = 12
@@ -586,6 +618,10 @@ object MainForm: TMainForm
     object tsStructured: TTabSheet
       Caption = 'Structured'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object btnValueTypes: TButton
         Left = 12
         Top = 15
@@ -594,6 +630,15 @@ object MainForm: TMainForm
         Caption = 'Value types test'
         TabOrder = 0
         OnClick = btnValueTypesClick
+      end
+      object btnStructuredException: TButton
+        Left = 139
+        Top = 15
+        Width = 121
+        Height = 21
+        Caption = 'Exception test'
+        TabOrder = 1
+        OnClick = btnStructuredExceptionClick
       end
     end
   end
@@ -661,7 +706,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140068000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140070000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
