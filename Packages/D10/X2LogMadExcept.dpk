@@ -1,11 +1,11 @@
-package X2LogFormsDXE2;
+package X2LogMadExcept;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -25,17 +25,19 @@ package X2LogFormsDXE2;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'X²Log - Forms'}
+{$DESCRIPTION 'X²Log - madExcept'}
+{$LIBSUFFIX 'D10'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  X2LogDXE2,
-  vcl,
-  VirtualTreesR;
+  madBasic_,
+  madDisAsm_,
+  madExcept_,
+  X2Log;
 
 contains
-  X2Log.Observer.MonitorForm in '..\X2Log.Observer.MonitorForm.pas' {X2LogObserverMonitorForm};
+  X2Log.Exception.madExceptHandler in '..\..\X2Log.Exception.madExceptHandler.pas';
 
 end.

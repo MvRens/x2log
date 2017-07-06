@@ -1,11 +1,11 @@
-package X2LogMadExceptDXE2;
+package X2LogJson;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -24,19 +24,18 @@ package X2LogMadExceptDXE2;
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
+{$DEFINE $(DELPHIBIN)}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'X²Log - madExcept'}
-{$RUNONLY}
+{$LIBSUFFIX 'D10'}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  madBasic_,
-  madDisAsm_,
-  madExcept_,
-  X2LogDXE2;
+  X2Log;
 
 contains
-  X2Log.Exception.madExceptHandler in '..\X2Log.Exception.madExceptHandler.pas';
+  X2Log.TextFormatter.Json in '..\..\X2Log.TextFormatter.Json.pas',
+  X2Log.JsonDataObjects in '..\..\X2Log.JsonDataObjects.pas';
 
 end.
+

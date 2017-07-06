@@ -2,7 +2,7 @@ unit X2Log.TextFormatter.Json;
 
 interface
 uses
-  JsonDataObjects,
+  X2Log.JsonDataObjects,
 
   X2Log.Details.Intf,
   X2Log.Intf,

@@ -1,9 +1,9 @@
 ﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 		<PropertyGroup>
-			<ProjectGuid>{E09901D8-F644-4C49-AF42-2C5A4EE2118A}</ProjectGuid>
-			<MainSource>X2LogFormsDXE2.dpk</MainSource>
+			<ProjectGuid>{DF06C136-DD6E-4481-967D-BF73C5B75BDA}</ProjectGuid>
+			<MainSource>X2LogMadExceptDXE2.dpk</MainSource>
 			<ProjectVersion>13.4</ProjectVersion>
-			<FrameworkType>VCL</FrameworkType>
+			<FrameworkType>None</FrameworkType>
 			<Base>True</Base>
 			<Config Condition="'$(Config)'==''">Debug</Config>
 			<Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -50,8 +50,8 @@
 			<DCC_CBuilderOutput>All</DCC_CBuilderOutput>
 			<RuntimeOnlyPackage>true</RuntimeOnlyPackage>
 			<DCC_BplOutput>$(DELPHIBIN)</DCC_BplOutput>
-			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-			<DCC_Description>X²Log - Forms</DCC_Description>
+			<DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+			<DCC_Description>X²Log - madExcept</DCC_Description>
 			<DCC_DcpOutput>$(DELPHIBIN)</DCC_DcpOutput>
 			<VerInfo_Locale>1043</VerInfo_Locale>
 			<GenPackage>true</GenPackage>
@@ -72,7 +72,6 @@
 			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
 			<DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
 			<VerInfo_Locale>1033</VerInfo_Locale>
-			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
 		</PropertyGroup>
 		<PropertyGroup Condition="'$(Cfg_1)'!=''">
 			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -101,12 +100,11 @@
 				<MainSource>MainSource</MainSource>
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
+			<DCCReference Include="madBasic_.dcp"/>
+			<DCCReference Include="madDisAsm_.dcp"/>
+			<DCCReference Include="madExcept_.dcp"/>
 			<DCCReference Include="X2LogDXE2.dcp"/>
-			<DCCReference Include="vcl.dcp"/>
-			<DCCReference Include="VirtualTreesR.dcp"/>
-			<DCCReference Include="..\X2Log.Observer.MonitorForm.pas">
-				<Form>X2LogObserverMonitorForm</Form>
-			</DCCReference>
+			<DCCReference Include="..\..\X2Log.Exception.madExceptHandler.pas"/>
 			<BuildConfiguration Include="Release">
 				<Key>Cfg_2</Key>
 				<CfgParent>Base</CfgParent>
@@ -124,6 +122,9 @@
 			<Borland.ProjectType>Package</Borland.ProjectType>
 			<BorlandProject>
 				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">X2LogMadExceptDXE2.dpk</Source>
+					</Source>
 					<VersionInfo>
 						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
 						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
@@ -152,9 +153,6 @@
 						<VersionInfoKeys Name="Comments"/>
 					</VersionInfoKeys>
 					<Excluded_Packages/>
-					<Source>
-						<Source Name="MainSource">X2LogFormsDXE2.dpk</Source>
-					</Source>
 				</Delphi.Personality>
 				<Deployment/>
 				<Platforms>

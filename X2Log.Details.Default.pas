@@ -724,7 +724,7 @@ begin
         FloatValue:     valueClass := TX2LogDictionaryFloatValue;
         DateTimeValue:  valueClass := TX2LogDictionaryDateTimeValue;
       else
-        AStream.Seek(payloadSize, soFromCurrent);
+        AStream.Position := AStream.Position + payloadSize;
       end;
 
       if Assigned(valueClass) then

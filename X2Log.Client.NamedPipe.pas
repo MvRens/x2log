@@ -394,7 +394,7 @@ begin
               FreeAndNil(detailsStream);
             end;
           end else
-            MessageData.Seek(detailsSize, soFromCurrent);
+            MessageData.Position := MessageData.Position + detailsSize;
         end;
       end;
 

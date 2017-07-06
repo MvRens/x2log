@@ -1,0 +1,62 @@
+package X2LogDXE2;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'X²Log'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl;
+
+contains
+  X2Log.Client.Base in '..\..\X2Log.Client.Base.pas',
+  X2Log.Client.NamedPipe in '..\..\X2Log.Client.NamedPipe.pas',
+  X2Log.Constants in '..\..\X2Log.Constants.pas',
+  X2Log.Exception.Default in '..\..\X2Log.Exception.Default.pas',
+  X2Log.Global in '..\..\X2Log.Global.pas',
+  X2Log.Intf in '..\..\X2Log.Intf.pas',
+  X2Log.Observer.Custom in '..\..\X2Log.Observer.Custom.pas',
+  X2Log.Observer.CustomThreaded in '..\..\X2Log.Observer.CustomThreaded.pas',
+  X2Log.Observer.Event in '..\..\X2Log.Observer.Event.pas',
+  X2Log.Observer.LogFile in '..\..\X2Log.Observer.LogFile.pas',
+  X2Log.Observer.NamedPipe in '..\..\X2Log.Observer.NamedPipe.pas',
+  X2Log in '..\..\X2Log.pas',
+  X2Log.Details.Default in '..\..\X2Log.Details.Default.pas',
+  X2Log.Details.Intf in '..\..\X2Log.Details.Intf.pas',
+  X2Log.Details.Registry in '..\..\X2Log.Details.Registry.pas',
+  X2Log.Util.Stream in '..\..\X2Log.Util.Stream.pas',
+  X2Log.Translations.Dutch in '..\..\X2Log.Translations.Dutch.pas',
+  X2Log.Decorator in '..\..\X2Log.Decorator.pas',
+  X2Log.Observer.RollingLogFile in '..\..\X2Log.Observer.RollingLogFile.pas',
+  X2Log.TextFormatter.Default in '..\..\X2Log.TextFormatter.Default.pas',
+  X2Log.TextFormatter.Intf in '..\..\X2Log.TextFormatter.Intf.pas',
+  X2Log.Intf.NamedPipe in '..\..\X2Log.Intf.NamedPipe.pas';
+
+end.
+
+

@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{16A1D415-5191-4718-97C3-669CCA175F4F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="X2Log.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="X2LogMadExcept.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="X2LogForms.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="X2LogJson.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="X2Log">
+        <MSBuild Projects="X2Log.dproj"/>
+    </Target>
+    <Target Name="X2Log:Clean">
+        <MSBuild Projects="X2Log.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="X2Log:Make">
+        <MSBuild Projects="X2Log.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="X2LogMadExcept">
+        <MSBuild Projects="X2LogMadExcept.dproj"/>
+    </Target>
+    <Target Name="X2LogMadExcept:Clean">
+        <MSBuild Projects="X2LogMadExcept.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="X2LogMadExcept:Make">
+        <MSBuild Projects="X2LogMadExcept.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="X2LogForms">
+        <MSBuild Projects="X2LogForms.dproj"/>
+    </Target>
+    <Target Name="X2LogForms:Clean">
+        <MSBuild Projects="X2LogForms.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="X2LogForms:Make">
+        <MSBuild Projects="X2LogForms.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="X2LogJson">
+        <MSBuild Projects="X2LogJson.dproj"/>
+    </Target>
+    <Target Name="X2LogJson:Clean">
+        <MSBuild Projects="X2LogJson.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="X2LogJson:Make">
+        <MSBuild Projects="X2LogJson.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="X2Log;X2LogMadExcept;X2LogForms;X2LogJson"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="X2Log:Clean;X2LogMadExcept:Clean;X2LogForms:Clean;X2LogJson:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="X2Log:Make;X2LogMadExcept:Make;X2LogForms:Make;X2LogJson:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
