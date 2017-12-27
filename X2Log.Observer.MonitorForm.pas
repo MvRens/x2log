@@ -780,11 +780,22 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.SetVisibleDetails(AControl: TControl);
+var
+  text: string;
+
 begin
   if Assigned(AControl) then
   begin
     AControl.BringToFront;
-    AControl.Visible := True;
+
+    if (AControl = reDetails) and (not reDetails.HandleAllocated) then
+    begin
+      // TRichEdit clears it's text when it is first shown, at least on Delphi XE2
+      text := reDetails.Text;
+      reDetails.Visible := True;
+      reDetails.Text := text;
+    end else
+      AControl.Visible := True;
   end;
 
   reDetails.Visible := (AControl = reDetails);
