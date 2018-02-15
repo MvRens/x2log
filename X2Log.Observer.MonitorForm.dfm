@@ -114,7 +114,6 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         ScrollBars = ssBoth
         TabOrder = 0
         Visible = False
-        ExplicitHeight = 451
       end
       object sbDetailsImage: TScrollBox
         Left = 0
@@ -233,7 +232,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         end
         item
           Position = 3
-          Width = 354
+          Width = 358
           WideText = 'Message'
         end>
     end
@@ -267,7 +266,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 116
         Top = 0
         Width = 46
-        Height = 22
+        Height = 13
         Caption = '    Filter:  '
         Layout = tlCenter
       end
@@ -318,7 +317,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000080110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A0040000C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
