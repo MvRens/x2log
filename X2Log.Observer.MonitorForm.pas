@@ -793,9 +793,6 @@ end;
 
 
 procedure TX2LogObserverMonitorForm.SetVisibleDetails(AControl: TControl);
-var
-  text: string;
-
 begin
   if Assigned(AControl) then
   begin
