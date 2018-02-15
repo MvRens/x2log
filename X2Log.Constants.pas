@@ -95,6 +95,12 @@ resourcestring
   LogMonitorFormMenuWindow = 'Window';
   LogMonitorFormMenuWindowAlwaysOnTop = 'Always on top';
 
+  { Caption of the details view headers }
+  LogMonitorFormMessageHeader = 'Message';
+  LogMonitorFormDetailHeader = 'Details';
+  LogMonitorFormKeyHeader = 'Key';
+  LogMonitorFormValueHeader = 'Value';
+
 
   { Status messages }
   LogMonitorFormStatusPaused = 'Paused: %d log message(s) skipped';

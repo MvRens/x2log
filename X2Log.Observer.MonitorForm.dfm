@@ -35,7 +35,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Height = 496
     Align = alRight
     BevelOuter = bvNone
-    TabOrder = 0
+    TabOrder = 1
     object tbDetails: TToolBar
       Left = 0
       Top = 0
@@ -100,7 +100,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 0
         Top = 19
         Width = 298
-        Height = 451
+        Height = 343
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = ANSI_CHARSET
@@ -112,22 +112,24 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         PlainText = True
         ReadOnly = True
         ScrollBars = ssBoth
-        TabOrder = 1
+        TabOrder = 0
         Visible = False
+        ExplicitHeight = 451
       end
       object sbDetailsImage: TScrollBox
         Left = 0
         Top = 19
         Width = 298
-        Height = 451
+        Height = 343
         HorzScrollBar.Tracking = True
         VertScrollBar.Tracking = True
         Align = alClient
         BorderStyle = bsNone
         DoubleBuffered = True
         ParentDoubleBuffered = False
-        TabOrder = 2
+        TabOrder = 1
         Visible = False
+        ExplicitHeight = 451
         object imgDetailsImage: TImage
           Left = 0
           Top = 0
@@ -140,14 +142,46 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
         Left = 0
         Top = 19
         Width = 298
-        Height = 451
+        Height = 343
         Align = alClient
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goColSizing, goAlwaysShowEditor, goThumbTracking]
-        TabOrder = 3
+        TabOrder = 2
         OnKeyDown = vleDetailsDictionaryKeyDown
+        ExplicitHeight = 451
         ColWidths = (
           150
           142)
+      end
+      object mmoMessage: TMemo
+        Left = 0
+        Top = 381
+        Width = 298
+        Height = 89
+        Align = alBottom
+        ReadOnly = True
+        ScrollBars = ssVertical
+        TabOrder = 3
+        ExplicitLeft = -2
+        ExplicitTop = 440
+      end
+      object hcMessage: THeaderControl
+        Left = 0
+        Top = 362
+        Width = 298
+        Height = 19
+        Align = alBottom
+        BiDiMode = bdLeftToRight
+        Sections = <
+          item
+            AutoSize = True
+            ImageIndex = -1
+            Text = 'Message'
+            Width = 298
+          end>
+        NoSizing = True
+        ParentBiDiMode = False
+        ExplicitLeft = -2
+        ExplicitTop = 440
       end
     end
   end
@@ -158,7 +192,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Height = 496
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     object vstLog: TVirtualStringTree
       Left = 0
       Top = 22
@@ -174,7 +208,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Header.Options = [hoAutoResize, hoColumnResize, hoDrag, hoVisible]
       HintMode = hmTooltip
       Images = ilsLog
-      TabOrder = 0
+      TabOrder = 1
       TreeOptions.PaintOptions = [toHideFocusRect, toShowButtons, toShowDropmark, toThemeAware]
       TreeOptions.SelectionOptions = [toFullRowSelect]
       OnFocusChanged = vstLogFocusChanged
@@ -214,7 +248,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
       Images = ilsLog
       List = True
       ShowCaptions = True
-      TabOrder = 1
+      TabOrder = 0
       OnCustomDraw = ToolbarCustomDraw
       object tbPause: TToolButton
         Left = 0
@@ -284,7 +318,7 @@ object X2LogObserverMonitorForm: TX2LogObserverMonitorForm
     Left = 448
     Top = 48
     Bitmap = {
-      494C01010A004000040110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A004000080110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

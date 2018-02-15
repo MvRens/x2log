@@ -100,6 +100,8 @@ type
     mmMainFileSaveAs: TMenuItem;
     sdSaveAs: TSaveDialog;
     vleDetailsDictionary: TValueListEditor;
+    mmoMessage: TMemo;
+    hcMessage: THeaderControl;
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -360,6 +362,11 @@ begin
   vstLog.Header.Columns[ColumnCategory].Text := GetLogResourceString(@LogMonitorFormColumnCategory);
   vstLog.Header.Columns[ColumnMessage].Text := GetLogResourceString(@LogMonitorFormColumnMessage);
 
+  hcMessage.Sections[0].Text := GetLogResourceString(@LogMonitorFormMessageHeader);
+  hcDetails.Sections[0].Text := GetLogResourceString(@LogMonitorFormDetailHeader);
+  vleDetailsDictionary.TitleCaptions[0] := GetLogResourceString(@LogMonitorFormKeyHeader);
+  vleDetailsDictionary.TitleCaptions[1] := GetLogResourceString(@LogMonitorFormValueHeader);
+
   mmMainFile.Caption := GetLogResourceString(@LogMonitorFormMenuFile);
   mmMainLog.Caption := GetLogResourceString(@LogMonitorFormMenuLog);
   mmMainDetails.Caption := GetLogResourceString(@LogMonitorFormMenuDetails);
@@ -505,8 +512,11 @@ begin
         vstLog.IsVisible[node] := (not Paused) and (ALevel in VisibleLevels);
 
 
-        while vstLog.RootNodeCount > MaxEntries do
-          vstLog.DeleteNode(vstLog.GetFirst);
+        if not paused then
+        begin
+          while vstLog.RootNodeCount > MaxEntries do
+            vstLog.DeleteNode(vstLog.GetFirst);
+        end;
       finally
         vstLog.EndUpdate;
       end;
@@ -620,9 +630,12 @@ begin
 
     else if Supports(ADetails, IX2LogDetailsText, logDetailsText) then
     begin
-      reDetails.Text := logDetailsText.AsString;
       canWrap := True;
       SetVisibleDetails(reDetails);
+
+      // Must be set after Visible = True, because the Text will get lost
+      // as soon as the handle is allocated.
+      reDetails.Text := logDetailsText.AsString;
     end;
   end else
     SetVisibleDetails(nil);
@@ -900,9 +913,14 @@ begin
   if Assigned(Node) then
   begin
     nodeData := Sender.GetNodeData(Node);
+
+    mmoMessage.Text := nodeData^.Message;
     SetDetails(nodeData^.Details);
   end else
+  begin
+    mmoMessage.Clear;
     SetDetails(nil);
+  end;
 
   UpdateUI;
 end;

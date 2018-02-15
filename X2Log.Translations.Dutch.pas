@@ -38,6 +38,11 @@ begin
   SetLogResourceString(@LogMonitorFormMenuWindow, 'Venster');
   SetLogResourceString(@LogMonitorFormMenuWindowAlwaysOnTop, 'Altijd op voorgrond');
 
+  SetLogResourceString(@LogMonitorFormMessageHeader, 'Melding');
+  SetLogResourceString(@LogMonitorFormDetailHeader, 'Details');
+  SetLogResourceString(@LogMonitorFormKeyHeader, 'Naam');
+  SetLogResourceString(@LogMonitorFormValueHeader, 'Waarde');
+
   SetLogResourceString(@LogMonitorFormStatusPaused, 'Gepauzeerd: %d melding(en) overgeslagen');
 
   SetLogResourceString(@LogMonitorFormSaveDetailsFilter, 'Alle bestanden (*.*)|*.*');
