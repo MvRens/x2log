@@ -30,7 +30,8 @@ package X2LogJsonDXE2;
 
 requires
   rtl,
-  X2LogDXE2;
+  X2LogDXE2,
+  soaprtl;
 
 contains
   X2Log.TextFormatter.Json in '..\..\X2Log.TextFormatter.Json.pas',

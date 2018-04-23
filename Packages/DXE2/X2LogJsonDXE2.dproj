@@ -125,6 +125,7 @@
 			</DelphiCompile>
 			<DCCReference Include="rtl.dcp"/>
 			<DCCReference Include="X2LogDXE2.dcp"/>
+			<DCCReference Include="soaprtl.dcp"/>
 			<DCCReference Include="..\..\X2Log.TextFormatter.Json.pas"/>
 			<DCCReference Include="..\..\X2Log.JsonDataObjects.pas"/>
 			<BuildConfiguration Include="Release">

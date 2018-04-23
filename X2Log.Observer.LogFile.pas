@@ -69,6 +69,7 @@ type
   protected
     { IX2LogTextFormatterHelper }
     function GetDetailsFilename: string;
+    function SaveDetailsToStream(AStream: TStream): Boolean;
 
     property Entry: TX2LogQueueEntry read FEntry;
     property LogFileName: string read FLogFileName;
@@ -244,6 +245,17 @@ begin
       until False;
     end;
   end;
+end;
+
+
+function TX2LogFileTextFormatterHelper.SaveDetailsToStream(AStream: TStream): Boolean;
+var
+  logDetailsStreamable: IX2LogDetailsStreamable;
+
+begin
+  Result := Supports(Entry.Details, IX2LogDetailsStreamable, logDetailsStreamable);
+  if Result then
+    logDetailsStreamable.SaveToStream(AStream);
 end;
 
 end.
