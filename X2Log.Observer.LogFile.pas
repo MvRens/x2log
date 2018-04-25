@@ -153,17 +153,24 @@ var
 
 begin
   fileName := GetFileName(AEntry);
-  ForceDirectories(ExtractFilePath(fileName));
+  if not ForceDirectories(ExtractFilePath(fileName)) then
+    exit;
 
   line := TextFormatter.GetText(TX2LogFileTextFormatterHelper.Create(AEntry, fileName, LogDetails),
                                 AEntry.Level, AEntry.DateTime, AEntry.Message, AEntry.Category, AEntry.Details);
 
-  { Append line to log file }
-  writer := TFile.AppendText(fileName);
   try
-    writer.WriteLine(line);
-  finally
-    FreeAndNil(writer);
+    { Append line to log file }
+    writer := TFile.AppendText(fileName);
+    try
+      writer.WriteLine(line);
+    finally
+      FreeAndNil(writer);
+    end;
+  except
+    { If we retry for an amount of time the buffers will just backlog,
+      so for now just carry on. }
+    on E:EInOutError do;
   end;
 end;
 
