@@ -21,6 +21,7 @@ type
   IX2LogDetails = interface
     ['{86F24F52-CE1F-4A79-936F-A5805D84E18A}']
     function GetSerializerIID: TGUID;
+    function Clone: IX2LogDetails;
 
     property SerializerIID: TGUID read GetSerializerIID;
   end;

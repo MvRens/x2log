@@ -22,6 +22,7 @@ type
 
     { IX2LogDetails }
     function GetSerializerIID: TGUID;
+    function Clone: IX2LogDetails;
 
     { IX2LogDetailsText }
     function GetAsString: string;
@@ -41,6 +42,7 @@ type
     FValueType: TX2LogValueType;
   protected
     constructor Create(AValueType: TX2LogValueType; AStream: TStream = nil; ASize: Cardinal = 0); overload; virtual;
+    function Clone: TX2LogDictionaryValue; virtual; abstract;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); virtual; abstract;
     procedure SaveToStream(AStream: TStream); virtual; abstract;
@@ -88,6 +90,7 @@ type
 
     { IX2LogDetails }
     function GetSerializerIID: TGUID;
+    function Clone: IX2LogDetails;
 
     { IX2LogDetailsDictionary }
     function GetKeys: TEnumerable<string>;
@@ -123,6 +126,7 @@ type
 
     { IX2LogDetails }
     function GetSerializerIID: TGUID;
+    function Clone: IX2LogDetails;
 
     { IX2LogDetailsBinary }
     function GetAsStream: TStream;
@@ -148,6 +152,7 @@ type
 
     { IX2LogDetails }
     function GetSerializerIID: TGUID;
+    function Clone: IX2LogDetails;
 
     { IX2LogDetailsGraphic }
     function GetAsGraphic: TGraphic;
@@ -217,6 +222,7 @@ type
     FValue: string;
   protected
     constructor Create(const AValue: string); overload;
+    function Clone: TX2LogDictionaryValue; override;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
@@ -232,6 +238,7 @@ type
     FValue: Boolean;
   protected
     constructor Create(AValue: Boolean); overload;
+    function Clone: TX2LogDictionaryValue; override;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
@@ -247,6 +254,7 @@ type
     FValue: Int64;
   protected
     constructor Create(AValue: Int64); overload;
+    function Clone: TX2LogDictionaryValue; override;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
@@ -262,6 +270,7 @@ type
     FValue: Extended;
   protected
     constructor Create(AValue: Extended); overload;
+    function Clone: TX2LogDictionaryValue; override;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
@@ -277,6 +286,7 @@ type
     FValue: TDateTime;
   protected
     constructor Create(AValue: TDateTime); overload;
+    function Clone: TX2LogDictionaryValue; override;
 
     procedure LoadFromStream(AStream: TStream; ASize: Cardinal); override;
     procedure SaveToStream(AStream: TStream); override;
@@ -308,6 +318,12 @@ end;
 function TX2LogStringDetails.GetSerializerIID: TGUID;
 begin
   Result := StringDetailsSerializerIID;
+end;
+
+
+function TX2LogStringDetails.Clone: IX2LogDetails;
+begin
+  Result := TX2LogStringDetails.Create(FText);
 end;
 
 
@@ -442,6 +458,21 @@ begin
 end;
 
 
+function TX2LogDictionaryDetails.Clone: IX2LogDetails;
+var
+  values: TX2LogValueDictionary;
+  pair: TPair<string, TX2LogDictionaryValue>;
+
+begin
+  values := TX2LogValueDictionary.Create([doOwnsValues]);
+
+  for pair in FValues do
+    values.Add(pair.Key, pair.Value.Clone);
+
+  Result := TX2LogDictionaryDetails.CreateOwned(values);
+end;
+
+
 function TX2LogDictionaryDetails.GetKeys: TEnumerable<string>;
 begin
   Result := FValues.Keys;
@@ -566,6 +597,12 @@ begin
 end;
 
 
+function TX2LogBinaryDetails.Clone: IX2LogDetails;
+begin
+  Result := TX2LogBinaryDetails.Create(Data);
+end;
+
+
 function TX2LogBinaryDetails.GetAsStream: TStream;
 begin
   Data.Position := 0;
@@ -620,6 +657,12 @@ end;
 function TX2LogGraphicDetails.GetSerializerIID: TGUID;
 begin
   Result := GraphicDetailsSerializerIID;
+end;
+
+
+function TX2LogGraphicDetails.Clone: IX2LogDetails;
+begin
+  Result := TX2LogGraphicDetails.Create(FGraphic);
 end;
 
 
@@ -823,6 +866,12 @@ begin
 end;
 
 
+function TX2LogDictionaryStringValue.Clone: TX2LogDictionaryValue;
+begin
+  Result := TX2LogDictionaryStringValue.Create(FValue);
+end;
+
+
 procedure TX2LogDictionaryStringValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
 begin
   Value := TStreamUtil.ReadString(AStream, nil, False, ASize);
@@ -847,6 +896,12 @@ begin
   inherited Create(BooleanValue);
 
   Value := AValue;
+end;
+
+
+function TX2LogDictionaryBooleanValue.Clone: TX2LogDictionaryValue;
+begin
+  Result := TX2LogDictionaryBooleanValue.Create(FValue);
 end;
 
 
@@ -880,6 +935,12 @@ begin
 end;
 
 
+function TX2LogDictionaryIntValue.Clone: TX2LogDictionaryValue;
+begin
+  Result := TX2LogDictionaryIntValue.Create(FValue);
+end;
+
+
 procedure TX2LogDictionaryIntValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
 begin
   if ASize <> SizeOf(Int64) then
@@ -910,6 +971,12 @@ begin
 end;
 
 
+function TX2LogDictionaryFloatValue.Clone: TX2LogDictionaryValue;
+begin
+  Result := TX2LogDictionaryFloatValue.Create(FValue);
+end;
+
+
 procedure TX2LogDictionaryFloatValue.LoadFromStream(AStream: TStream; ASize: Cardinal);
 begin
   if ASize <> SizeOf(Extended) then
@@ -937,6 +1004,12 @@ begin
   inherited Create(DateTimeValue);
 
   Value := AValue;
+end;
+
+
+function TX2LogDictionaryDateTimeValue.Clone: TX2LogDictionaryValue;
+begin
+  Result := TX2LogDictionaryDateTimeValue.Create(FValue);
 end;
 
 

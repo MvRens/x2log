@@ -171,10 +171,17 @@ end;
 
 
 procedure TX2LogObserverWorkerThread.Log(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
+var
+  details: IX2LogDetails;
+
 begin
+  details := nil;
+  if Assigned(ADetails) then
+    details := ADetails.Clone;
+
   TMonitor.Enter(LogQueue);
   try
-    LogQueue.Enqueue(TX2LogQueueEntry.Create(ALevel, ADateTime, AMessage, ACategory, ADetails));
+    LogQueue.Enqueue(TX2LogQueueEntry.Create(ALevel, ADateTime, AMessage, ACategory, details));
     LogQueueSignal.SetEvent;
   finally
     TMonitor.Exit(LogQueue);

@@ -5,3 +5,4 @@ Test/bin/
 *.local
 *.identcache
 *.dcu
+Test/X2LogTest.stat

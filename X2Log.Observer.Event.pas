@@ -49,7 +49,14 @@ end;
 
 
 procedure TX2LogEventObserver.DoLog(ALevel: TX2LogLevel; ADateTime: TDateTime; const AMessage, ACategory: string; ADetails: IX2LogDetails);
+var
+  details: IX2LogDetails;
+
 begin
+  details := nil;
+  if Assigned(ADetails) then
+    details := ADetails.Clone;
+
   if Assigned(FOnLog) then
   begin
     if RunInMainThread then
@@ -58,10 +65,10 @@ begin
         procedure
         begin
           if Assigned(FOnLog) then
-            FOnLog(Self, ALevel, ADateTime, AMessage, ACategory, ADetails);
+            FOnLog(Self, ALevel, ADateTime, AMessage, ACategory, details);
         end);
     end else
-      FOnLog(Self, ALevel, ADateTime, AMessage, ACategory, ADetails);
+      FOnLog(Self, ALevel, ADateTime, AMessage, ACategory, details);
   end;
 end;
 

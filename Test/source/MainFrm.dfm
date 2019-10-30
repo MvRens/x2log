@@ -72,10 +72,6 @@ object MainForm: TMainForm
     end
     object tsFile: TTabSheet
       Caption = 'File'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -168,10 +164,6 @@ object MainForm: TMainForm
     end
     object tsRollingFile: TTabSheet
       Caption = 'Rolling File'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -279,10 +271,6 @@ object MainForm: TMainForm
     end
     object tsNamedPipe: TTabSheet
       Caption = 'Named Pipe'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         623
         299)
@@ -431,10 +419,6 @@ object MainForm: TMainForm
     TabOrder = 2
     object tsText: TTabSheet
       Caption = 'Text'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         623
         76)
@@ -504,10 +488,6 @@ object MainForm: TMainForm
     object tsException: TTabSheet
       Caption = 'Exception'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       DesignSize = (
         623
         76)
@@ -706,7 +686,7 @@ object MainForm: TMainForm
     Left = 552
     Top = 176
     Bitmap = {
-      494C01010200140070000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010200140074000C000C00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000000C00000001002000000000000009
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

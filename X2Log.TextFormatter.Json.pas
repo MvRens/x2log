@@ -50,6 +50,7 @@ implementation
 uses
   Soap.EncdDecd,
   System.Classes,
+  System.NetEncoding,
   System.SysUtils;
 
 

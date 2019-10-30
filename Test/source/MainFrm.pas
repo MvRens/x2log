@@ -10,7 +10,7 @@ uses
   Vcl.ImgList,
   Vcl.StdCtrls,
 
-  X2Log.Intf;
+  X2Log.Intf, System.ImageList;
 
   
 type
